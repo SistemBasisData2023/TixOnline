@@ -3,8 +3,9 @@ module.exports = {
     content: ["./views/**/*.ejs"],
     mode: "jit",
     theme: {
-      extend: {},
+      extend: {
+      },
     },
-    plugins: [],
+    plugins: [require("daisyui")],
   };
   
