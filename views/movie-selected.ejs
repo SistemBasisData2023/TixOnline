@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Theaters List</title>
+</head>
+<body>
+  <h1>Theaters List on selected movie</h1>
+  <ul>
+    <% theaters.forEach(function(theater) { %>
+      <li>
+            <!-- detail -->
+            <a href="/detail/<%= theater.location %>/<%= theater.movie_id %>"><%= theater.location %></a>
+            <a><%= theater.studio_id %></a>
+      </li>
+    <% }) %>
+  </ul>
+</body>
+</html>

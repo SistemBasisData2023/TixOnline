@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>TixOnline - Buy Movie Tickets Online</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/public/styles/fe_styles.css">
+    <script src="/public/scripts/script.js" defer></script>
+</head>
+<!-- 
+<body>
+  <h1>Welcome to the Movie and Theater Website!</h1>
+  <p>Choose an option:</p>
+  <ul>
+    <li><a href="/movies">Browse Movies</a></li>
+    <li><a href="/theaters">Browse Theaters</a></li>
+    <li><a href="/login-account">Login</a></li>
+    <li><a href="/registerAdmin_Account">Register Admin</a></li>
+  </ul>
+</body>
+</html> -->
+
+<body>
+    <!-- Navbar -->
+    <nav class="bg-black p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-cfab7a text-2xl font-semibold">TixOnline</a>
+            <div class="text-cfab7a">
+                <a href="/home" class="text-cfab7a hover:text-white px-4">Home</a>
+                <a href="#nowplaying" class="text-cfab7a hover:text-white px-4">Now Playing</a>
+                <a href="#comingsoon" class="text-cfab7a hover:text-white px-4">Coming Soon</a>
+                <a href="/theaters" class="text-cfab7a hover:text-white px-4">Theaters</a>
+                <a href="#about" class="text-cfab7a hover:text-white px-4">About</a>
+            </div>
+            <div>
+                <button id="registerBtn" class=" text-white px-4 py-2 custom-btn rounded "><a
+                        href="/register-account">Register</a></button>
+                <button id="loginBtn" class=" text-white custom-btn rounded py-2 px-4"> <a href="/login-account">Log
+                        in</a></button>
+            </div>
+        </div>
+    </nav>
+</body>
+
+<!-- Video Trailer-->
+<section id="home" class="bg-black">
+    <div class="container mx-auto p-6">
+        <div class="relative">
+            <video class="w-full" controls width="100%" height="100%">
+                <source src="views\assets\gotg3trailer.mp4" type="video/mp4">
+            </video>
+            <div class="text-cfab7a mt-4">
+                <h3 class="text-2xl font-semibold">Guardians of the Galaxy Vol.3 | Action, Adventure, Comedy | PG-13
+                </h3>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Now Playing Movie Gallery Section -->
+<section id="nowplaying" class="bg-black py-16 text-[#cfab7a]">
+    <div class="container mx-auto">
+        <h1 class="text-cfab7a text-2xl font-semibold mb-4">Now Playing
+        </h1>
+        <h2 class="text-cfab7a text-xl font-semibold mb-4">
+            Jakarta | Grand Indonesia | XXI
+        </h2>
+
+        <div class="kodfun-galeri">
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625297335009280/fastX.jpg');">
+                <div class="overlay" onclick="showMovieDetails('fastX')">
+                    <h4 class="text-cfab7a font-semibold">Fast X</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625742837207090/Flash.jpg');">
+                <div class="overlay" onClick="showMovieDetails('flash')">
+                    <h4 class="text-cfab7a font-semibold">The Flash</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625743462146118/John_Wick.jpg');">
+                <div class="overlay" onClick="showMovieDetails('johnWick')">
+                    <h4 class="text-cfab7a font-semibold">John Wick</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625743768342618/marvels.jpg');">
+                <div class="overlay" onClick="showMovieDetails('marvels')">
+                    <h4 class="text-cfab7a font-semibold">Marvels</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625744439418890/Shazam.jpg');">
+                <div class="overlay" onClick="showMovieDetails('shazam')">
+                    <h4 class="text-cfab7a font-semibold">Shazam</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625743151775814/GOTG3.jpg');">
+                <div class="overlay" onClick="showMovieDetails('gotg3')">
+                    <h4 class="text-cfab7a font-semibold">Guardian of the Galaxy Vol. 3</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625742224834580/transformers.jpg');">
+                <div class="overlay" onClick="showMovieDetails('transformers')">
+                    <h4 class="text-cfab7a font-semibold">Transformers</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625744728838144/spiderman.jpg');">
+                <div class="overlay" onClick="showMovieDetails('spiderman')">
+                    <h4 class="text-cfab7a font-semibold">Spiderman Across The Spider-Verse</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625744145825818/oppenheimer.jpeg');">
+                <div class="overlay" onClick="showMovieDetails('oppenheimer')">
+                    <h4 class="text-cfab7a font-semibold">Oppenheimer</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625742510039070/bluebeetle.jpg');">
+                <div class="overlay" onClick="showMovieDetails('bluebeetle')">
+                    <h4 class="text-cfab7a font-semibold">Blue Beetle</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!---- Hero Section -->
+<section class="bg-black py-20 text-[#cfab7a]">
+    <div class="container mx-auto">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl text-cfab7a font-semibold mb-6">Welcome to TixOnline</h1>
+            <p class="text-lg text-cfab7a mb-8">Buy movie tickets online and never miss your favorite movies
+                again!</p>
+            <a href="#" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded">Get
+                Started</a>
+        </div>
+    </div>
+</section>
+
+<!-- Coming Soon Movie Gallery Section -->
+<section id="comingsoon" class="bg-black py-16 text-[#cfab7a]">
+    <div class="container mx-auto">
+        <h1 class="text-2xl text-cfab7a font-semibold mb-4">Coming Soon | Jakarta</h1>
+        <div class="kodfun-galeri">
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625297335009280/fastX.jpg');">
+                <div class="overlay" onclick="showMovieDetails('fastX')">
+                    <h4 class="text-cfab7a font-semibold">Fast X</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625742837207090/Flash.jpg');">
+                <div class="overlay" onClick="showMovieDetails('flash')">
+                    <h4 class="text-cfab7a font-semibold">The Flash</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625743462146118/John_Wick.jpg');">
+                <div class="overlay" onClick="showMovieDetails('johnWick')">
+                    <h4 class="text-cfab7a font-semibold">John Wick</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625743768342618/marvels.jpg');">
+                <div class="overlay" onClick="showMovieDetails('marvels')">
+                    <h4 class="text-cfab7a font-semibold">Marvels</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625744439418890/Shazam.jpg');">
+                <div class="overlay" onClick="showMovieDetails('shazam')">
+                    <h4 class="text-cfab7a font-semibold">Shazam</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625743151775814/GOTG3.jpg');">
+                <div class="overlay" onClick="showMovieDetails('gotg3')">
+                    <h4 class="text-cfab7a font-semibold">Guardian of the Galaxy Vol. 3</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625742224834580/transformers.jpg');">
+                <div class="overlay" onClick="showMovieDetails('transformers')">
+                    <h4 class="text-cfab7a font-semibold">Transformers</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625744728838144/spiderman.jpg');">
+                <div class="overlay" onClick="showMovieDetails('spiderman')">
+                    <h4 class="text-cfab7a font-semibold">Spiderman Across The Spider-Verse</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625744145825818/oppenheimer.jpeg');">
+                <div class="overlay" onClick="showMovieDetails('oppenheimer')">
+                    <h4 class="text-cfab7a font-semibold">Oppenheimer</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+            <div style="background-image: url('https://cdn.discordapp.com/attachments/1112625260840366100/1112625742510039070/bluebeetle.jpg');">
+                <div class="overlay" onClick="showMovieDetails('bluebeetle')">
+                    <h4 class="text-cfab7a font-semibold">Blue Beetle</h4>
+                    <p class="text-cfab7a">Rated:R 13+</p>
+                </div>
+            </div>
+        </div>
+</section>
+
+<!-- Movie Details Popup -->
+<div id="movieDetailsPopup" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="bg-black rounded-lg shadow-lg p-6 w-1/2">
+        <h2 id="movieTitle" class="text-2xl font-semibold mb-4"></h2>
+        <p id="movieSynopsis" class="text-cfab7a mb-4"></p>
+        <p id="movieActors" class="text-cfab7a mb-4"></p>
+        <p id="movieTicketPrice" class="text-cfab7a mb-4"></p>
+        <a href="booking.html" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">Book
+            Now</a>
+        <button id="closeMovieDetailsBtn" class="absolute top-0 right-0 mt-4 mr-4 text-white hover:text-gray-800">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-6 w-6 close-icon">
+                <path fill="none" d="M0 0h24v24H0z" />
+                <path
+                    d="M19 6.41l-1.41-1.41L12 10.17 6.41 4.59 5 6l6 6-6 6 1.41 1.41L12 13.83l5.59 5.59 1.41-1.41L13.83 12l5.59-5.59z" />
+            </svg>
+        </button>
+
+    </div>
+</div>
+
+<!-- Features Section -->
+<section id="about" class="bg-black py-16 text-[#cfab7a]">
+    <div class="container mx-auto">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-cfab7a text-3xl font-semibold mb-6">Why Choose TixOnline?</h2>
+            <p class="text-lg text-cfab7a mb-8">Experience the convenience of buying movie tickets online with
+                TixOnline.</p>
+            <div class="flex flex-wrap justify-center">
+                <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                        class="h-12 w-12 mx-auto mb-4 text-red-600">
+                        <path fill="none" d="M0 0h24v24H0z" />
+                        <path
+                            d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 3a2 2 0 1 1-.001 3.999A2 2 0 0 1 11 7zm2 9H9v-2h4v2z"
+                            fill="rgba(255,255,255,1)" />
+                    </svg>
+                    <h3 class="text-xl text-cfab7a font-semibold mb-2">Easy Ticket Booking</h3>
+                    <p class="text-cfab7a">Book your movie tickets in just a few clicks without any hassle.</p>
+                </div>
+                <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                        class="h-12 w-12 mx-auto mb-4 text-red-600">
+                        <path fill="none" d="M0 0h24v24H0z" />
+                        <path
+                            d="M20 11H4v2h16v-2zm0-4H4v2h16V7zm0 8H4v2h16v-2zm0 4h-2v2h2v-2zm2-8h-2v2h2v-2zm0-4h-2v2h2V7zm0 8h-2v2h2v-2zm0 4h-2v2h2v-2zm2-8h-2v2h2v-2zm0-4h-2v2h2V7zm0 8h-2v2h2v-2zm0 4h-2v2h2v-2zm2-8h-2v2h2v-2zm0-4h-2v2h2V7zm0 8h-2v2h2v-2zm0 4h-2v2h2v-2zm2-8h-2v2h2v-2z"
+                            fill="rgba(255,255,255,1)" />
+                    </svg>
+                    <h3 class="text-xl text-cfab7a font-semibold mb-2">Wide Movie Selection</h3>
+                    <p class="text-cfab7a">Choose from a wide range of movies and genres to suit your preferences.
+                    </p>
+                </div>
+                <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                        class="h-12 w-12 mx-auto mb-4 text-red-600">
+                        <path fill="none" d="M0 0h24v24H0z" />
+                        <path
+                            d="M12 2L2 7l10 5 10-5-10-5zm0 2.276L20.566 7 12 11.724 3.434 7 12 4.276zm0 11.448L2 13l10-5 10 5-10 5zm0 2.276L20.566 19 12 14.276 3.434 19 12 21.724z"
+                            fill="rgba(255,255,255,1)" />
+                    </svg>
+                    <h3 class="text-xl text-cfab7a font-semibold mb-2">Secure Online Payments</h3>
+                    <p class="text-cfab7a">Make your payments securely with our trusted payment gateways.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-black text-cfab7a py-6 text-[#cfab7a]">
+    <div class="container mx-auto text-center">
+        <p>&copy; 2023 TixOnline. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script>
+    function showMovieDetails(movieTitle) {
+        // Set movie details based on the movieTitle parameter (you can customize this logic)
+        if (movieTitle === 'fastX') {
+            movieTitleElement.textContent = 'Fast & Furious X';
+            movieSynopsisElement.textContent = "Over many missions and against impossible odds, Dom Toretto and his family have outsmarted and outdriven every foe in their path. Now, they must confront the most lethal opponent they've ever faced. Fueled by revenge, a terrifying threat emerges from the shadows of the past to shatter Dom's world and destroy everything -- and everyone -- he loves.";
+            movieActorsElement.textContent = "Star: Vin Diesel, Michelle Rodriguez, Tyrese Gibson, Chris 'Ludacris' Bridges, John Cena";
+            movieTicketPriceElement.textContent = 'Ticket Price: $10';
+        } else if (movieTitle === 'flash') {
+            movieTitleElement.textContent = 'The Flash';
+            movieSynopsisElement.textContent = "Worlds collide when the Flash uses his superpowers to travel back in time to change the events of the past. However, when his attempt to save his family inadvertently alters the future, he becomes trapped in a reality in which General Zod has returned, threatening annihilation. With no other superheroes to turn to, the Flash looks to coax a very different Batman out of retirement and rescue an imprisoned Kryptonian -- albeit not the one he's looking for.";
+            movieActorsElement.textContent = "Ezra Miller, Sasha Calle, Michael Shannon, Ron Livingston, Maribel Verdú, Kiersey Clemons, Antje Traue, Michael Keaton";
+            movieTicketPriceElement.textContent = 'Ticket Price: $12';
+        } else if (movieTitle === 'johnWick') {
+            movieTitleElement.textContent = 'John Wick: Chapter 4';
+            movieSynopsisElement.textContent = "With the price on his head ever increasing, legendary hit man John Wick takes his fight against the High Table global as he seeks out the most powerful players in the underworld, from New York to Paris to Japan to Berlin.";
+            movieActorsElement.textContent = 'Keanu Reeves, Donnie Yen, Rina Sawayama, Shamier Anderson, Lance Reddick, Ian McShane, Laurence Fishburne';
+            movieTicketPriceElement.textContent = 'Ticket Price: $15';
+        } else if (movieTitle === 'marvels') {
+            movieTitleElement.textContent = 'The Marvels';
+            movieSynopsisElement.textContent = 'Carol Danvers, aka Captain Marvel, has reclaimed her identity from the tyrannical Kree and taken revenge on the Supreme Intelligence. However, unintended consequences see her shouldering the burden of a destabilized universe. When her duties send her to an anomalous wormhole linked to a Kree revolutionary, her powers become entangled with two other superheroes to form the Marvels.';
+            movieActorsElement.textContent = 'Brie Larson, Teyonah Parris, Iman Vellani, Zawe Ashton, Park Seo-joon, Samuel L. Jackson';
+            movieTicketPriceElement.textContent = 'Ticket Price: $10';
+        } else if (movieTitle === 'shazam') {
+            movieTitleElement.textContent = 'Shazam! Fury of the Gods';
+            movieSynopsisElement.textContent = 'Bestowed with the powers of the gods, Billy Batson and his fellow foster kids are still learning how to juggle teenage life with their adult superhero alter egos. When a vengeful trio of ancient gods arrives on Earth in search of the magic stolen from them long ago, Shazam and his allies get thrust into a battle for their superpowers, their lives, and the fate of the world.';
+            movieActorsElement.textContent = 'Zachary Levi, Asher Angel, Jack Dylan Grazer, Helen Mirren, Lucy Liu, Rachel Zegler, Djimon Hounsou';
+            movieTicketPriceElement.textContent = 'Ticket Price: $12';
+        } else if (movieTitle === 'gotg3') {
+            movieTitleElement.textContent = 'Guardians of the Galaxy Vol. 3';
+            movieSynopsisElement.textContent = 'Still reeling from the loss of Gamora, Peter Quill must rally his team to defend the universe and protect one of their own. If the mission is not completely successful, it could possibly lead to the end of the Guardians as we know them.';
+            movieActorsElement.textContent = 'Chris Pratt, Zoe Saldana, Dave Bautista, Vin Diesel, Bradley Cooper, Pom Klementieff, Karen Gillan';
+            movieTicketPriceElement.textContent = 'Ticket Price: $12';
+        } else if (movieTitle === 'transformers') {
+            movieTitleElement.textContent = 'Transformers: Rise of the Beasts';
+            movieSynopsisElement.textContent = 'During the 1990s, the Maximals, Predacons and Terrorcons join the existing battle on Earth between Autobots and Decepticons.';
+            movieActorsElement.textContent = 'Anthony Ramos, Dominique Fishback, Luna Lauren Velez, Ron Perlman, Peter Cullen, Frank Welker';
+            movieTicketPriceElement.textContent = 'Ticket Price: $15';
+        } else if (movieTitle === 'spiderman') {
+            movieTitleElement.textContent = 'Spiderman Across the Spider-Verse';
+            movieSynopsisElement.textContent = "After reuniting with Gwen Stacy, Brooklyn's full-time, friendly neighborhood Spider-Man is catapulted across the Multiverse, where he encounters a team of Spider-People charged with protecting its very existence. However, when the heroes clash on how to handle a new threat, Miles finds himself pitted against the other Spiders. He must soon redefine what it means to be a hero so he can save the people he loves most.";
+            movieActorsElement.textContent = 'Shameik Moore, Hailee Steinfeld, Jake Johnson, Liev Schreiber, Oscar Isaac, Issa Rae, Brian Tyree Henry, Lauren Velez, Lily Tomlin';
+            movieTicketPriceElement.textContent = 'Ticket Price: $10';
+        } else if (movieTitle === 'oppenheimer') {
+            movieTitleElement.textContent = 'Oppenheimer';
+            movieSynopsisElement.textContent = "Physicist J Robert Oppenheimer works with a team of scientists during the Manhattan Project, leading to the development of the atomic bomb.";
+            movieActorsElement.textContent = "Robert Downey Jr., Matt Damon, Emily Blunt, Meryl Streep, Rami Malek, Ben Mendelsohn, T.R. Knight, Colin Firth";
+            movieTicketPriceElement.textContent = 'Ticket Price: $12';
+        } else if (movieTitle === 'bluebeetle') {
+            movieTitleElement.textContent = 'Blue Beetle';
+            movieSynopsisElement.textContent = "Jaime Reyes suddenly finds himself in possession of an ancient relic of alien biotechnology called the Scarab. When the Scarab chooses Jaime to be its symbiotic host, he's bestowed with an incredible suit of armor that's capable of extraordinary and unpredictable powers, forever changing his destiny as he becomes the superhero Blue Beetle.";
+            movieActorsElement.textContent = "Xolo Maridueña, Angel Manuel Soto";
+            movieTicketPriceElement.textContent = 'Ticket Price: $15';
+        }
+
+        movieDetailsPopup.classList.remove('hidden');
+
+        closeMovieDetailsBtn.addEventListener('click', () => {
+            movieDetailsPopup.classList.add('hidden');
+        });
+    }
+
+    registerBtn.addEventListener('click', () => {
+        registerModal.classList.remove('hidden');
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+        registerModal.classList.add('hidden');
+    });
+
+    loginBtn.addEventListener('click', () => {
+        loginModal.classList.remove('hidden');
+    });
+
+    closeLoginModalBtn.addEventListener('click', () => {
+        loginModal.classList.add('hidden');
+    });
+
+</script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .kodfun-galeri {
+        display: flex;
+        height: 20rem;
+        gap: 1rem;
+    }
+
+    .kodfun-galeri>div {
+        flex: 1;
+        border-radius: 1rem;
+        background-size: auto 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        transition: all 0.8s cubic-bezier(0.25, 0.4, 0.45, 1.4);
+        overflow: hidden;
+    }
+
+    .kodfun-galeri>div:hover {
+        flex: 5;
+    }
+
+    .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background-color: rgba(0, 0, 0, 0.7);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .kodfun-galeri>div:hover .overlay {
+        opacity: 1;
+    }
+
+    .overlay h4,
+    .overlay p {
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .overlay h4 {
+        font-size: 1.5rem;
+    }
+
+    .overlay p {
+        font-size: 1rem;
+    }
+
+    .text-cfab7a {
+        color: #cfab7a;
+    }
+
+    .close-icon {
+        fill: white;
+    }
+
+    .custom-btn {
+        background-color: #cfab7a;
+        color: black;
+    }
+</style>
+
+</body>
+
+</html>

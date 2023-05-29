@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Home</title>
+</head>
+<body>
+  <a><%schedule.title %></a>
+  <a><%schedule.name %>,<%schedule.location %></a>
+
+  <ul>
+    <% schedule.forEach(function(schedule) { %>
+      <li>
+            <a href="/seat/<%= schedule.schedule_id %>"><%= schedule.date %></a>
+            <a><%= schedule.type %></a>
+      </li>
+    <% }) %>
+</body>
+</html>

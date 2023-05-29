@@ -1,0 +1,65 @@
+body{
+    font-family: Arial, sans-serif;
+}
+
+.kodfun-galeri {
+    display: flex;
+    height: 20rem;
+    gap: 1rem;
+}
+
+.kodfun-galeri>div {
+    flex: 1;
+    border-radius: 1rem;
+    background-size: auto 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    transition: all 0.8s cubic-bezier(0.25, 0.4, 0.45, 1.4);
+    overflow: hidden;
+}
+
+.kodfun-galeri>div:hover {
+    flex: 5;
+}
+
+.overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.kodfun-galeri>div:hover .overlay {
+    opacity: 1;
+}
+
+.overlay h4,
+.overlay p {
+    margin: 0;
+}
+
+.overlay h4 {
+    font-size: 1.5rem;
+}
+
+.overlay p {
+    font-size: 1rem;
+}
+
+.text-cfab7a {
+    color: #cfab7a;
+}
+
+.close-icon {
+    fill: white;
+}
+
+.custom-btn {
+    background-color: #cfab7a;
+    color: black;
+}

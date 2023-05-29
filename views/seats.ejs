@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Movie List</title>
+</head>
+<body>
+  <h1>Select Seat</h1>
+  <ul>
+    <% seats.forEach(function(seat) { %>
+      <li>
+          <p><%= seat.seat_number %></p>
+      </li>
+    <% }) %>
+  </ul>
+</body>
+</html>
