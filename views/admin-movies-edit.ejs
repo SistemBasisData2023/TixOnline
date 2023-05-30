@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Movie</title>
+</head>
+<body>
+  <h1>Create Movie</h1>
+  <form action="/create-movie" method="POST">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required><br><br>
+    
+    <label for="genre">Genre:</label>
+    <select id="genre" name="genre" required>
+      <option value="Action">Action</option>
+      <option value="Adventure">Adventure</option>
+      <option value="Comedy">Comedy</option>
+      <option value="Drama">Drama</option>
+      <option value="Fantasy">Fantasy</option>
+      <option value="Horror">Horror</option>
+      <option value="Mystery">Mystery</option>
+      <option value="Romance">Romance</option>
+      <option value="Sci-Fi">Sci-Fi</option>
+      <option value="Thriller">Thriller</option>
+      <option value="Other">Other</option>
+    </select><br><br>
+    
+    <label for="duration">Duration:</label>
+    <input type="text" id="duration" name="duration" required><br><br>
+    
+    <label for="release_date">Release Date:</label>
+    <input type="text" id="release_date" name="release_date" required><br><br>
+    
+    <label for="synopsis">Synopsis:</label><br>
+    <textarea id="synopsis" name="synopsis" rows="4" cols="50" required></textarea><br><br>
+    
+    <label for="status">Status:</label>
+    <select id="status" name="status" required>
+      <option value="UPCOMING">Upcoming</option>
+      <option value="SHOWING">Showing</option>
+      <option value="SHOWED">Showed</option>
+    </select><br><br>
+    
+    <label for="trailer_link">Trailer Link:</label>
+    <input type="text" id="trailer_link" name="trailer_link" required><br><br>
+    
+    <label for="image">Image:</label>
+    <input type="file" id="image" name="image" accept="image/*" required><br><br>
+    
+    <input type="submit" value="jangan dipencet, belom kelar">
+  </form>
+</body>
+</html>

@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const paypal = require('paypal-rest-sdk');
 const bcrypt = require('bcrypt');
 const axios = require('axios');
+const multer = require('multer');
 
 //initialize the app as an express app
 const app = express();
@@ -23,6 +24,27 @@ const db = new Client({
     ssl:{rejectUnauthorized: false}, 
   });
 
+  const fileStorage = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, 'public/images/');
+    },
+    filename: (req, file, callback) => {
+        callback(null, Date.now() + ' - ' +file.originalname);
+    }
+  });
+
+  const fileFilter = (req,file,callback) => { 
+    if(file.mimetype === 'image/png' || 
+       file.mimetype === 'image/jpg' || 
+       file.mimetype === 'image/jpeg'){
+        callback(null, true);
+    }else{
+        callback(null, false);
+    }
+  }
+  app.use(express.static('public'));
+app.use(multer({storage:fileStorage, fileFilter:fileFilter}).single('image'));
+const upload = multer({ storage: fileStorage });
   // Configure PayPal Sandbox credentials
 paypal.configure({
     mode : 'sandbox',
@@ -80,6 +102,78 @@ router.get('/', (req, res) => {
     }catch(err){
         console.error('Page is not availible', error);
         return res.status(500).json({ message: 'An error occurred during showing page.' });
+    }
+});
+
+router.get('/admin/movies/add', async(req,res)=> {
+    try{
+        res.render('admin-movies-add.ejs');
+    }catch(error){
+
+    }
+});
+
+router.get('/admin/movies/edit/:id', async(req, res)=> {
+    try{
+        res.render('admin-movies-edit.ejs');
+    }catch(error){
+
+    }
+});
+router.get('/admin/movies', async (req, res) => {
+    try{
+        const query ='SELECT * FROM Movies;';
+
+        await db.query(query, (err, results) => {
+            if(err){
+
+            }else{
+                res.render('admin-movies.ejs', {movies : results.rows});
+            }
+        });
+
+    }catch(error){
+    }
+});
+
+router.post('/create-movie', upload.single('image'), async (req,res)=>{
+    const { title, genre, duration, release_date, synopsis, status, trailer_link} = req.body;
+    const image = req.filename;
+    try{
+        const query = 'INSERT INTO Movies (title, genre, duration, release_date, synopsis, status, trailer_link, images) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);';
+        const values = [title, genre, duration, release_date, synopsis, status, trailer_link, image];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log(err);
+            }else{
+                console.log("Movie created");
+                res.redirect('/admin/movies');
+            }
+        });
+
+    }catch(err){
+        console.log(err);
+    }
+});
+
+router.post('/delete-movie/:id', async (req,res)=>{
+    const movie_id = req.params.id;
+    try{
+        const query = 'DELETE FROM Movies WHERE movie_id = $1;';
+        const values = [movie_id];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log(err);
+            }else{
+                console.log("deleted.")
+                res.redirect('/admin/movies');
+            }
+        });
+
+    }catch(err){
+        console.log(err);
     }
 });
 

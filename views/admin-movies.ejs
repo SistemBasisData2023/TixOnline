@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Table Example</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .actions button {
+      padding: 5px 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .actions button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="actions">
+    <a href="/admin/movies/add">Add New Item</a>
+  </div>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Image</th>
+      <th>Actions</th>
+    </tr>
+    <% movies.forEach(function(movie) { %>
+      <tr>
+        <td><%= movie.title %></td>
+        <td><%= movie.images %></td>
+        <td>
+          <a href="/admin/movies/edit/<%= movie.movie_id %>">Edit</button>
+
+          <form action="/delete-movie/<%= movie.movie_id %>" method="post">
+            <input type="submit" value="Delete">
+          </form>
+        </td>
+      </tr>
+    <% }); %>
+  </table>
+
+</body>
+</html>
