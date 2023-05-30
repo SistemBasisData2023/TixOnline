@@ -88,4 +88,3 @@ loginBtn.addEventListener('click', () => {
 closeLoginModalBtn.addEventListener('click', () => {
     loginModal.classList.add('hidden');
 });
-
