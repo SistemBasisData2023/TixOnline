@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Theaters List</title>
+  <script>
+     function cancelSeats(){
+      //Delete selected-seats
+      fetch('http://localhost:3000/delete-select-seat', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        })
+        .then(function (response) {
+            // Handle the server response if needed
+        })
+        .catch(function (error) {
+            // Handle any errors that occurred during the request
+        });
+        window.location.href = '/';
+    }
+  </script>
+</head>
+<body>
+  <h1>cancel</h1>
+  <button id="cancelButton" onclick="cancelSeats()">Cancel</button>
+</body>
+</html>

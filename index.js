@@ -2,7 +2,9 @@
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const paypal = require('paypal-rest-sdk');
 const bcrypt = require('bcrypt');
+const axios = require('axios');
 
 //initialize the app as an express app
 const app = express();
@@ -20,7 +22,14 @@ const db = new Client({
     port: 5432,
     ssl:{rejectUnauthorized: false}, 
   });
-  
+
+  // Configure PayPal Sandbox credentials
+paypal.configure({
+    mode : 'sandbox',
+    client_id: 'AXGCErbNw-M4COGxcnG2NkdhhyHPJDqyyAC2NTwIemP7b7i0FXAwkWOI_4YC2nk2VIuF7XeKv6SfIlAZ',
+    client_secret: 'EEuMnCqlUcqyAkK5zuW4GuYbjj4mJUY4dcB2v4dMuKcWObaPHKBT5aB3FXl2cCcVU2i27cWCOtGsvl5Z'
+  });
+
 //Melakukan koneksi dan menunjukkan indikasi database terhubung
 
 //jalankan koneksi ke database
@@ -36,10 +45,12 @@ db.connect((err)=>{
 app.use(
     session({
         secret: 'ini contoh secret',
-        saveUninitialized: false,
-        resave: false
+        saveUninitialized: true,
+        resave: false,
+        cookie: { maxAge: 1000 * 60 * 60 * 24 }
     })
 );
+
 app.use(bodyParser.json());
 app.use(
     bodyParser.urlencoded({
@@ -47,10 +58,11 @@ app.use(
     })
 );
 
+
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: false}));
 
-var temp;
+var store_session;
  
 app.use('/', router);
 
@@ -58,14 +70,12 @@ app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-app.use(express.static("public"));
-app.set("view engine", "ejs");
-
-
 //ROUTERS
 //Landing page
 router.get('/', (req, res) => {
     try{
+        console.log("This is /");
+        console.log(store_session);
         res.render('home.ejs');
     }catch(err){
         console.error('Page is not availible', error);
@@ -73,19 +83,308 @@ router.get('/', (req, res) => {
     }
 });
 
-router.get('/movies/:movieId', async (req,res) => {
-    const {movieId} = req.params;
+router.post('/pay', (req, res) => {
+    const ticketQuantity = store_session.ticketQuantity;
+    const ticketPricesString = JSON.stringify(store_session.ticketPrices);
+    const totalString = JSON.stringify(store_session.ticketQuantity*store_session.ticketPrices);
+    console.log("Ticket Quantity " + ticketQuantity + " price " + ticketPricesString + " total " + totalString);
+
+    const create_payment_json = {
+      intent: 'sale',
+      payer: {
+        payment_method: 'paypal'
+      },
+      redirect_urls: {
+        return_url: 'http://localhost:3000/success',
+        cancel_url: 'http://localhost:3000/cancel'
+      },
+      transactions: [{
+        item_list: {
+          items: [{
+            name: 'Cinema Ticket',
+            sku: 'ticket001',
+            price: ticketPricesString,
+            currency: 'USD',
+            quantity: ticketQuantity
+          }]
+        },
+        amount: {
+          currency: 'USD',
+          total: totalString
+        },
+        description: 'Payment for cinema ticket'
+      }]
+    };
+  
+    paypal.payment.create(create_payment_json, (error, payment) => {
+      if (error) {
+        console.error(error.response);
+      } else {
+        console.log(payment.transactions);
+        for (let i = 0; i < payment.links.length; i++) {
+          if (payment.links[i].rel === 'approval_url') {
+            res.redirect(payment.links[i].href);
+          }
+        }
+      }
+    });
+  });
+  
+router.get('/success', (req, res) => {
+    const payerId = req.query.PayerID;
+    const paymentId = req.query.paymentId;
+    const totalString = JSON.stringify(store_session.ticketQuantity*store_session.ticketPrices);
+
+    const execute_payment_json = {
+      payer_id: payerId,
+      transactions: [{
+        amount: {
+          currency: 'USD',
+          total: totalString
+        }
+      }]
+    };
+  
+    paypal.payment.execute(paymentId, execute_payment_json, async (error, payment) => {
+      if (error) {
+        console.error(error.response);
+      } else {
+  
+        console.log("This is /succes");
+        const transaction_id = store_session.transaction_id;
+        const transaction_status = 'DONE';
+    
+        try{
+            const query = 'UPDATE transactions SET transaction_status = $1 WHERE transaction_id = $2;';
+            const values = [transaction_status, transaction_id];
+    
+            await db.query(query, values, async (err,results) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    //dapetin tiket blom
+                    const queryTicket = 'SELECT Tickets.*, Studios.*, Schedule.date, Schedule.hours, Schedule.prices FROM Tickets JOIN Transactions ON Tickets.transaction_id = Transactions.transaction_id JOIN Schedule ON Tickets.schedule_id = Schedule.schedule_id JOIN Studios ON Studios.studio_id = Schedule.studio_id WHERE Tickets.transaction_id = $1;';
+                    const valuesTicket = [transaction_id];
+
+                    await db.query(queryTicket, valuesTicket, (err,results) => {
+                        if(err){
+                            console.log(err);
+                        }else{
+                            store_session.ticketQuantity = null;
+                            store_session.ticketPrices = null;
+                            store_session.transaction_id = null;
+                            console.log(results.rows);
+                            res.render('success.ejs', { payment, tickets:results.rows});
+                            console.log("Transaction done.")
+                        }
+                    });
+                    
+                }
+            });
+        }catch(err){
+            
+        }
+      }
+    });
+  });
+  
+  
+router.get('/cancel', async (req, res) => {
+    const transaction_id = store_session.transaction_id;
+
+    const transaction_status = 'CANCELED';
 
     try{
-        const query = 'SELECT DISTINCT Studios.* FROM Studios JOIN Schedule ON Studios.studio_id = Schedule.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Movies.movie_id = $1;';
-        const values = [movieId];
+        const query = 'UPDATE transactions SET transaction_status = $1 WHERE transaction_id = $2;';
+        const values = [transaction_status, transaction_id];
+
+        await db.query(query, values, (err,results) => {
+            if(err){
+                console.log(err);
+            }else{
+                store_session.ticketQuantity = null;
+                store_session.ticketPrices = null;
+                store_session.transaction_id = null;
+                console.log("Transaction canceled.")
+                res.render('cancel.ejs');
+            }
+        });
+    }catch(err){
+
+    }
+
+});
+  
+//Showing seat layout page
+router.get('/seat/:scheduleId', async (req, res) => {
+    const {scheduleId} = req.params;
+    store_session.schedule_id = scheduleId;
+
+    try{
+        //Get sold seats first
+        const querySoldSeat = 'SELECT seat_id FROM ScheduleSeats WHERE schedule_id = $1;';
+        const values = [scheduleId];
+        const soldSeats = null;
+
+        await db.query(querySoldSeat, values, async (err, soldSeats) => {
+            if(err){
+                console.log(err);
+                return res.json({ message: 'Retrive data failed.' });
+            }else{
+                //Get seats on selected schedule
+                const query = 'SELECT Seats.*, Schedule.Schedule_id, Schedule.prices FROM Seats JOIN Schedule ON Schedule.studio_id = Seats.studio_id WHERE Schedule.schedule_id = $1;';
+
+                await db.query(query, values, (err, results) => {
+                    if(err){
+                        console.log(err);
+                        return res.json({ message: 'Retrive data failed.' });
+                    }else{
+                        store_session.ticketPrices = results.rows[0].prices;
+                        res.render('seats.ejs', {seats : results.rows, scheduleId:scheduleId, soldSeats:soldSeats.rows});
+                    }
+                });
+            }
+        });
+
+        
+    }catch(error){
+        console.error('Page is not availible', error);
+        return res.status(500).json({ message: 'An error occurred during showing page.' });
+    } 
+});
+
+//Selected seat API
+router.post('/select-seat', async (req, res) => {
+    const {seatsId, scheduleId} = req.body;
+    store_session.ticketQuantity = seatsId.length;
+    store_session.seats_id = seatsId;
+    try{
+        const query = 'INSERT INTO ScheduleSeats (schedule_id, seat_id) VALUES ($1, $2);';
+        seatsId.forEach(async (seatId) => {
+            const values = [scheduleId, seatId];
+            await db.query(query, values, (err, results) => {
+                if(err){
+                    console.log(err);
+                    return res.json({ message: 'Retrive data failed.' });
+                }else{
+                    console.log(store_session);
+                    console.log("Selected seat received by server.");
+                }
+            });
+        });
+    }catch{
+        console.error('Error select seat:', error);
+        return res.status(500).json({ message: 'An error occurred during select seat.' });
+    }
+});
+
+//Make transaction API
+router.post('/transaction-waiting', async (req, res) => {
+    const {quantity} = req.body;
+    const user_id = store_session.user_id;
+    const transaction_status = 'WAITING';
+    const transaction_date = new Date();
+
+    try{
+        const query = 'INSERT INTO Transactions (user_id, quantity, transaction_status, transaction_date) VALUES ($1, $2, $3, $4) RETURNING transaction_id;';
+        const values = [user_id, quantity, transaction_status, transaction_date];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log(err);
+            }else{
+                store_session.transaction_id = results.rows[0].transaction_id;
+                console.log("Transaction is made");
+            }
+        });
+ 
+    }catch(error){
+        console.error('Error make transaction:', error);
+        return res.status(500).json({ message: 'An error occurred during making transaction.' });
+    }
+});
+
+//Make tickets API
+//Bikin error
+router.post('/ticket-waiting', async (req, res) => {
+    console.log("tiket waiting");
+
+    const {seatsId, scheduleId} = req.body;
+
+    const transaction_id = store_session.transaction_id;
+
+    try{
+        const query='INSERT INTO Tickets (transaction_id, schedule_id, seat_id) VALUES ($1, $2, $3);';
+
+        seatsId.forEach(async (seatId) => {
+            const values = [transaction_id, scheduleId, seatId];
+            console.log("ticket transaction id" + transaction_id);
+            req.session.transaction_id = transaction_id;
+            await db.query(query, values, (err, results) => {
+                if(err){
+                    console.log(err);
+                    return res.json({ message: 'Making ticket failed.' });
+                }else{
+                    console.log("Ticket success.");
+                }
+            });
+        });
+
+    }catch(error){
+        console.error('Error make ticket(s):', error);
+        return res.status(500).json({ message: 'An error occurred during making ticket.' });
+    }
+});
+
+//Delete selected seat API
+router.delete('/delete-select-seat', async (req, res) => {
+    const scheduleId = store_session.schedule_id;
+    const seatsId = store_session.seats_id;
+    try{
+        const query = 'DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;';
+        seatsId.forEach(async (seatId) => {
+            const values = [scheduleId, seatId];
+            await db.query(query, values, (err, results) => {
+                if(err){
+                    console.log(err);
+                    return res.json({ message: 'Retrive data failed.' });
+                }else{
+                    store_session.seats_id = null;
+                    console.log("Selected seat deleted from server.");
+                }
+            });
+        });
+    }catch{
+        console.error('Error select seat:', error);
+        return res.status(500).json({ message: 'An error occurred during select seat.' });
+    }
+});
+
+
+//Showing selected movie details include the schedules page
+router.get('/detail/:location/:movieId', async (req, res) => {
+    const {location, movieId} = req.params;
+
+    try{
+        const query = 'SELECT Schedule.*, Movies.*, Studios.* FROM Schedule  JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id WHERE Studios.location = $1 AND Schedule.movie_id = $2;';
+        const values = [location, movieId];
 
         await db.query(query, values, (err, results) => {
             if(err){
                 console.log(err);
                 return res.json({ message: 'Retrive data failed.' });
             }else{
-                res.render('theaters.ejs', {theaters : results.rows});
+                console.log(store_session);
+                res.render('detail.ejs', {schedules : results.rows, 
+                    movieTitle : results.rows[0].title, 
+                    movieGenre : results.rows[0].genre, 
+                    movieDuration : results.rows[0].duration, 
+                    movieReleaseDate : results.rows[0].release_date,
+                    movieSynopsis : results.rows[0].synopsis,
+                    moviePlayedAt : results.rows[0].location,
+                    moviePlayedAtCity : results.rows[0].city,
+                    username : req.session.username
+                });
             }
         });
     }catch(error){
@@ -94,6 +393,29 @@ router.get('/movies/:movieId', async (req,res) => {
     }
 });
 
+//Showing theaters list where the selected movie is playing page
+router.get('/movie/:movieTitle', async (req,res) => {
+    const {movieTitle} = req.params;
+
+    try{
+        const query = 'SELECT DISTINCT Studios.location, Movies.movie_id FROM Studios JOIN Schedule ON Studios.studio_id = Schedule.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Movies.title = $1;';
+        const values = [movieTitle];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log(err);
+                return res.json({ message: 'Retrive data failed.' });
+            }else{
+                res.render('movie-selected.ejs', {theaters : results.rows});
+            }
+        });
+    }catch(error){
+        console.error('Page is not availible', error);
+        return res.status(500).json({ message: 'An error occurred during showing page.' });
+    }
+});
+
+//Showing movies list page
 router.get('/movies', async (req,res) => {
     try{
         const query = 'SELECT * FROM movies;'
@@ -103,7 +425,7 @@ router.get('/movies', async (req,res) => {
                 console.log(err);
                 return res.json({ message: 'Retrive data failed.' });
             }else{
-                res.render('movies.ejs', {movies : results.rows});
+                res.render('movies-list.ejs', {movies : results.rows});
             }
         });
     }catch(error){
@@ -112,19 +434,20 @@ router.get('/movies', async (req,res) => {
     }
 });
 
-router.get('/theaters/:theaterId', async (req,res) => {
-    const {theaterId} = req.params;
+//Showing movies list that is playing on selected theater's location page
+router.get('/theater/:location', async (req,res) => {
+    const {location} = req.params;
 
     try{
-        const query = 'SELECT DISTINCT Movies.* FROM Movies JOIN Schedule ON Movies.movie_id = Schedule.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id WHERE Studios.studio_id = $1;';
-        const values = [theaterId];
+        const query = 'SELECT DISTINCT Movies.*, Studios.location FROM Movies JOIN Schedule ON Movies.movie_id = Schedule.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id WHERE Studios.location = $1;';
+        const values = [location];
 
         await db.query(query, values, (err, results) => {
             if(err){
                 console.log(err);
                 return res.json({ message: 'Retrive data failed.' });
             }else{
-                res.render('movies.ejs', {movies : results.rows});
+                res.render('theater-selected.ejs', {movies : results.rows});
             }
         });
     }catch(error){
@@ -132,17 +455,18 @@ router.get('/theaters/:theaterId', async (req,res) => {
         return res.status(500).json({ message: 'An error occurred during showing page.' });
     }
 });
-
+ 
+//Showing theaters location page
 router.get('/theaters', async (req,res) => {
     try{
-        const query = 'SELECT * FROM studios;'
+        const query = 'SELECT DISTINCT name, location, city FROM studios;'
 
         await db.query(query, (err, results) => {
             if(err){
                 console.log(err);
                 return res.json({ message: 'Retrive data failed.' });
             }else{
-                res.render('theaters.ejs', {theaters : results.rows});
+                res.render('theaters-list.ejs', {theaters : results.rows});
             }
         });
     }catch(error){
@@ -151,50 +475,7 @@ router.get('/theaters', async (req,res) => {
     }
 });
 
-router.post('/book', async (req,res) => {
-    try{
-        //const query = `INSERT INTO Bookings (user_id, movie_id, studio_id, seat_id, booking_date) VALUES (1, 1, 1, 2, CURRENT_DATE);`
-        //const value = [user_id, movie_id, studio_id, seat_id, booking_date];
-
-        await db.query(query, value, (err, results) => {
-            if(err){
-                console.log(err);
-                return res.json({ message: 'Insert book failed' });
-            } else{
-                console.log("Book made!");
-            }
-        });
-
-        const query =   `UPDATE Seats
-                        SET is_available = false
-                        WHERE studio_id = 1
-                        AND seat_number = 2
-                        AND EXISTS (
-                            SELECT 1
-                            FROM Schedule
-                            WHERE studio_id = 1
-                            AND date = '2023-05-27'
-                            AND hours = 18
-                        );`
-
-        const value = [studio_id, seat_number, date, hours];
-        
-        await db.query(query, value, (err, results) => {
-            if(err){
-                console.log(err);
-                return res.json({ message: 'Update seats failed' });
-            } else{
-                console.log("Seat updated");
-            }
-        });
-
-
-    }catch(error){
-        console.error('Error during booking:', error);
-        return res.status(500).json({ message: 'An error occurred during booking.' });
-    }
-});
-
+//Login page
 router.get('/login-account', async (req, res) =>{
     try{
         res.render('login.ejs');
@@ -206,6 +487,7 @@ router.get('/login-account', async (req, res) =>{
     }
 });
 
+//Login button API
 router.post('/login', async (req, res) => {
     const { username, password} = req.body;
 
@@ -220,7 +502,7 @@ router.post('/login', async (req, res) => {
                 return res.json({ message: 'Error find password' });
             } else{
                 const hash = results.rows[0].password;
-                console.log(results);
+
                 bcrypt.compare(password, hash, async (err, results) => {
                     if (err) {
                         console.error(err);
@@ -228,7 +510,17 @@ router.post('/login', async (req, res) => {
                     } else {
                         if(results){
                             req.session.username = username;
-                            return res.json({ message: 'Account found.' });
+                            console.log("Login Successfull!");
+                            const queryUsernameId = 'SELECT user_id FROM users WHERE username = $1;';
+                            await db.query(queryUsernameId, [req.session.username], async(err, results) => {
+                                if(err){
+
+                                }else{
+                                    store_session = req.session;
+                                    store_session.user_id = results.rows[0].user_id;
+                                    res.redirect('/');
+                                }
+                            });
                         }else{
                             console.log("Password wrong")
                         }
@@ -246,6 +538,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
+//Register account page
 router.get('/register-account', async (req, res) => {
     try{
         res.render('register.ejs', 
@@ -265,6 +558,7 @@ router.get('/register-account', async (req, res) => {
     }
 });
 
+//Register button API
 router.post('/register', async (req, res) => {
     const { username, email, password, first_name, last_name, phone_number } = req.body;
 
@@ -310,14 +604,13 @@ router.post('/register', async (req, res) => {
                             console.log(err);
                             return res.json({ message: 'Insert account data failed' });
                         } else{
+                            // Set session data for the registered user
+                            store_session = req.session;
+                            store_session.user_id = req.body.user_id;
                             console.log("Register Successfull!");
+                            res.redirect('/');
                         }
                     });
-    
-                    // Set session data for the registered user
-                    temp = req.session;
-                    temp.username = req.body.username;
-    
                 }
             });
         }else{
@@ -398,110 +691,3 @@ async function checkUsernameAvailability(username) {
       return false; // Return false in case of an error
     }
   }
-   //Function to check wether the email is already taken or not
- async function checkEmailAvailability_Admin(email) {
-    try {
-      // Query the table for the specified email
-      const query = 'SELECT * FROM Admins WHERE email = $1';
-      const values = [email];
-      const result = await db.query(query, values);
-
-      // Return true if the email is available (no matching rows found), false otherwise
-      if(result.rowCount > 0){
-        return false;
-      }else{
-        return true;
-      }
-    } catch (error) {
-      console.error('Error checking email availability:', error);
-      return false; // Return false in case of an error
-    }
-}
-
-// ADMIN 
-router.get('/registerAdmin_Account', async (req, res) => {
-    try {
-      res.render('registerAdmin.ejs', {
-        UsernameAvailability: true,
-        EmailAvailability: true,
-        usernameRegexAllowed: true,
-        emailRegexAllowed: true,
-        passwordRegexAllowed: true,
-      });
-  
-      console.log("Open /registerAdmin");
-    } catch (error) {
-      console.error('Page is not available', error);
-      return res.status(500).json({ message: 'An error occurred while showing the page.' });
-    }
-  });
-  
-  router.post('/registerAdmin', async (req, res) => {
-    const { username, email, password } = req.body;
-  
-    // Regex
-    const emailAdminRegex = /^[A-Za-z0-9._%+-]+@tix\.gmail\.com$/;
-    const usernameRegex = /^[a-zA-Z0-9_-]{8,30}$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\S]{8,}$/;
-  
-    // Check if the input values match the regex patterns
-    const usernameRegexAllowed = usernameRegex.test(username);
-    const emailRegexAllowed = emailAdminRegex.test(email);
-    const passwordRegexAllowed = passwordRegex.test(password);
-  
-    try {
-      // Check username availability
-      const UsernameAvailability = await checkUsernameAvailability(username);
-      const EmailAvailability = await checkEmailAvailability_Admin(email);
-  
-      console.log(UsernameAvailability);
-      console.log(EmailAvailability);
-  
-      // Check if all conditions for registration are met
-      if (
-        UsernameAvailability &&
-        EmailAvailability &&
-        emailRegexAllowed &&
-        passwordRegexAllowed&&
-        usernameRegexAllowed
-      ) {
-        console.log("Test");
-        bcrypt.hash(password, 10, async (err, hash) => {
-          if (err) {
-            // Hash failed
-            return res.status(500).send('Error hashing the string');
-          }
-  
-          // Insert new user into the database
-          const query = `INSERT INTO Admins (username, email, password ) VALUES ($1, $2, $3);`;
-          const values = [username, email, hash];
-  
-          try {
-            await db.query(query, values);
-            console.log("Test");
-            console.log("Register Successful!");
-  
-            // Set session data for the registered user
-            req.session.username = username;
-            return res.json({ message: 'Registration successful.' });
-          } catch (error) {
-            console.log(error);
-            return res.json({ message: 'Insert account data failed' });
-          }
-        });
-      } else {
-        res.status(500);
-        res.render('registerAdmin.ejs', {
-          UsernameAvailability: await checkUsernameAvailability(username),
-          emailAdminRegex: emailAdminRegex.test(email),
-          passwordRegexAllowed: passwordRegex.test(password),
-        });
-      }
-    } catch (error) {
-      console.error('Error during registration:', error);
-      return res.status(500).json({ message: 'An error occurred during registration.' });
-    }
-  });
-  
-
-  

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Theaters List</title>
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      fetch('http://localhost:3000/transaction-done', {
+        method: 'PUT',
+      })
+        .then(response => {
+          if (response.ok) {
+            // Request succeeded
+            console.log('Transaction done successfully!');
+          } else {
+            // Request failed
+            console.error('Error completing the transaction:', response.status);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    });
+  </script>
+</head>
+<body>
+  <h1>success</h1>
+  <ul>
+    <% tickets.forEach(function(ticket) { %>
+      <li>
+          <p><%= ticket.ticket_id  %></p>
+      </li>
+    <% }) %>
+  </ul>
+  <li><a href="/">Ok</a></li>
+</body>
+</html>

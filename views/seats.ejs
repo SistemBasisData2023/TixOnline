@@ -3,15 +3,177 @@
 <head>
   <meta charset="UTF-8">
   <title>Movie List</title>
+  <style>
+    .selected {
+      background-color: yellow;
+    }
+
+    .sold {
+      background-color: gray;
+      pointer-events: none; /* Disable click events */
+    }
+    .popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.popup-content {
+    background-color: #fff;
+    max-width: 300px;
+    margin: 100px auto;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+button {
+    margin-top: 10px;
+}
+  </style>
+  <script>
+    var selectedSeats = []; // Array to store selected seat numbers
+    var scheduleId = <%= scheduleId %>;
+    var currentDate = new Date();
+
+    window.ticketQuantity = selectedSeats.length;
+
+    window.addEventListener('DOMContentLoaded', () => {
+    const showPopupButton = document.getElementById('showPopup');
+    const popup = document.getElementById('popup');
+    const cancelButton = document.getElementById('cancelButton');
+
+    showPopupButton.addEventListener('click', () => {
+        popup.style.display = 'block';
+    });
+
+    cancelButton.addEventListener('click', () => {
+        popup.style.display = 'none';
+    });
+});
+    function storeSeatNumber(seatNumber, buttonElement) {
+      // Check if the seat is already selected
+      var index = selectedSeats.indexOf(seatNumber);
+      if (index !== -1) {
+        // Remove the seat from the array if it's already selected
+        selectedSeats.splice(index, 1);
+        buttonElement.classList.remove("selected");
+      } else {
+        // Add the seat to the array if it's not already selected
+        selectedSeats.push(seatNumber);
+        buttonElement.classList.add("selected");
+      }
+
+      // Log the selected seats array (for demonstration purposes)
+      console.log("Selected seats: " + selectedSeats);
+    }
+
+    function bookSeats() {
+        fetch('http://localhost:3000/select-seat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ seatsId: selectedSeats, scheduleId }),
+        })
+        .then(function (response) {
+            // Handle the server response if needed
+        })
+        .catch(function (error) {
+            // Handle any errors that occurred during the request
+        });
+
+    }
+    
+    function cancelSeats(){
+      //Delete selected-seats
+      fetch('http://localhost:3000/delete-select-seat', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        })
+        .then(function (response) {
+            // Handle the server response if needed
+        })
+        .catch(function (error) {
+            // Handle any errors that occurred during the request
+        });
+    }
+
+    function confirmSeats(){
+          //tambah fetch POST insert transaction
+        fetch('http://localhost:3000/transaction-waiting', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },//quantity, transaction_date
+        body: JSON.stringify({ quantity : selectedSeats.length }),
+        })
+        .then(function (response) {
+       
+        })
+        .catch(function (error) {
+            // Handle any errors that occurred during the request
+        });
+
+        setTimeout(function(){
+          makeTickets();
+        }, 500); 
+    }
+
+    function makeTickets(){
+         //tambah fetch POST insert ticket
+        fetch('http://localhost:3000/ticket-waiting', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }, //schedule_date, seatsId
+        body: JSON.stringify({ seatsId: selectedSeats, scheduleId }),
+        })
+        .then(function (response) {
+            // Handle the server response if needed
+        })
+        .catch(function (error) {
+            // Handle any errors that occurred during the request
+        });
+    }
+
+  </script>
 </head>
 <body>
-  <h1>Select Seat</h1>
+  <h1>Select Seat <%=scheduleId%></h1>
   <ul>
     <% seats.forEach(function(seat) { %>
       <li>
-          <p><%= seat.seat_number %></p>
+          <button onclick="storeSeatNumber('<%= seat.seat_id %>', this)"
+            <% soldSeats.forEach(function(soldSeat){ if(soldSeat.seat_id == seat.seat_id) { %>
+                class="sold"
+                <% } })%>
+            >
+            <%= seat.seat_number %>
+          </button>
+
       </li>
     <% }) %>
   </ul>
+        <!-- buat transaksi WAITING, ticket. Udah ada API nya-->
+  <button id="showPopup" onclick="bookSeats()">Open Pop-up</button>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <h2>Confirmation</h2>
+            <p><This is a pop-up message>.</p>
+  
+            <button id="cancelButton" onclick="cancelSeats()">Cancel</button>
+          
+            <form action="/pay" method="post">
+              <input type="submit" value="Buy" onclick="confirmSeats()">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

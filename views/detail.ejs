@@ -3,13 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <title>Home</title>
+  <style>
+    .login-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #f9f9f9;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
-  <a><%schedule.title %></a>
-  <a><%schedule.name %>,<%schedule.location %></a>
-
+  <a><%= movieTitle %></a>
+  <a><%= moviePlayedAt %></a>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/TNDfvNqPILg?controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
   <ul>
-    <% schedule.forEach(function(schedule) { %>
+    <% schedules.forEach(function(schedule) { %>
       <li>
             <a href="/seat/<%= schedule.schedule_id %>"><%= schedule.date %></a>
             <a><%= schedule.type %></a>
