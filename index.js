@@ -130,14 +130,18 @@ router.get('/', async (req, res) => {
 });
 
 router.get("/movie-test", async(req, res) => {
+
     try{
-        const query = 'SELECT * FROM Movies;';
-        
-        await db.query(query, (err, results) => {
+        const query = 'SELECT * FROM Movies WHERE status = $1;'
+
+        await db.query(query, ['SHOWING'], async (err, movies) => {
             if(err){
                 console.log('/movie-test - Getting data error');
             }else{
-                res.render('movie.ejs', {movies : results.rows, schedules : null});
+                console.log(movies.rows);
+                const movieId = movies.rows[0].movie_id;
+                const url = '/schedules/' + movieId;
+                res.redirect(url);
             }
         });
     }catch(error){
@@ -146,22 +150,35 @@ router.get("/movie-test", async(req, res) => {
 
 router.get("/schedules/:movieId", async(req, res) => {
     const {movieId} = req.params;
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+
     try{
-        const query = 'SELECT * FROM Movies;';
-        
-        await db.query(query, async (err, movies) => {
+          const query = 'SELECT * FROM Movies WHERE status = $1;';
+
+        await db.query(query, ['SHOWING'], async (err, movies) => {
             if(err){
                 console.log('/schedules 1 - Getting data error');
             }else{
-                const query = 'SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = $1;';
-                const values = [movieId];
+                const query = 'SELECT DISTINCT location FROM Studios;';
+        
+                await db.query(query, async (err, locations) => {
 
-                await db.query(query, values, (err, results) => {
                     if(err){
-                        console.log(err);
-                        console.log('/schedules 2 - Getting data error');
+                        console.log('/movie-test - Getting data error');
                     }else{
-                        res.render('movie.ejs', {movies : movies.rows, schedules : results.rows});
+                        const query = 'SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = $1;';
+                        const values = [movieId];
+
+                        await db.query(query, values, (err, results) => {
+                            if(err){
+                                console.log(err);
+                                console.log('/schedules 2 - Getting data error');
+                            }else{
+                                
+                                res.render('movie.ejs', {movies : movies.rows, schedules : results.rows, locations : locations.rows, nextWeek});
+                            }
+                        });
                     }
                 });
             }

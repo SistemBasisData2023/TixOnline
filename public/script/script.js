@@ -12,10 +12,10 @@ const loginModal = document.getElementById('loginModal');
 const closeLoginModalBtn = document.getElementById('closeLoginModalBtn');
         
 
-function showMovieDetails(movieTitle) {
+function showMovieDetails(movieTitle, movieSynopsis) {
 // Set movie details based on the movieTitle parameter (you can customize this logic)
 movieTitleElement.textContent = movieTitle;
-movieSynopsisElement.textContent = movieTitle;
+movieSynopsisElement.textContent = movieSynopsis;
 movieActorsElement.textContent = "Xolo Maridueña, Angel Manuel Soto";
 movieTicketPriceElement.textContent = 'Ticket Price: $15';
 

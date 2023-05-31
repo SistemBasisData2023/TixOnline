@@ -72,8 +72,8 @@
         </h1>
         <div class="kodfun-galeri">
             <% moviesShowing.forEach(function(movieShowing) { %>
-                <div style="background-image: url('/images/<%= movieShowing.images %>');">
-                    <div class="overlay" onclick="showMovieDetails('<%= movieShowing.title %>')">
+                <div style="background-image: url('/images/<%= movieShowing.images %>');" onclick="showMovieDetails('<%= movieShowing.title %>','<%= movieShowing.synopsis %>')">
+                    <div class="overlay">
                         <h4 class="font-semibold "><%= movieShowing.title %></h4>
                         <p>Rated : <%= movieShowing.rating %></p>
                     </div>

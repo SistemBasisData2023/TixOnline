@@ -2,6 +2,11 @@
 <html>
   <head>
     <title>Movie List</title>
+    <script>
+        function submitForm() {
+          document.getElementById('dateForm').submit();
+        }
+      </script>
   </head>
   <body>
     <h1>Movie List</h1>
@@ -14,18 +19,32 @@
         <% }) %>
     </ul>
     
-  
-    <% if (schedules.length > 0 || schedules != null ) { %>
-        <h3>Schedules:</h3>
-        <ul>
-          <% schedules.forEach(schedule => { %>
-            <li><%= schedule.date %> at <%= schedule.time %></li>
+    <form>
+        <select>
+          <% locations.forEach((location) => { %>
+            <option><%= location.location %></option>
           <% }) %>
-        </ul>
-      <% } else { %>
-        <p>No schedules available for this movie.</p>
-      <% } %>
-    <% } %>
-      
+        </select>
+    </form>
+
+    <input type="date" id="selectedDate" name="selectedDate" min="<%= nextWeek.toISOString().split('T')[0] %>" onchange="submitForm()">
+
+
+    <% if (schedules != null ) { %>
+        <% if (schedules.length > 0) { %>
+
+            <h3>Schedules:</h3>
+
+            <ul>
+              <% schedules.forEach(schedule => { %>
+                <li><%= schedule.date %> at <%= schedule.hours %>.00</li>
+              <% }) %>
+            </ul>
+
+          <% } else { %>
+            <p>No schedules available for this movie.</p>
+          <% } %>
+     <% } %>
+
     </body>
   </html>
