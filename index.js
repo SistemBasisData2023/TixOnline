@@ -836,3 +836,220 @@ async function checkUsernameAvailability(username) {
       return false; // Return false in case of an error
     }
   }
+
+   //Function to check wether the email is already taken or not
+ async function checkEmailAdminAvailability(email) {
+    try {
+      // Query the table for the specified email
+      const query = 'SELECT * FROM Admins WHERE email = $1';
+      const values = [email];
+      const result = await db.query(query, values);
+  
+      // Return true if the email is available (no matching rows found), false otherwise
+      return result.rowCount === 0;
+    } catch (error) {
+      console.error('Error checking username availability:', error);
+      return false; // Return false in case of an error
+    }
+  }
+  
+      //Function to check wether the username is already taken or not
+      async function checkUsernameAdminAvailability(username) {
+        try {
+          const query = 'SELECT * FROM Admins WHERE username = $1';
+          const values = [username];
+          const result = await db.query(query, values);
+      
+          // Return true if the username is available (no matching rows found), false otherwise
+          return result.rowCount === 0;
+        } catch (error) {
+          console.error('Error checking username availability:', error);
+          return false; // Return false in case of an error
+        }
+      }
+      
+
+  //Register Admin 
+router.get('/registerAdmin_Account', async (req, res) => {
+    try {
+      res.render('registerAdmin.ejs', {
+        UsernameAvailability: true,
+        EmailAvailability: true,
+        usernameRegexAllowed: true,
+        emailRegexAllowed: true,
+        passwordRegexAllowed: true,
+      });
+      console.log("Open /registerAdmin");
+    } catch (error) {
+      console.error('Page is not available', error);
+      return res.status(500).json({ message: 'An error occurred while showing the page.' });
+    }
+  });
+  
+  router.post('/registerAdmin', async (req, res) => {
+    const { username, email, password } = req.body;
+  
+    // Regex
+    const emailAdminRegex = /^[A-Za-z0-9._%+-]+@tix\.gmail\.com$/;
+    const usernameRegex = /^[a-zA-Z0-9_-]{8,30}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\S]{8,}$/;
+  
+    // Check if the input values match the regex patterns
+    const usernameRegexAllowed = usernameRegex.test(username);
+    console.log(usernameRegexAllowed);
+    const emailRegexAllowed = emailAdminRegex.test(email);
+    console.log(emailRegexAllowed);
+    const passwordRegexAllowed = passwordRegex.test(password);
+    console.log(passwordRegexAllowed);
+  
+    try {
+    // Check username availability
+      const UsernameAvailability = await checkUsernameAdminAvailability(username);
+      console.log("Username:");
+      console.log(UsernameAvailability);
+    const EmailAvailability = await checkEmailAdminAvailability(email);
+    console.log("Email:");
+    console.log(EmailAvailability);
+  
+      // Check if all conditions for registration are met
+      if (
+        (UsernameAvailability == true ) &&
+        (EmailAvailability == true) &&
+        (emailRegexAllowed == true) &&
+        (passwordRegexAllowed == true) &&
+        (usernameRegexAllowed == true)
+      ) {
+        console.log("Test");
+        bcrypt.hash(password, 10, async (err, hash) => {
+          if (err) {
+            // Hash failed
+            return res.status(500).send('Error hashing the string');
+          }
+          // Insert new user into the database
+          const query = `INSERT INTO Admins (username, email, password ) VALUES ($1, $2, $3);`;
+          const values = [username, email, hash];
+  
+          try {
+            await db.query(query, values);
+            console.log("Register Successful!");
+  
+            // Set session data for the registered user
+            req.session.username = username;
+            return res.json({ message: 'Registration successful.' });
+          } catch (error) {
+            console.log(error);
+            return res.json({ message: 'Insert account data failed' });
+          }
+        });
+      } else {
+        res.status(500);
+        res.render('registerAdmin.ejs', {
+          UsernameAvailability: await checkUsernameAvailability(username),
+          emailAdminRegex: emailAdminRegex.test(email),
+          passwordRegexAllowed: passwordRegex.test(password),
+        });
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      return res.status(500).json({ message: 'An error occurred during registration.' });
+    }
+  });
+
+//Log in Admin 
+router.get('/loginAdmin_account', async (req, res) =>{
+    try{
+        res.render('loginAdmin.ejs');
+
+        console.log("Open /loginAdmin");
+    }catch(error){
+        console.error('Page is not availible', error);
+        return res.status(500).json({ message: 'An error occurred during showing page.' });
+    }
+});
+
+//Login button API
+router.post('/loginAdmin', async (req, res) => {
+    const { username, password} = req.body;
+
+    try{
+        const query = 'SELECT password FROM Admins WHERE username = $1';
+        const values = [username];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log(err);
+
+                return res.json({ message: 'Error find password' });
+            } else{
+                const hash = results.rows[0].password;
+
+                bcrypt.compare(password, hash, async (err, results) => {
+                    if (err) {
+                        console.error(err);
+                        res.status(500).send('Error compare the string');
+                    } else {
+                        if(results){
+                            req.session.username = username;
+                            console.log("Login Successfull!");
+                            const queryUsernameId = 'SELECT admin_id FROM Admins WHERE username = $1;';
+                            await db.query(queryUsernameId, [req.session.username], async(err, results) => {
+                                if(err){
+                                console.log(err);
+                                }else{
+                                    console.log(results.rows[0].user_id);
+                                    store_session = req.session;
+                                    store_session.user_id = results.rows[0].admin_id;
+                                    res.redirect('/');
+                                }
+                            });
+                        }else{
+                            console.log("Password wrong")
+                        }
+                    }
+                });
+            }
+        });
+
+        // true if the username and email  is available (no matching rows found), false otherwise
+        console.log("Open /loginAdmin");
+    }catch(error){
+        console.error('Page is not availible', error);
+        return res.status(500).json({ message: 'An error occurred during showing page.' });
+    }
+});
+
+//Payment recap 
+//function to get all purchases
+async function getAllPurchases() {
+    try {
+      const query = 'SELECT * FROM Transactions';
+      const result = await db.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error('Error retrieving purchase information:', error);
+      return [];
+    }
+  }
+
+  async function fetchPurchaseInformation() {
+    try {
+      // Check admin authorization here if needed
+  
+      const purchases = await getAllPurchases();
+  
+      if (purchases.length === 0) {
+        console.log('No purchase information available.');
+      } else {
+        console.log('Purchase Information:');
+        purchases.forEach((purchase) => {
+          console.log('Transaction ID:', purchase.transaction_id);
+          console.log('User ID:', purchase.user_id);
+          console.log('Transaction Date:', purchase.transaction_date);
+          console.log('Transaction Status:', purchase.transaction_status);
+          console.log('------------------------');
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching purchase information:', error);
+    }
+  }
