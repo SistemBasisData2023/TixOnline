@@ -99,11 +99,30 @@ app.listen(port, () => {
 
 //ROUTERS
 //Landing page
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     try{
-        console.log("This is /");
-        console.log(store_session);
-        res.render('home.ejs');
+        const query = 'SELECT * FROM movies WHERE status = $1;'
+    
+        await db.query(query, ['SHOWING'], async (err, moviesShowing) => {
+            if(err){
+                console.log(err);
+                return res.json({ message: 'Retrive data failed.' });
+            }else{
+                const query = 'SELECT * FROM movies WHERE status = $1;';
+        
+                await db.query(query, ['UPCOMING'], (err, moviesUpcoming) => {
+                    if(err){
+                        console.log(err);
+                        return res.json({ message: 'Retrive data failed.' });
+                    }else{
+                        console.log("This is /");
+                        console.log(store_session);
+                        res.render('home.ejs',{moviesShowing:moviesShowing.rows, moviesUpcoming:moviesUpcoming.rows});
+                    }
+                });
+            }
+        });
+
     }catch(err){
         console.error('Page is not availible', error);
         return res.status(500).json({ message: 'An error occurred during showing page.' });
@@ -143,6 +162,7 @@ router.get('/admin/movies', async (req, res) => {
 
 router.post('/create-movie', async (req,res)=>{
     const { title, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
+    console.log(req.body);
     const image = req.file.filename;
 
     try{

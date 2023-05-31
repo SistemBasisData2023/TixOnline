@@ -74,66 +74,14 @@
             Jakarta | Grand Indonesia | XXI
         </h2>
         <div class="kodfun-galeri">
-            <div style="background-image: url('/images/fastX.jpg');">
-                <div class="overlay" onclick="showMovieDetails('fastX')">
-                    <h4 class="font-semibold ">Fast X</h4>
-                    <p>Rated:R 13+</p>
+            <% moviesShowing.forEach(function(movieShowing) { %>
+                <div style="background-image: url('/images/<%= movieShowing.images %>');">
+                    <div class="overlay">
+                        <h4 class="font-semibold "><%= movieShowing.title %></h4>
+                        <p>Rated : <%= movieShowing.rating %></p>
+                    </div>
                 </div>
-            </div>
-            <div style="background-image: url('/images/Flash.jpg');">
-                <div class="overlay" onClick="showMovieDetails('flash')">
-                    <h4 class="font-semibold ">The Flash</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/John Wick.jpg');">
-                <div class="overlay" onClick="showMovieDetails('johnWick')">
-                    <h4 class="font-semibold ">John Wick</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/marvels.jpg');">
-                <div class="overlay" onClick="showMovieDetails('marvels')">
-                    <h4 class="font-semibold ">Marvels</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/Shazam.jpg');">
-                <div class="overlay" onClick="showMovieDetails('shazam')">
-                    <h4 class="font-semibold ">Shazam</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/GOTG3.jpg');">
-                <div class="overlay" onClick="showMovieDetails('gotg3')">
-                    <h4 class="font-semibold ">Guardian of the Galaxy Vol. 3</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/transformers.jpg');">
-                <div class="overlay" onClick="showMovieDetails('transformers')">
-                    <h4 class="font-semibold ">Transformers</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/spiderman.jpg');">
-                <div class="overlay" onClick="showMovieDetails('spiderman')">
-                    <h4 class="font-semibold ">Spiderman Across The Spider-Verse</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/oppenheimer.jpg');">
-                <div class="overlay" onClick="showMovieDetails('oppenheimer')">
-                    <h4 class="font-semibold ">Oppenheimer</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/bluebeetle.jpg');">
-                <div class="overlay" onClick="showMovieDetails('bluebeetle')">
-                    <h4 class="font-semibold ">Blue Beetle</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
+              <% }) %>
         </div>
     </div>
 </section>
@@ -156,66 +104,14 @@
     <div class="container mx-auto">
         <h1 class="mb-4 text-4xl font-semibold ">Coming Soon | Jakarta</h1>
         <div class="kodfun-galeri">
-            <div style="background-image: url('/images/fastX.jpg');">
-                <div class="overlay" onclick="showMovieDetails('fastX')">
-                    <h4 class="font-semibold ">Fast X</h4>
-                    <p>Rated:R 13+</p>
+            <% moviesUpcoming.forEach(function(movieUpcoming) { %>
+                <div style="background-image: url('/images/<%= movieUpcoming.images %>');">
+                    <div class="overlay">
+                        <h4 class="font-semibold "><%= movieUpcoming.title %></h4>
+                        <p>Rated : <%= movieUpcoming.rating %></p>
+                    </div>
                 </div>
-            </div>
-            <div style="background-image: url('/images/Flash.jpg');">
-                <div class="overlay" onClick="showMovieDetails('flash')">
-                    <h4 class="font-semibold ">The Flash</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/John Wick.jpg');">
-                <div class="overlay" onClick="showMovieDetails('johnWick')">
-                    <h4 class="font-semibold ">John Wick</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/marvels.jpg');">
-                <div class="overlay" onClick="showMovieDetails('marvels')">
-                    <h4 class="font-semibold ">Marvels</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/Shazam.jpg');">
-                <div class="overlay" onClick="showMovieDetails('shazam')">
-                    <h4 class="font-semibold ">Shazam</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/GOTG3.jpg');">
-                <div class="overlay" onClick="showMovieDetails('gotg3')">
-                    <h4 class="font-semibold ">Guardian of the Galaxy Vol. 3</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/transformers.jpg');">
-                <div class="overlay" onClick="showMovieDetails('transformers')">
-                    <h4 class="font-semibold ">Transformers</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/spiderman.jpg');">
-                <div class="overlay" onClick="showMovieDetails('spiderman')">
-                    <h4 class="font-semibold ">Spiderman Across The Spider-Verse</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/oppenheimer.jpg');">
-                <div class="overlay" onClick="showMovieDetails('oppenheimer')">
-                    <h4 class="font-semibold ">Oppenheimer</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
-            <div style="background-image: url('/images/bluebeetle.jpg');">
-                <div class="overlay" onClick="showMovieDetails('bluebeetle')">
-                    <h4 class="font-semibold ">Blue Beetle</h4>
-                    <p>Rated:R 13+</p>
-                </div>
-            </div>
+              <% }) %>
         </div>
     </div>
 </section>
