@@ -70,13 +70,10 @@
     <div class="container mx-auto">
         <h1 class="mb-4 text-4xl font-semibold">Now Playing
         </h1>
-        <h2 class="mb-4 text-xl font-semibold">
-            Jakarta | Grand Indonesia | XXI
-        </h2>
         <div class="kodfun-galeri">
             <% moviesShowing.forEach(function(movieShowing) { %>
                 <div style="background-image: url('/images/<%= movieShowing.images %>');">
-                    <div class="overlay">
+                    <div class="overlay" onclick="showMovieDetails('<%= movieShowing.title %>')">
                         <h4 class="font-semibold "><%= movieShowing.title %></h4>
                         <p>Rated : <%= movieShowing.rating %></p>
                     </div>
@@ -102,7 +99,7 @@
 <!-- Coming Soon Movie Gallery Section -->
 <section id="comingsoon" class="bg-black py-16 text-[#cfab7a]">
     <div class="container mx-auto">
-        <h1 class="mb-4 text-4xl font-semibold ">Coming Soon | Jakarta</h1>
+        <h1 class="mb-4 text-4xl font-semibold ">Coming Soon</h1>
         <div class="kodfun-galeri">
             <% moviesUpcoming.forEach(function(movieUpcoming) { %>
                 <div style="background-image: url('/images/<%= movieUpcoming.images %>');">

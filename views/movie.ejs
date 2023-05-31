@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Movie List</title>
+  </head>
+  <body>
+    <h1>Movie List</h1>
+    
+    <ul
+        <% movies.forEach(movie => { %>
+          <li>
+            <a href="/schedules/<%= movie.movie_id %>"><%= movie.title %></a>
+          </li>
+        <% }) %>
+    </ul>
+    
+  
+    <% if (schedules.length > 0 || schedules != null ) { %>
+        <h3>Schedules:</h3>
+        <ul>
+          <% schedules.forEach(schedule => { %>
+            <li><%= schedule.date %> at <%= schedule.time %></li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p>No schedules available for this movie.</p>
+      <% } %>
+    <% } %>
+      
+    </body>
+  </html>

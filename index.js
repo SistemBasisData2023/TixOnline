@@ -129,6 +129,48 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get("/movie-test", async(req, res) => {
+    try{
+        const query = 'SELECT * FROM Movies;';
+        
+        await db.query(query, (err, results) => {
+            if(err){
+                console.log('/movie-test - Getting data error');
+            }else{
+                res.render('movie.ejs', {movies : results.rows, schedules : null});
+            }
+        });
+    }catch(error){
+    }
+});
+
+router.get("/schedules/:movieId", async(req, res) => {
+    const {movieId} = req.params;
+    try{
+        const query = 'SELECT * FROM Movies;';
+        
+        await db.query(query, async (err, movies) => {
+            if(err){
+                console.log('/schedules 1 - Getting data error');
+            }else{
+                const query = 'SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = $1;';
+                const values = [movieId];
+
+                await db.query(query, values, (err, results) => {
+                    if(err){
+                        console.log(err);
+                        console.log('/schedules 2 - Getting data error');
+                    }else{
+                        res.render('movie.ejs', {movies : movies.rows, schedules : results.rows});
+                    }
+                });
+            }
+        });
+        
+    }catch(error){
+    }
+});
+
 router.get('/admin/movies/add', async(req,res)=> {
     try{
         res.render('admin-movies-add.ejs');
