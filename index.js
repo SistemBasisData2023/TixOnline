@@ -519,9 +519,20 @@ router.get('/detail/:location/:movieId', async (req, res) => {
                 console.log(err);
                 return res.json({ message: 'Retrive data failed.' });
             }else{
+                const url = results.rows[0].trailer_link;
+                const videoId = url.match(/(?:\?v=|\/embed\/|\/\d\/|\/v\/|youtu\.be\/|\/embed\/|\/e\/|watch\?v=|v\/|e\/|youtu\.be\/|\/\d\/|\/v\/|embed\/|\/e\/)([\w-]{11})/);
+                let extractedId;
+                if (videoId && videoId.length > 1) {
+                extractedId = videoId[1];
+                console.log("Success extract video ID.");
+                } else {
+                console.log("Unable to extract video ID.");
+                }
+
                 console.log(store_session);
                 res.render('detail.ejs', {schedules : results.rows, 
                     movieTitle : results.rows[0].title, 
+                    movieVideo : extractedId,
                     movieGenre : results.rows[0].genre, 
                     movieDuration : results.rows[0].duration, 
                     movieReleaseDate : results.rows[0].release_date,
