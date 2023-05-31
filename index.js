@@ -6,6 +6,7 @@ const paypal = require('paypal-rest-sdk');
 const bcrypt = require('bcrypt');
 const axios = require('axios');
 const multer = require('multer');
+const fs = require('fs');
 
 //initialize the app as an express app
 const app = express();
@@ -13,6 +14,8 @@ const router = express.Router();
 const { Client } = require('pg');
 
 const port = 3000;
+
+
 
 // Create a PostgreSQL connection pool
 const db = new Client({
@@ -29,7 +32,9 @@ const db = new Client({
         callback(null, 'public/images/');
     },
     filename: (req, file, callback) => {
-        callback(null, Date.now() + ' - ' +file.originalname);
+        const extension = file.originalname.split('.').pop(); // Get the file extension
+        const filename = req.body.title.toLowerCase().replace(/[^a-z0-9]/g, '-'); // Generate filename from the input
+        callback(null, Date.now() + ' - ' + filename + '.' + extension);
     }
   });
 
@@ -136,15 +141,17 @@ router.get('/admin/movies', async (req, res) => {
     }
 });
 
-router.post('/create-movie', upload.single('image'), async (req,res)=>{
-    const { title, genre, duration, release_date, synopsis, status, trailer_link} = req.body;
-    const image = req.filename;
+router.post('/create-movie', async (req,res)=>{
+    const { title, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
+    const image = req.file.filename;
+
     try{
-        const query = 'INSERT INTO Movies (title, genre, duration, release_date, synopsis, status, trailer_link, images) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);';
-        const values = [title, genre, duration, release_date, synopsis, status, trailer_link, image];
+        const query = 'INSERT INTO Movies (title, genre, duration, release_date, synopsis, status, trailer_link, images, rating) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);';
+        const values = [title, genre, duration, release_date, synopsis, status, trailer_link, image, rating];
 
         await db.query(query, values, (err, results) => {
             if(err){
+                console.log("Making movie error.")
                 console.log(err);
             }else{
                 console.log("Movie created");
@@ -160,15 +167,39 @@ router.post('/create-movie', upload.single('image'), async (req,res)=>{
 router.post('/delete-movie/:id', async (req,res)=>{
     const movie_id = req.params.id;
     try{
-        const query = 'DELETE FROM Movies WHERE movie_id = $1;';
+        const query = 'SELECT images FROM Movies WHERE movie_id = $1;';
         const values = [movie_id];
 
-        await db.query(query, values, (err, results) => {
+        await db.query(query, values, async (err, results) => {
             if(err){
                 console.log(err);
-            }else{
-                console.log("deleted.")
                 res.redirect('/admin/movies');
+            }else{
+                const filename = results.rows[0].images;
+                const filePath = `public/images/${filename}`;
+
+                fs.unlink(filePath, async (err) => {
+                    if (err) {
+                      console.error(err);
+                      res.redirect('/admin/movies');
+                    } else {
+        
+                      const query = 'DELETE FROM Movies WHERE movie_id = $1;';
+                      const values = [movie_id];
+              
+                      await db.query(query, values, async (err, results) => {
+                          if(err){
+                              console.log(err);
+                              res.redirect('/admin/movies');
+                          }else{
+                              console.log("deleted.")
+                              res.redirect('/admin/movies');
+                          }
+                      });
+                    }
+                  });
+
+             
             }
         });
 

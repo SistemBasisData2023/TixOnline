@@ -44,13 +44,27 @@
   <table>
     <tr>
       <th>Name</th>
+      <th>Genre</th>
+      <th>Druation</th>
+      <th>Release Date</th>
+      <th>Synopsis</th>
+      <th>Status</th>
+      <th>Trailer Link</th>
       <th>Image</th>
       <th>Actions</th>
     </tr>
     <% movies.forEach(function(movie) { %>
       <tr>
         <td><%= movie.title %></td>
-        <td><%= movie.images %></td>
+        <td><%= movie.genre %></td>
+        <td><%= movie.duration %></td>
+        <td><%= movie.release_date %></td>
+        <td><%= movie.synopsis %></td>
+        <td><%= movie.status %></td>
+        <td><%= movie.trailer_link %></td>
+        <td>
+          <img src='/images/<%= movie.images %> ' width="100" height="150"> 
+        </td>
         <td>
           <a href="/admin/movies/edit/<%= movie.movie_id %>">Edit</button>
 
