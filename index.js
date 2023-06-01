@@ -116,8 +116,13 @@ router.get('/', async (req, res) => {
                         return res.json({ message: 'Retrive data failed.' });
                     }else{
                         console.log("This is /");
+                        const store_session = req.session;
                         console.log(store_session);
-                        res.render('home.ejs',{moviesShowing:moviesShowing.rows, moviesUpcoming:moviesUpcoming.rows});
+                        res.render('home.ejs',{
+                            moviesShowing:moviesShowing.rows, 
+                            moviesUpcoming:moviesUpcoming.rows,
+                            session:store_session
+                        });
                     }
                 });
             }
@@ -713,7 +718,6 @@ router.post('/login', async (req, res) => {
         await db.query(query, values, (err, results) => {
             if(err){
                 console.log(err);
-
                 return res.json({ message: 'Error find password' });
             } else{
                 const hash = results.rows[0].password;
@@ -731,8 +735,7 @@ router.post('/login', async (req, res) => {
                                 if(err){
 
                                 }else{
-                                    store_session = req.session;
-                                    store_session.user_id = results.rows[0].user_id;
+                                    req.session.user_id = results.rows[0].user_id;
                                     res.redirect('/');
                                 }
                             });
@@ -1101,10 +1104,8 @@ async function getAllPurchases() {
     }
   }
 
-  async function fetchPurchaseInformation() {
+  router.get('/transactionDetails', async (req, res) => {
     try {
-      // Check admin authorization here if needed
-  
       const purchases = await getAllPurchases();
   
       if (purchases.length === 0) {
@@ -1119,7 +1120,43 @@ async function getAllPurchases() {
           console.log('------------------------');
         });
       }
+  
+      res.render('transactionDetails.ejs', { purchases }); // Render the "transactionDetails.ejs" template and pass the purchases data
     } catch (error) {
       console.error('Error fetching purchase information:', error);
+      res.status(500).json({ message: 'An error occurred while fetching purchase information.' });
     }
-  }
+  });
+
+  //profile 
+    // Query the database to retrieve user information
+    router.get('/profile', async (req, res) => {
+        try {
+          // Check if the user is logged in
+          if (!req.session.username) {
+            // If not logged in, redirect to the login page or display an error message
+            return res.redirect('/login');
+            // Alternatively, you can render an error page:
+            // return res.render('error', { message: 'You need to log in to view your profile.' });
+          }
+      
+          const query = 'SELECT * FROM users WHERE username = $1';
+          const values = [req.session.username];
+      
+          await db.query(query, values, (err, results) => {
+            if (err) {
+              console.log(err);
+              return res.json({ message: 'Error retrieving user information.' });
+            } else {
+              const user = results.rows[0];
+              res.render('profile.ejs', { user });
+            }
+          });
+      
+        } catch (error) {
+          console.error('Error occurred while retrieving user profile:', error);
+          return res.status(500).json({ message: 'An error occurred while retrieving user profile.' });
+        }
+      });
+      
+      
