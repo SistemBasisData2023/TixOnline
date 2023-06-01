@@ -129,6 +129,65 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get("/movie-test", async(req, res) => {
+
+    try{
+        const query = 'SELECT * FROM Movies WHERE status = $1;'
+
+        await db.query(query, ['SHOWING'], async (err, movies) => {
+            if(err){
+                console.log('/movie-test - Getting data error');
+            }else{
+                console.log(movies.rows);
+                const movieId = movies.rows[0].movie_id;
+                const url = '/schedules/' + movieId;
+                res.redirect(url);
+            }
+        });
+    }catch(error){
+    }
+});
+
+router.get("/schedules/:movieId", async(req, res) => {
+    const {movieId} = req.params;
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    try{
+          const query = 'SELECT * FROM Movies WHERE status = $1;';
+
+        await db.query(query, ['SHOWING'], async (err, movies) => {
+            if(err){
+                console.log('/schedules 1 - Getting data error');
+            }else{
+                const query = 'SELECT DISTINCT location FROM Studios;';
+        
+                await db.query(query, async (err, locations) => {
+
+                    if(err){
+                        console.log('/movie-test - Getting data error');
+                    }else{
+                        const query = 'SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = $1;';
+                        const values = [movieId];
+
+                        await db.query(query, values, (err, results) => {
+                            if(err){
+                                console.log(err);
+                                console.log('/schedules 2 - Getting data error');
+                            }else{
+                                
+                                res.render('movie.ejs', {movies : movies.rows, schedules : results.rows, locations : locations.rows, nextWeek});
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        
+    }catch(error){
+    }
+});
+
 router.get('/admin/movies/add', async(req,res)=> {
     try{
         res.render('admin-movies-add.ejs');
@@ -519,9 +578,20 @@ router.get('/detail/:location/:movieId', async (req, res) => {
                 console.log(err);
                 return res.json({ message: 'Retrive data failed.' });
             }else{
+                const url = results.rows[0].trailer_link;
+                const videoId = url.match(/(?:\?v=|\/embed\/|\/\d\/|\/v\/|youtu\.be\/|\/embed\/|\/e\/|watch\?v=|v\/|e\/|youtu\.be\/|\/\d\/|\/v\/|embed\/|\/e\/)([\w-]{11})/);
+                let extractedId;
+                if (videoId && videoId.length > 1) {
+                extractedId = videoId[1];
+                console.log("Success extract video ID.");
+                } else {
+                console.log("Unable to extract video ID.");
+                }
+
                 console.log(store_session);
                 res.render('detail.ejs', {schedules : results.rows, 
                     movieTitle : results.rows[0].title, 
+                    movieVideo : extractedId,
                     movieGenre : results.rows[0].genre, 
                     movieDuration : results.rows[0].duration, 
                     movieReleaseDate : results.rows[0].release_date,
