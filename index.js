@@ -196,16 +196,26 @@ router.get('/admin/movies/add', async(req,res)=> {
     }
 });
 
-router.get('/admin/movies/edit/:id', async(req, res)=> {
+router.get('/admin/movies/edit/:movieId', async(req, res)=> {
+    const {movieId} = req.params;
     try{
-        res.render('admin-movies-edit.ejs');
+        const query = 'SELECT * FROM Movies WHERE movie_id = $1;';
+
+        await db.query(query, [movieId], (err, results) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.render('admin-movies-edit.ejs',{movie : results.rows[0]});
+            }
+        });
     }catch(error){
 
     }
 });
+
 router.get('/admin/movies', async (req, res) => {
     try{
-        const query ='SELECT * FROM Movies;';
+        const query ='SELECT * FROM Movies ORDER BY movie_id ASC;';
 
         await db.query(query, (err, results) => {
             if(err){
@@ -243,8 +253,96 @@ router.post('/create-movie', async (req,res)=>{
     }
 });
 
+
+router.post('/edit-movie/:id', async (req,res)=>{
+    const movie_id = req.params.id;
+    const { title, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
+
+    try{
+        let query = 'UPDATE Movies SET';
+
+        const updateFields = [];
+    
+        if (title) {
+            const escapedTitle = title.replace(/'/g, "''"); // Escape single quotes
+            updateFields.push(`title = '${escapedTitle}'`);
+        }
+    
+        if (genre && (genre !== 'None')) {
+          updateFields.push(`genre = '${genre}'`);
+        }
+    
+        if (duration) {
+            updateFields.push(`genre = '${genre}'`);
+        }
+    
+        if (release_date) {
+          updateFields.push(`release_date = '${release_date}'`);
+        }
+      
+        if (synopsis) {
+          updateFields.push(`synopsis = '${synopsis}'`);
+        }
+      
+        if (status && (status !== 'None')) {
+          updateFields.push(`status = '${status}'`);
+        }
+      
+        if (trailer_link) {
+          updateFields.push(`trailer_link = '${trailer_link}'`);
+        }
+      
+        if (rating) {
+          updateFields.push(`rating = '${rating}'`);
+        }
+      
+        if(req.file){
+            const image = req.file.filename;
+            updateFields.push(`images = '${image}'`);
+
+             //Delete previous photo
+
+            const queryDeletePhoto = 'SELECT images FROM Movies WHERE movie_id = $1;';
+            const values = [movie_id];
+
+            await db.query(queryDeletePhoto, values, async (err, results) => {
+                if(err){
+                    console.log(err);
+                    res.redirect('/admin/movies');
+                }else{
+                    const filename = results.rows[0].images;
+                    const filePath = `public/images/${filename}`;
+
+                    fs.unlink(filePath, async (err) => {
+                        if (err) {
+                            console.log(err);
+                        } else {    
+                            console.log("Photo deleted.");
+                        }
+                    });
+                }
+            });
+        }
+    
+        query += ` ${updateFields.join(', ')} WHERE movie_id = ${movie_id};`;
+        console.log(query);
+        await db.query(query, (err, results) => {
+            if(err){
+                console.log("Edit data failed : ", err);
+            }else{
+                console.log(query);
+                console.log("Data edited.");
+                res.redirect('/admin/movies');
+            }
+        });
+    }catch(err){
+        console.log(err);
+    }
+});
+
 router.post('/delete-movie/:id', async (req,res)=>{
     const movie_id = req.params.id;
+
     try{
         const query = 'SELECT images FROM Movies WHERE movie_id = $1;';
         const values = [movie_id];
