@@ -11,19 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<!-- 
-<body>
-  <h1>Welcome to the Movie and Theater Website!</h1>
-  <p>Choose an option:</p>
-  <ul>
-    <li><a href="/movies">Browse Movies</a></li>
-    <li><a href="/theaters">Browse Theaters</a></li>
-    <li><a href="/login-account">Login</a></li>
-    <li><a href="/registerAdmin_Account">Register Admin</a></li>
-  </ul>uut5y8`  
-</body>
-</html> -->
-
+<script>
+    function checkSession() {
+  if (typeof session !== 'undefined' && session.hasOwnProperty('username') && session.username !== null) {
+    return true;
+  } else {
+    return false;
+  }
+    }
+</script>
 <body class="font-raleway">
     <!-- Navbar -->
     <nav class="p-4 bg-black text-cfab7a">
@@ -37,14 +33,21 @@
                 <a href="#about" class="px-4 hover:text-white">About</a>
             </div>
             <div>
-                <button id="registerBtn" class="px-4 py-2 text-black rounded custom-btn"><a
-                        href="/register-account">Register</a></button>
-                <button id="loginBtn" class="px-4 py-2 text-black rounded custom-btn"> <a href="/login-account">Log
-                        in</a></button>
+                <% if (session && session.username) { %>
+                    <a href="/profile" class="px-4 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
+                      </a>
+                <% } else { %>
+                    <button id="registerBtn" class="px-4 py-2 text-black rounded custom-btn"><a href="/register-account">Register</a></button>
+                    <button id="loginBtn" class="px-4 py-2 text-black rounded custom-btn"><a href="/login-account">Log in</a></button>
+                <% } %>
 
             </div>
         </div>
     </nav>
+    
 </body>
 
 <!-- Video Trailer-->
@@ -186,7 +189,5 @@
         <p>&copy; 2023 TixOnline. All rights reserved.</p>
     </div>
 </footer>
-
 </body>
-
 </html>

@@ -1,0 +1,30 @@
+<!-- transactionDetails.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Transaction Details</title>
+</head>
+<body>
+  <h1>Transaction Details</h1>
+  <% if (purchases.length === 0) { %>
+    <p>No purchase information available.</p>
+  <% } else { %>
+    <table>
+      <tr>
+        <th>Transaction ID</th>
+        <th>User ID</th>
+        <th>Transaction Date</th>
+        <th>Transaction Status</th>
+      </tr>
+      <% purchases.forEach((purchase) => { %>
+        <tr>
+          <td><%= purchase.transaction_id %></td>
+          <td><%= purchase.user_id %></td>
+          <td><%= purchase.transaction_date %></td>
+          <td><%= purchase.transaction_status %></td>
+        </tr>
+      <% }); %>
+    </table>
+  <% } %>
+</body>
+</html>
