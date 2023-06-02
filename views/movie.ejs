@@ -45,14 +45,18 @@
 
         <!--Filter-->
     <form id="filterForm" action="/schedules/<%= movie.movie_id %>" method="GET">
-        <select id="city" name="city">
-          <% locations.forEach((location) => { %>
-            <option value="tes"><%= location.location %></option>
+        <select id="selectedCity" name="selectedCity">
+          <% cities.forEach((city) => { %>
+            <option value="<%= city.city %>"><%= city.city %></option>
           <% }) %>
         </select>
-        <input type="date" id="selectedDate" name="selectedDate" min="<%= nextWeek.toISOString().split('T')[0] %>">
-        <input type="submit" value="Submit">
+
+
+        <input type="date" id="selectedDate" name="selectedDate" value="<%= nextWeek.toISOString().split('T')[0] %>"  min="<%= nextWeek.toISOString().split('T')[0] %>">
+
+        <button type="submit">Filter</button>
       </form>
+
 
    
 

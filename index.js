@@ -25,9 +25,9 @@ const db = new Client({
     password: 'dNWTl39fJjCB',
     port: 5432,
     ssl:{rejectUnauthorized: false}, 
-  });
+});
 
-  const fileStorage = multer.diskStorage({
+const fileStorage = multer.diskStorage({
     destination: (req, file, callback) => {
         callback(null, 'public/images/');
     },
@@ -36,9 +36,9 @@ const db = new Client({
         const filename = req.body.title.toLowerCase().replace(/[^a-z0-9]/g, '-'); // Generate filename from the input
         callback(null, Date.now() + ' - ' + filename + '.' + extension);
     }
-  });
+});
 
-  const fileFilter = (req,file,callback) => { 
+const fileFilter = (req,file,callback) => { 
     if(file.mimetype === 'image/png' || 
        file.mimetype === 'image/jpg' || 
        file.mimetype === 'image/jpeg'){
@@ -46,7 +46,7 @@ const db = new Client({
     }else{
         callback(null, false);
     }
-  }
+}
   app.use(express.static('public'));
 app.use(multer({storage:fileStorage, fileFilter:fileFilter}).single('image'));
 const upload = multer({ storage: fileStorage });
@@ -155,32 +155,36 @@ router.get("/movie-test", async(req, res) => {
 
 router.get("/schedules/:movieId", async(req, res) => {
     const {movieId} = req.params;
+    const {selectedCity, selectedDate} = req.query;
+
+
     const today = new Date();
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const selectDate = req.body.selectedDate;
-    const selectCity = req.body.city;
-    console.log(selectCity);
-    console.log(selectDate);
+
+   
+
     try{
-          const query = 'SELECT * FROM Movies WHERE status = $1;';
+        const query = 'SELECT * FROM Movies WHERE status = $1;';
 
         await db.query(query, ['SHOWING'], async (err, movies) => {
             if(err){
                 console.log('/schedules 1 - Getting data error');
             }else{
-                const query = 'SELECT DISTINCT location FROM Studios;';
+                const query = 'SELECT DISTINCT city FROM Studios;';
         
-                await db.query(query, async (err, locations) => {
+                await db.query(query, async (err, cities) => {
 
                     if(err){
                         console.log('/movie-test - Getting data error');
                     }else{
-                        
+                        cities.rows.unshift({city: 'All' });
+                        console.log(cities.rows);
                         const queryMovie = 'SELECT * FROM Movies WHERE movie_id = $1;';
                         const values = [movieId];
                         await db.query(queryMovie , values, async (err, movie) => {
                             if(err){
                                 console.log(err);
+
                                 console.log('/schedules - Getting data movie error');
                             }else{
                                 const url = movie.rows[0].trailer_link;
@@ -193,16 +197,27 @@ router.get("/schedules/:movieId", async(req, res) => {
                                     console.log("Unable to extract video ID.");
                                 }
 
-                                const query = 'SELECT Schedule.*, Studios.* FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = $1;';
-                                const values = [movieId];
+                                let date = nextWeek.toISOString().split('T')[0];
+                                
+                                if(selectedDate){
+                                    date = selectedDate;
+                                }
+                          
+                                let querySchedule = `SELECT Schedule.*, Studios.* FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = '${movieId}' AND Schedule.date ='${date}' `;
+                                
+                                if(selectedCity && (selectedCity !== 'All')){
+                                    querySchedule += ` AND Studios.city = '${selectedCity}'`;
+                                }
+                                querySchedule += ';';
+                                console.log(querySchedule);
 
-                                await db.query(query, values, (err, results) => {
+                                await db.query(querySchedule, (err, results) => {
                                     if(err){
                                         console.log(err);
                                         console.log('/schedules - Getting data error');
                                     }else{
                                         console.log(results.rows);
-                                        res.render('movie.ejs', {movies : movies.rows, movie: movie.rows[0], schedules : results.rows, locations : locations.rows, nextWeek, movieVideo: extractedId});
+                                        res.render('movie.ejs', {movies : movies.rows, movie: movie.rows[0], schedules : results.rows, cities : cities.rows, nextWeek, movieVideo: extractedId});
                                     }
                                 });
                             }
