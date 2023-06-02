@@ -116,7 +116,6 @@ router.get('/', async (req, res) => {
                         return res.json({ message: 'Retrive data failed.' });
                     }else{
                         console.log("This is /");
-                        const store_session = req.session;
                         console.log(store_session);
                         res.render('home.ejs',{
                             moviesShowing:moviesShowing.rows, 
@@ -160,7 +159,7 @@ router.get("/schedules/:movieId", async(req, res) => {
 
     const today = new Date();
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-
+    console.log(nextWeek);
    
 
     try{
@@ -197,20 +196,20 @@ router.get("/schedules/:movieId", async(req, res) => {
                                     console.log("Unable to extract video ID.");
                                 }
 
-                                let date = nextWeek.toISOString().split('T')[0];
+                                let date = today.toISOString().split('T')[0];
                                 
                                 if(selectedDate){
                                     date = selectedDate;
                                 }
                           
-                                let querySchedule = `SELECT Schedule.*, Studios.* FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = '${movieId}' AND Schedule.date ='${date}' `;
+                                let querySchedule = `SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = '${movieId}' AND Schedule.date ='${date}'`;
                                 
                                 if(selectedCity && (selectedCity !== 'All')){
                                     querySchedule += ` AND Studios.city = '${selectedCity}'`;
                                 }
                                 querySchedule += ';';
                                 console.log(querySchedule);
-
+                                console.log(date);
                                 await db.query(querySchedule, (err, results) => {
                                     if(err){
                                         console.log(err);
@@ -709,7 +708,7 @@ router.delete('/delete-select-seat', async (req, res) => {
 //Showing selected movie details include the schedules page
 router.get('/detail/:location/:movieId', async (req, res) => {
     const {location, movieId} = req.params;
-
+    console.log(store_session);
     try{
         const query = 'SELECT Schedule.*, Movies.*, Studios.* FROM Schedule  JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id WHERE Studios.location = $1 AND Schedule.movie_id = $2;';
         const values = [location, movieId];
@@ -752,7 +751,7 @@ router.get('/detail/:location/:movieId', async (req, res) => {
 //Showing theaters list where the selected movie is playing page
 router.get('/movie/:movieTitle', async (req,res) => {
     const {movieTitle} = req.params;
-
+    console.log(store_session);
     try{
         const query = 'SELECT DISTINCT Studios.location, Movies.movie_id FROM Studios JOIN Schedule ON Studios.studio_id = Schedule.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Movies.title = $1;';
         const values = [movieTitle];
@@ -773,6 +772,7 @@ router.get('/movie/:movieTitle', async (req,res) => {
 
 //Showing movies list page
 router.get('/movies', async (req,res) => {
+    console.log(store_session);
     try{
         const query = 'SELECT * FROM movies;'
 
@@ -864,14 +864,16 @@ router.post('/login', async (req, res) => {
                         res.status(500).send('Error compare the string');
                     } else {
                         if(results){
-                            req.session.username = username;
                             console.log("Login Successfull!");
                             const queryUsernameId = 'SELECT user_id FROM users WHERE username = $1;';
-                            await db.query(queryUsernameId, [req.session.username], async(err, results) => {
+
+                            await db.query(queryUsernameId, [username], async(err, results) => {
                                 if(err){
 
                                 }else{
-                                    req.session.user_id = results.rows[0].user_id;
+                                    console.log(results.rows[0]);
+                                    store_session = req.session;
+                                    store_session.user_id = results.rows[0].user_id;
                                     res.redirect('/');
                                 }
                             });
@@ -1198,10 +1200,9 @@ router.post('/loginAdmin', async (req, res) => {
                         res.status(500).send('Error compare the string');
                     } else {
                         if(results){
-                            req.session.username = username;
                             console.log("Login Successfull!");
                             const queryUsernameId = 'SELECT admin_id FROM Admins WHERE username = $1;';
-                            await db.query(queryUsernameId, [req.session.username], async(err, results) => {
+                            await db.query(queryUsernameId, [username], async(err, results) => {
                                 if(err){
                                 console.log(err);
                                 }else{
