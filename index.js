@@ -865,7 +865,7 @@ router.post('/login', async (req, res) => {
                     } else {
                         if(results){
                             console.log("Login Successfull!");
-                            const queryUsernameId = 'SELECT user_id FROM users WHERE username = $1;';
+                            const queryUsernameId = 'SELECT * FROM users WHERE username = $1;';
 
                             await db.query(queryUsernameId, [username], async(err, results) => {
                                 if(err){
@@ -873,6 +873,7 @@ router.post('/login', async (req, res) => {
                                 }else{
                                     console.log(results.rows[0]);
                                     store_session = req.session;
+                                    store_session.username = results.rows[0].username;
                                     store_session.user_id = results.rows[0].user_id;
                                     res.redirect('/');
                                 }
