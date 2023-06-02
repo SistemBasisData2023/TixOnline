@@ -158,9 +158,8 @@ router.get("/schedules/:movieId", async(req, res) => {
 
 
     const today = new Date();
+    today.setDate(today.getDate() + 1);
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-    console.log(nextWeek);
-   
 
     try{
         const query = 'SELECT * FROM Movies WHERE status = $1;';
@@ -196,10 +195,11 @@ router.get("/schedules/:movieId", async(req, res) => {
                                     console.log("Unable to extract video ID.");
                                 }
 
-                                let date = today.toISOString().split('T')[0];
-                                
+                                let date = today;
                                 if(selectedDate){
                                     date = selectedDate;
+                                }else{
+                                    date = today.toISOString().split('T')[0];
                                 }
                           
                                 let querySchedule = `SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = '${movieId}' AND Schedule.date ='${date}'`;
@@ -207,16 +207,17 @@ router.get("/schedules/:movieId", async(req, res) => {
                                 if(selectedCity && (selectedCity !== 'All')){
                                     querySchedule += ` AND Studios.city = '${selectedCity}'`;
                                 }
-                                querySchedule += ';';
-                                console.log(querySchedule);
-                                console.log(date);
+                                querySchedule += 'ORDER BY hours ASC;';
+                                
+
                                 await db.query(querySchedule, (err, results) => {
                                     if(err){
                                         console.log(err);
                                         console.log('/schedules - Getting data error');
                                     }else{
-                                        console.log(results.rows);
-                                        res.render('movie.ejs', {movies : movies.rows, movie: movie.rows[0], schedules : results.rows, cities : cities.rows, nextWeek, movieVideo: extractedId});
+                                        console.log(querySchedule);
+                                     
+                                        res.render('movie.ejs', {movies : movies.rows, movie: movie.rows[0], schedules : results.rows, cities : cities.rows, nextWeek, movieVideo: extractedId, session:store_session});
                                     }
                                 });
                             }

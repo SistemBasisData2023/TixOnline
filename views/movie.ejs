@@ -3,19 +3,23 @@
   <head>
     <title>Movie List</title>
     <style>
-      #date-range {
-  width: 300px;
-}
-
-#selected-date {
-  margin-top: 10px;
-  padding: 5px;
-  width: 100px;
-}
-
+      .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 2rem;
+        background-color: white;
+        border-radius: 0.5rem;
+        z-index: 9999;
+      }
     </style>
     <script>
-
+      function showPopup() {
+        var popup = document.getElementById("popup");
+        popup.style.display = "block";
+      }
     </script>
         <meta charset="UTF-8">
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -80,27 +84,73 @@
         <button type="submit">Filter</button>
       </form>
 
+    
+      <section id="schedule" class="bg-black py-16 text-[#cfab7a] ">
    
-
-
-
-
-
-    <% if (schedules != null ) { %>
-        <% if (schedules.length > 0) { %>
-
+        <% if (schedules != null ) { %>
+          <% if (schedules.length > 0) { %>
+  
             <h3>Schedules:</h3>
+  
+            <% let scheduleByLocation = {}; %>
+  
+            <% schedules.forEach(schedule => {
+                if (!scheduleByLocation[schedule.location]) {
+                  scheduleByLocation[schedule.location] = [];
+                }
+                scheduleByLocation[schedule.location].push(schedule);
+            }); %>
+  
+            <% Object.keys(scheduleByLocation).forEach(location => { %>
+                <h2><%= location %></h2>
+                <ul>
 
-            <ul>
-              <% schedules.forEach(schedule => { %>
-                <li><%= schedule.date %> at <%= schedule.hours %>.00</li>
-              <% }) %>
-            </ul>
+                  <% scheduleByLocation[location].forEach(schedule => { %>
+                    
+                    <% if(session != null) {%>
+                      <a href="/seat/<%= schedule.schedule_id %>" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded py-2 px-4">
+                        <%= schedule.hours %>
+                        <%= schedule.type %>
+                      </a>
+                    <% }else{ %>
+                    <a onclick="showPopup()" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded py-2 px-4">
+                      <%= schedule.hours %>
+                      <%= schedule.type %>
+                    </a>
+                    <% }%>
+               
 
+                 
+                 
+                 
+                  <% }); %>
+
+                </ul>
+              <% }); %>
+  
+              
+              
+  
           <% } else { %>
             <p>No schedules available for this movie.</p>
           <% } %>
-     <% } %>
+        <% } %>
+    
+  </section>
+
+  <div id="popup" class="popup">
+    <h2>This is a pop-up!</h2>
+    <p>Please login first to buy ticket</p>
+    <button onclick="hidePopup()" class="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded py-2 px-4">Close</button>
+  </div>
+
+  <script>
+    function hidePopup() {
+      var popup = document.getElementById("popup");
+      popup.style.display = "none";
+    }
+  </script>
+   
 
     </body>
   </html>
