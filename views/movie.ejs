@@ -2,32 +2,62 @@
 <html>
   <head>
     <title>Movie List</title>
+
     <script>
-        function submitForm() {
-          document.getElementById('dateForm').submit();
-        }
-      </script>
+      const filterForm = document.getElementById("filterForm");
+      document.querySelector(".cityFilter").addEventListener("click", function(){
+
+        filterForm.cityFilter();
+
+      });
+    </script>
+        <meta charset="UTF-8">
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/styles/fe_style.css">
+        <link rel="stylesheet" href="/styles/style.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <h1>Movie List</h1>
+
+    <section id="movieList" class="bg-black py-16 text-[#cfab7a]">
+      <div class="container mx-auto">
+          <h1 class="mb-4 text-4xl font-semibold">Now Playing
+          </h1>
+          <div class="kodfun-galeri">
+              <% movies.forEach(movie => {  %>
+                  <div style="background-image: url('/images/<%= movie.images %>');">
+                      <div class="overlay">
+                          <a href="/schedules/<%= movie.movie_id %>" class="font-semibold "><%= movie.title %></a>
+                   
+                      </div>
+                  </div>
+                <% }) %>
+          </div>
+      </div>
+    </section>
+
     
-    <ul
-        <% movies.forEach(movie => { %>
-          <li>
-            <a href="/schedules/<%= movie.movie_id %>"><%= movie.title %></a>
-          </li>
-        <% }) %>
-    </ul>
-    
-    <form>
-        <select>
+ 
+    <!--Movie Selected Info-->
+    <p><%= movie.title %></p>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= movieVideo %>?controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+        <!--Filter-->
+    <form id="filterForm" action="/schedules/<%= movie.movie_id %>" method="GET">
+        <select id="city" name="city">
           <% locations.forEach((location) => { %>
-            <option><%= location.location %></option>
+            <option value="tes"><%= location.location %></option>
           <% }) %>
         </select>
-    </form>
+        <input type="date" id="selectedDate" name="selectedDate" min="<%= nextWeek.toISOString().split('T')[0] %>">
+        <input type="submit" value="Submit">
+      </form>
 
-    <input type="date" id="selectedDate" name="selectedDate" min="<%= nextWeek.toISOString().split('T')[0] %>" onchange="submitForm()">
+   
+
+
+
 
 
     <% if (schedules != null ) { %>
