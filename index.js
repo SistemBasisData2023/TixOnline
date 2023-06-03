@@ -142,9 +142,14 @@ router.get("/movie-test", async(req, res) => {
             if(err){
                 console.log('/movie-test - Getting data error');
             }else{
+                const today = new Date();
+                today.setDate(today.getDate() + 1);
+                const date = today.toISOString().split('T')[0];
+
+                console.log(date);
                 console.log(movies.rows);
                 const movieId = movies.rows[0].movie_id;
-                const url = '/schedules/' + movieId;
+                const url = '/schedules/' + movieId + '?selectedCity=All&selectedDate=' + date;
                 res.redirect(url);
             }
         });
@@ -161,6 +166,29 @@ router.get("/schedules/:movieId", async(req, res) => {
     today.setDate(today.getDate() + 1);
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
 
+    var monthNames = [
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"
+      ];
+    var dateArray = []; // Initialize the array
+  
+    for (var i = 0; i < 7; i++) {
+  var nextDate = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
+  var dateString = nextDate.toISOString().split('T')[0];
+  
+  var [year, monthNumber, day] = dateString.split('-');
+  var month = monthNames[nextDate.getMonth()];
+  var dateObject = { 
+    year: parseInt(year),
+    month: month,
+    monthNumber:parseInt(monthNumber),
+    day: parseInt(day)
+  };
+  
+  dateArray.push(dateObject);
+}
+    console.log(dateArray);
+    
     try{
         const query = 'SELECT * FROM Movies WHERE status = $1;';
 
@@ -217,7 +245,15 @@ router.get("/schedules/:movieId", async(req, res) => {
                                     }else{
                                         console.log(querySchedule);
                                      
-                                        res.render('movie.ejs', {movies : movies.rows, movie: movie.rows[0], schedules : results.rows, cities : cities.rows, nextWeek, movieVideo: extractedId, session:store_session});
+                                        res.render('movie.ejs', {movies : movies.rows, 
+                                            movie: movie.rows[0], 
+                                            schedules : results.rows, 
+                                            cities : cities.rows, 
+                                            nextWeek, 
+                                            movieVideo: extractedId, 
+                                            session:store_session,
+                                            dateSelector : dateArray
+                                        });
                                     }
                                 });
                             }

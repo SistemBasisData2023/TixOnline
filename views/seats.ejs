@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Movie List</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/fe_style.css">
+  <link rel="stylesheet" href="/styles/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
+      .columns {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
     .selected {
       background-color: yellow;
     }
@@ -146,20 +157,28 @@ button {
 </head>
 <body>
   <h1>Select Seat <%=scheduleId%></h1>
-  <ul>
-    <% seats.forEach(function(seat) { %>
-      <li>
-          <button onclick="storeSeatNumber('<%= seat.seat_id %>', this)"
-            <% soldSeats.forEach(function(soldSeat){ if(soldSeat.seat_id == seat.seat_id) { %>
-                class="sold"
-                <% } })%>
-            >
-            <%= seat.seat_number %>
-          </button>
 
+  <ul>
+    <% var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; %>
+    <% alphabet.split('').forEach(function(letter) { %>
+      <li class="list-none">
+        <ul>
+          <% seats.forEach(function(seat) { %>
+            <% if (seat.seat_number.charAt(0) === letter) { %>
+              <button onclick="storeSeatNumber('<%= seat.seat_id %>', this)"
+                <% soldSeats.forEach(function(soldSeat){ if(soldSeat.seat_id == seat.seat_id) { %>
+                    class="sold"
+                    <% } })%>
+                >
+                <%= seat.seat_number %>
+              </button>
+            <% } %>
+          <% }) %>
+        </ul>
       </li>
     <% }) %>
   </ul>
+  
         <!-- buat transaksi WAITING, ticket. Udah ada API nya-->
   <button id="showPopup" onclick="bookSeats()">Open Pop-up</button>
 
