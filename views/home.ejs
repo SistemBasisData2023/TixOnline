@@ -6,48 +6,53 @@
     <title>TixOnline - Buy Movie Tickets Online</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/styles/fe_style.css">
-    <script src="/script/script.js" defer></script>
     <link rel="stylesheet" href="/styles/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <script>
     function checkSession() {
-  if (typeof session !== 'undefined' && session.hasOwnProperty('username') && session.username !== null) {
-    return true;
-  } else {
-    return false;
-  }
+        if (typeof session !== 'undefined' && session.hasOwnProperty('username') && session.username !== null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 </script>
+
 <body class="font-raleway">
     <!-- Navbar -->
     <nav class="p-10 bg-black text-cfab7a">
-        <div class="container flex items-center justify-between mx-auto">
+        <div class="container flex flex-col items-center justify-between mx-auto lg:flex-row">
             <a href="#" class="text-3xl font-semibold">TixOnline</a>
-            <div class="text-[#cfab7a]">
+            <div class="text-[#cfab7a] mt-4 lg:mt-0">
                 <a href="/home" class="px-4 hover:text-white">Home</a>
-                <a href="#nowplaying" class="px-4 hover:text-white">Now Playing</a>
-                <a href="#comingsoon" class="px-4 hover:text-white">Coming Soon</a>
+                <a href="#nowplaying" class="px-4 hover:text-white smooth-scroll">Now Playing</a>
+                <a href="#comingsoon" class="px-4 hover:text-white smooth-scroll">Coming Soon</a>
                 <a href="/theaters" class="px-4 hover:text-white">Theaters</a>
-                <a href="#about" class="px-4 hover:text-white">About</a>
+                <a href="#about" class="px-4 hover:text-white smooth-scroll">About</a>
             </div>
-            <div>
+            <div class="flex items-center mt-4 lg:mt-0">
                 <% if (session && session.username) { %>
                     <a href="/profile" class="px-4 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                         </svg>
-                      </a>
-                <% } else { %>
-                    <button id="registerBtn" class="px-4 py-2 text-black rounded custom-btn"><a href="/register-account">Register</a></button>
-                    <button id="loginBtn" class="px-4 py-2 text-black rounded custom-btn"><a href="/login-account">Log in</a></button>
-                <% } %>
-
+                    </a>
+                    <% } else { %>
+                        <button id="registerBtn" class="w-auto px-3 py-1 mr-2 text-black rounded custom-btn hover:text-white"><a
+                                href="/register-account">Register</a></button>
+                        <button id="loginBtn" class="w-auto px-3 py-1 text-black rounded custom-btn hover:text-white"><a
+                                href="/login-account">Log in</a></button>
+                        <% } %>
             </div>
         </div>
     </nav>
-    
+
+    <script src="/script/script.js" defer></script>
+
 </body>
 
 <!-- Video Trailer-->
@@ -66,10 +71,6 @@
     </div>
 </section>
 
-
-
-
-
 <!-- Now Playing Movie Gallery Section -->
 <section id="nowplaying" class="bg-black py-16 text-[#cfab7a]">
     <div class="container mx-auto">
@@ -77,15 +78,19 @@
         </h1>
         <div class="kodfun-galeri">
             <% moviesShowing.forEach(function(movieShowing) { %>
-                <div style="background-image: url('/images/<%= movieShowing.images %>');" onclick="showMovieDetails('<%= movieShowing.title %>','<%= movieShowing.synopsis %>')">
+                <div style="background-image: url('/images/<%= movieShowing.images %>');"
+                    onclick="showMovieDetails('<%= movieShowing.title %>','<%= movieShowing.synopsis %>')">
                     <div class="overlay">
-                        <h4 class="font-semibold "><%= movieShowing.title %></h4>
-                        <p>Rated : <%= movieShowing.movie_id%></p>
+                        <h4 class="font-semibold ">
+                            <%= movieShowing.title %>
+                        </h4>
+                        <p>Rated : <%= movieShowing.movie_id%>
+                        </p>
                     </div>
                 </div>
-              <% }) %>
+                <% }) %>
         </div>
-    </div> 
+    </div>
 </section>
 
 <!---- Hero Section -->
@@ -109,22 +114,24 @@
             <% moviesUpcoming.forEach(function(movieUpcoming) { %>
                 <div style="background-image: url('/images/<%= movieUpcoming.images %>');">
                     <div class="overlay">
-                        <h4 class="font-semibold "><%= movieUpcoming.title %></h4>
-                        <p>Rated : <%= movieUpcoming.rating %></p>
+                        <h4 class="font-semibold ">
+                            <%= movieUpcoming.title %>
+                        </h4>
+                        <p>Rated : <%= movieUpcoming.rating %>
+                        </p>
                     </div>
                 </div>
-              <% }) %>
+                <% }) %>
         </div>
     </div>
 </section>
 
 <!-- Movie Details Popup -->
-<div id="movieDetailsPopup" class="bg-slate-900 fixed inset-0 z-50 flex items-center justify-center hidden">
+<div id="movieDetailsPopup"
+    class="fixed inset-0 z-50 flex items-center justify-center hidden bg-opacity-75 bg-slate-900">
     <div class="w-1/2 p-6 rounded-lg shadow-lg bg-gradient-to-bl from-gray-800 to-gray-900">
         <h2 id="movieTitle" class="mb-4 text-2xl font-semibold text-white lg"></h2>
         <p id="movieSynopsis" class="mb-4 text-cfab7a"></p>
-
-  
         <a href="/schedules" class="px-4 py-2 font-semibold text-white bg-red-600 rounded hover:bg-red-700">Book
             Now</a>
         <button id="closeMovieDetailsBtn" class="absolute top-0 right-0 mt-4 mr-4 text-white hover:text-gray-800">
@@ -134,7 +141,6 @@
                     d="M19 6.41l-1.41-1.41L12 10.17 6.41 4.59 5 6l6 6-6 6 1.41 1.41L12 13.83l5.59 5.59 1.41-1.41L13.83 12l5.59-5.59z" />
             </svg>
         </button>
-
     </div>
 </div>
 
@@ -192,4 +198,5 @@
     </div>
 </footer>
 </body>
+
 </html>

@@ -11,10 +11,10 @@
 </head>
 
 <body class="flex flex-col h-screen bg-black text-cfab7a font-raleway">
-    <a href="#" class="absolute top-0 right-0 m-4 text-4xl hover:text-white">TixOnline</a>
+    <a href="/" class="absolute top-0 right-0 m-4 text-4xl hover:text-white">TixOnline</a>
     <div class="flex flex-1">
         <div class="flex items-center justify-center w-1/2">
-            <img src="/images/cinemabg.png" alt="Image" class="max-w-full max-h-full">
+            <img src="/images/cinemabg.png" alt="Image" class="object-cover w-full h-auto">
         </div>
         <div id="registerModal" class="flex items-center justify-center w-1/2">
             <div class="w-full max-w-xl p-8">
@@ -59,58 +59,64 @@
                                                                                     <input type="text" id="username"
                                                                                         name="username"
                                                                                         class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                                        placeholder="Insert username"
                                                                                         required>
                                                                                 </div>
-                                                                                <br><br>
                                                                                 <div class="mb-4">
                                                                                     <label for="email"
                                                                                         class="block mb-2 font-semibold text-black">Email</label>
                                                                                     <input type="email" id="email"
                                                                                         name="email"
                                                                                         class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                                        placeholder="example@email.com"
                                                                                         required>
                                                                                 </div>
-                                                                                <br><br>
-                                                                                <div class="mb-4">
-                                                                                    <label for="password"
-                                                                                        class="block mb-2 font-semibold text-black">Password</label>
-                                                                                    <input type="password" id="password"
-                                                                                        name="password"
-                                                                                        class="w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                        required>
+                                                                                <div class="grid grid-cols-2 gap-4">
+                                                                                    <div class="mb-4">
+                                                                                        <label for="password"
+                                                                                            class="block mb-2 font-semibold text-black">Password</label>
+                                                                                        <input type="password"
+                                                                                            id="password"
+                                                                                            name="password"
+                                                                                            class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                                            placeholder="Insert password"
+                                                                                            required>
+                                                                                    </div>
+                                                                                    <div class="mb-4">
+                                                                                        <label for="confirmPassword"
+                                                                                            class="block mb-2 font-semibold text-black">Confirm
+                                                                                            Password</label>
+                                                                                        <input type="password"
+                                                                                            id="confirmPassword"
+                                                                                            name="confirmPassword"
+                                                                                            class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                                            placeholder="Re-enter password"
+                                                                                            required>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <br><br>
-                                                                                <div class="mb-4">
-                                                                                    <label for="confirmPassword"
-                                                                                        class="block mb-2 font-semibold text-black">Confirm
-                                                                                        Password</label>
-                                                                                    <input type="password"
-                                                                                        id="confirmPassword"
-                                                                                        name="confirmPassword"
-                                                                                        class="w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                        required>
+                                                                                <div class="grid grid-cols-2 gap-4">
+                                                                                    <div class="mb-4">
+                                                                                        <label for="firstName"
+                                                                                            class="block mb-2 font-semibold text-black">First
+                                                                                            Name</label>
+                                                                                        <input type="text"
+                                                                                            id="firstName"
+                                                                                            name="firstName"
+                                                                                            class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                                            placeholder="Insert first name"
+                                                                                            required>
+                                                                                    </div>
+                                                                                    <div class="mb-4">
+                                                                                        <label for="lastName"
+                                                                                            class="block mb-2 font-semibold text-black">Last
+                                                                                            Name</label>
+                                                                                        <input type="text" id="lastName"
+                                                                                            name="lastName"
+                                                                                            class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                                            placeholder="Insert last name"
+                                                                                            required>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <br><br>
-                                                                                <div class="mb-4">
-                                                                                    <label for="firstName"
-                                                                                        class="block mb-2 font-semibold text-black">First
-                                                                                        Name</label>
-                                                                                    <input type="text" id="firstName"
-                                                                                        name="firstName"
-                                                                                        class="w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                        required>
-                                                                                </div>
-                                                                                <br><br>
-                                                                                <div class="mb-4">
-                                                                                    <label for="lastName"
-                                                                                        class="block mb-2 font-semibold text-black">Last
-                                                                                        Name</label>
-                                                                                    <input type="text" id="lastName"
-                                                                                        name="lastName"
-                                                                                        class="w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                        required>
-                                                                                </div>
-                                                                                <br><br>
                                                                                 <div class="mb-6">
                                                                                     <label for="phoneNumber"
                                                                                         class="block mb-2 font-semibold text-black">Phone
@@ -118,15 +124,16 @@
                                                                                     <input type="tel" id="phoneNumber"
                                                                                         name="phoneNumber"
                                                                                         class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                                        placeholder="08xxxxxxxxxx"
                                                                                         required>
                                                                                 </div>
-                                                                                <br><br>
                                                                                 <div class="text-right">
                                                                                     <button type="submit"
                                                                                         class="px-4 py-2 font-semibold text-white bg-red-600 rounded hover:bg-red-700"
-                                                                                        onclick="return comparePasswords()">Register</button>
+                                                                                        onclick="return comparePasswords()">Sign Up</button>
                                                                                 </div>
                                                                             </div>
+
                 </form>
             </div>
         </div>

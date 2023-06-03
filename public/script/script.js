@@ -11,19 +11,50 @@ const closeLoginModalBtn = document.getElementById('closeLoginModalBtn');
         
 
 function showMovieDetails(movieTitle, movieSynopsis) {
-// Set movie details based on the movieTitle parameter (you can customize this logic)
-movieTitleElement.textContent = movieTitle;
-movieSynopsisElement.textContent = movieSynopsis;
-
-
-            movieDetailsPopup.classList.remove('hidden');
-
-            closeMovieDetailsBtn.addEventListener('click', () => {
-                movieDetailsPopup.classList.add('hidden');
-            });
-
-            console.log(movieId);
+    movieTitleElement.textContent = movieTitle;
+    movieSynopsisElement.textContent = movieSynopsis;
+    movieDetailsPopup.classList.remove('hidden');
+    closeMovieDetailsBtn.addEventListener('click', () => {
+    movieDetailsPopup.classList.add('hidden');
+    });
+    console.log(movieId);
 }
+
+function showMovieDetailsPopup() {
+    var popup = document.getElementById("movieDetailsPopup");
+    popup.classList.add("show");
+}
+
+function hideMovieDetailsPopup() {
+    var popup = document.getElementById("movieDetailsPopup");
+    popup.classList.remove("show");
+}
+
+// JavaScript code for smooth scrolling
+
+// Smooth scroll to a target element
+function smoothScroll(target) {
+    const element = document.querySelector(target);
+    if (element) {
+        window.scrollTo({
+        top: element.offsetTop,
+        behavior: "smooth"
+    });
+    }
+}
+
+  // Attach click event listeners to navigation links
+document.addEventListener("DOMContentLoaded", function() {
+    const navigationLinks = document.querySelectorAll(".smooth-scroll");
+
+    navigationLinks.forEach(function(link) {
+        link.addEventListener("click", function(e) {
+        e.preventDefault();
+        const target = this.getAttribute("href");
+        smoothScroll(target);
+        });
+    });
+});
 
 registerBtn.addEventListener('click', () => {
     registerModal.classList.remove('hidden');
