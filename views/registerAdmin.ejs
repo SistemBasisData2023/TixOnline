@@ -1,34 +1,93 @@
-<%-include("./partials/header")-%>
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Register</title>
+    <meta charset="UTF-8">
+    <title>Register Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/fe_style.css">
+    <script src="/script/script.js" defer></script>
 </head>
-<body>
-    <h1>Register</h1>
-    <form method="POST" action="/registerAdmin">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
 
-        <br><br>
+<body class="flex flex-col h-screen bg-black text-cfab7a font-raleway">
+    <a href="/" class="absolute top-0 right-0 m-4 text-4xl hover:text-white">TixOnline</a>
+    <div class="flex flex-1">
+        <div class="flex items-center justify-center w-1/2">
+            <img src="/images/cinemabg.png" alt="Image" class="object-cover w-full h-auto">
+        </div>
+        <div id="registerModal" class="flex items-center justify-center w-1/2">
+            <div class="w-full max-w-xl p-8">
+                <h2 class="mb-6 text-3xl font-bold font-raleway">Admin Register</h2>
+                <form method="POST" action="/registerAdmin">
+                    <% if (UsernameAvailability==false) { %>
+                        <p>Username is already taken.</p>
+                        <% } %>
+                            <% if ( EmailAvailability==false) { %>
+                                <p>Email is already taken.</p>
+                                <% } %>
+                                    <% if (usernameRegexAllowed==false) { %>
+                                        <p>consist of 8 to 30 characters, including uppercase and lowercase
+                                            letters, numbers, underscores, and hyphens..</p>
+                                        <% } %>
+                                            <% if (emailRegexAllowed==false) { %>
+                                                <p>Ensures that the email address contains a username part,
+                                                    followed by the "@" symbol, a domain part, and a valid
+                                                    top-level domain.</p>
+                                                <% } %>
+                                                    <% if (passwordRegexAllowed==false) { %>
+                                                        <p>At least one lowercase letter, at least one
+                                                            uppercase letter, at least one digit, matches
+                                                            any combination of alphanumeric characters and
+                                                            special characters (non-whitespace) with a
+                                                            minimum length of 8.</p>
+                                                        <% } %>
+                                                            <div class="px-3 py-8 font-semibold rounded custom-btn">
+                                                                <div class="mb-4">
+                                                                    <label for="username"
+                                                                        class="block mb-2 font-semibold text-black">Username</label>
+                                                                    <input type="text" id="username" name="username"
+                                                                        class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                        placeholder="Insert username" required>
+                                                                </div>
+                                                                <div class="mb-4">
+                                                                    <label for="email"
+                                                                        class="block mb-2 font-semibold text-black">Email</label>
+                                                                    <input type="email" id="email" name="email"
+                                                                        class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                        placeholder="example@email.com" required>
+                                                                </div>
+                                                                <div class="grid grid-cols-2 gap-4">
+                                                                    <div class="mb-4">
+                                                                        <label for="password"
+                                                                            class="block mb-2 font-semibold text-black">Password</label>
+                                                                        <input type="password" id="password"
+                                                                            name="password"
+                                                                            class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                            placeholder="Insert password" required>
+                                                                    </div>
+                                                                    <div class="mb-4">
+                                                                        <label for="confirmPassword"
+                                                                            class="block mb-2 font-semibold text-black">Confirm
+                                                                            Password</label>
+                                                                        <input type="password" id="confirmPassword"
+                                                                            name="confirmPassword"
+                                                                            class="w-full px-4 py-2 border border-gray-300 rounded"
+                                                                            placeholder="Re-enter password" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex items-end justify-end">
+                                                                    <button type="submit"
+                                                                        class="px-4 py-2 font-semibold text-white bg-red-600 rounded hover:bg-red-700"
+                                                                        onclick="return comparePasswords()"
+                                                                        value="Register">Sign Up</button>
+                                                                </div>
+                                                            </div>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-
-        <br><br>
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-
-        <br><br>
-
-        <label for="confirmPassword">Confirm Password:</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" required>
-        <br><br>
-
-        <input type="submit" value="Log in" onclick="return comparePasswords()">
-    </form>
-
+                </form>
+            </div>
+        </div>
+    </div>
     <script>
         function comparePasswords() {
             var password = document.getElementById("password").value;
@@ -38,9 +97,10 @@
                 alert("Passwords do not match.");
                 return false; // Prevent form submission
             }
-            
+
             return true; // Allow form submission
         }
     </script>
 </body>
+
 </html>
