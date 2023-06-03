@@ -512,6 +512,9 @@ router.post('/pay', (req, res) => {
   });
   
 router.get('/success', (req, res) => {
+   if(!store_session){
+    res.redirect('/');
+   }else{
     const payerId = req.query.PayerID;
     const paymentId = req.query.paymentId;
     const totalString = JSON.stringify(store_session.ticketQuantity*store_session.ticketPrices);
@@ -567,71 +570,81 @@ router.get('/success', (req, res) => {
         }
       }
     });
-  });
+   }
+});
   
   
 router.get('/cancel', async (req, res) => {
-    const transaction_id = store_session.transaction_id;
+    if(!store_session){
+        res.redirect('/');
+    }else{
+        const transaction_id = store_session.transaction_id;
 
-    const transaction_status = 'CANCELED';
-
-    try{
-        const query = 'UPDATE transactions SET transaction_status = $1 WHERE transaction_id = $2;';
-        const values = [transaction_status, transaction_id];
-
-        await db.query(query, values, (err,results) => {
-            if(err){
-                console.log(err);
-            }else{
-                store_session.ticketQuantity = null;
-                store_session.ticketPrices = null;
-                store_session.transaction_id = null;
-                console.log("Transaction canceled.")
-                res.render('cancel.ejs');
-            }
-        });
-    }catch(err){
-
+        const transaction_status = 'CANCELED';
+    
+        try{
+            const query = 'UPDATE transactions SET transaction_status = $1 WHERE transaction_id = $2;';
+            const values = [transaction_status, transaction_id];
+    
+            await db.query(query, values, (err,results) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    store_session.ticketQuantity = null;
+                    store_session.ticketPrices = null;
+                    store_session.transaction_id = null;
+                    console.log("Transaction canceled.")
+                    res.render('cancel.ejs');
+                }
+            });
+        }catch(err){
+    
+        }
     }
 
 });
   
 //Showing seat layout page
 router.get('/seat/:scheduleId', async (req, res) => {
-    const {scheduleId} = req.params;
-    store_session.schedule_id = scheduleId;
+    if(!store_session){
+        res.redirect('/');
+    }else{
+        const {scheduleId} = req.params;
+        store_session.schedule_id = scheduleId;
+    
+        try{
+            //Get sold seats first
+            const querySoldSeat = 'SELECT seat_id FROM ScheduleSeats WHERE schedule_id = $1;';
+            const values = [scheduleId];
+            const soldSeats = null;
+    
+            await db.query(querySoldSeat, values, async (err, soldSeats) => {
+                if(err){
+                    console.log(err);
+                    return res.json({ message: 'Retrive data failed.' });
+                }else{
+                    //Get seats on selected schedule
+                    const query = 'SELECT Seats.*, Schedule.Schedule_id, Schedule.prices FROM Seats JOIN Schedule ON Schedule.studio_id = Seats.studio_id WHERE Schedule.schedule_id = $1;';
+    
+                    await db.query(query, values, (err, results) => {
+                        if(err){
+                            console.log(err);
+                            return res.json({ message: 'Retrive data failed.' });
+                        }else{
+                            store_session.ticketPrices = results.rows[0].prices;
+                            res.render('seats.ejs', {seats : results.rows, scheduleId:scheduleId, soldSeats:soldSeats.rows});
+                        }
+                    });
+                }
+            });
+    
+            
+        }catch(error){
+            console.error('Page is not availible', error);
+            return res.status(500).json({ message: 'An error occurred during showing page.' });
+        } 
+    }
 
-    try{
-        //Get sold seats first
-        const querySoldSeat = 'SELECT seat_id FROM ScheduleSeats WHERE schedule_id = $1;';
-        const values = [scheduleId];
-        const soldSeats = null;
-
-        await db.query(querySoldSeat, values, async (err, soldSeats) => {
-            if(err){
-                console.log(err);
-                return res.json({ message: 'Retrive data failed.' });
-            }else{
-                //Get seats on selected schedule
-                const query = 'SELECT Seats.*, Schedule.Schedule_id, Schedule.prices FROM Seats JOIN Schedule ON Schedule.studio_id = Seats.studio_id WHERE Schedule.schedule_id = $1;';
-
-                await db.query(query, values, (err, results) => {
-                    if(err){
-                        console.log(err);
-                        return res.json({ message: 'Retrive data failed.' });
-                    }else{
-                        store_session.ticketPrices = results.rows[0].prices;
-                        res.render('seats.ejs', {seats : results.rows, scheduleId:scheduleId, soldSeats:soldSeats.rows});
-                    }
-                });
-            }
-        });
-
-        
-    }catch(error){
-        console.error('Page is not availible', error);
-        return res.status(500).json({ message: 'An error occurred during showing page.' });
-    } 
 });
 
 //Selected seat API
@@ -865,6 +878,15 @@ router.get('/theaters', async (req,res) => {
     }catch(error){
         console.error('Page is not availible', error);
         return res.status(500).json({ message: 'An error occurred during showing page.' });
+    }
+});
+
+router.post('/logout', async (req,res) => {
+    try{
+
+        store_session = null;
+    }catch(error){
+
     }
 });
 
@@ -1119,7 +1141,7 @@ async function checkUsernameAvailability(username) {
       
 
   //Register Admin 
-router.get('/registerAdmin_Account', async (req, res) => {
+router.get('/admin/register', async (req, res) => {
     try {
       res.render('registerAdmin.ejs', {
         UsernameAvailability: true,
@@ -1135,7 +1157,7 @@ router.get('/registerAdmin_Account', async (req, res) => {
     }
   });
   
-  router.post('/registerAdmin', async (req, res) => {
+  router.post('/register-admin', async (req, res) => {
     const { username, email, password } = req.body;
   
     // Regex
@@ -1205,7 +1227,7 @@ router.get('/registerAdmin_Account', async (req, res) => {
   });
 
 //Log in Admin 
-router.get('/loginAdmin_account', async (req, res) =>{
+router.get('/admin/login', async (req, res) =>{
     try{
         res.render('loginAdmin.ejs');
 
@@ -1217,7 +1239,7 @@ router.get('/loginAdmin_account', async (req, res) =>{
 });
 
 //Login button API
-router.post('/loginAdmin', async (req, res) => {
+router.post('/login-admin', async (req, res) => {
     const { username, password} = req.body;
 
     try{
@@ -1301,22 +1323,22 @@ async function getAllPurchases() {
       console.error('Error fetching purchase information:', error);
       res.status(500).json({ message: 'An error occurred while fetching purchase information.' });
     }
-  });
+});
 
   //profile 
     // Query the database to retrieve user information
     router.get('/profile', async (req, res) => {
         try {
           // Check if the user is logged in
-          if (!req.session.username) {
+          if (!store_session) {
             // If not logged in, redirect to the login page or display an error message
-            return res.redirect('/login');
+            return res.redirect('/login-account');
             // Alternatively, you can render an error page:
             // return res.render('error', { message: 'You need to log in to view your profile.' });
           }
       
           const query = 'SELECT * FROM users WHERE username = $1';
-          const values = [req.session.username];
+          const values = [store_session.username];
       
           await db.query(query, values, (err, results) => {
             if (err) {
