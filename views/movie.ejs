@@ -68,21 +68,25 @@
             </div>
       
     </section>
- 
-  
-        <!--Filter-->
+
+    <section id="filter" class="bg-black py-16 text-[#cfab7a] ">
+         <!--Filter-->
     <form id="filterForm" action="/schedules/<%= movie.movie_id %>" method="GET">
-        <select id="selectedCity" name="selectedCity">
-          <% cities.forEach((city) => { %>
-            <option value="<%= city.city %>"><%= city.city %></option>
-          <% }) %>
-        </select>
+      <select id="selectedCity" name="selectedCity" onchange="this.form.submit();">
+        <% cities.forEach((city) => { %>
+          <option value="<%= city.city %>" <% if(city.city == cityFilter){ %> selected <%}%>><%= city.city %></option>
+        <% }) %>
+      </select>
+      
 
-
-        <input type="date" id="selectedDate" name="selectedDate">
-
-        <button type="submit">Filter</button>
-      </form>
+      <select id="selectedDate" name="selectedDate" onchange="this.form.submit();">
+        <% dateSelector.forEach((date) => { %>
+          <option value="<%= date.date %>" <% if(date.date == dateFilter){ %> selected <%}%>><%= date.date %></option>
+        <% }) %>
+      </select>
+    </form>
+    </section>
+     
 
     
       <section id="schedule" class="bg-black py-16 text-[#cfab7a] ">

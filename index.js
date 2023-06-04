@@ -159,8 +159,9 @@ router.get("/movie-test", async(req, res) => {
 
 router.get("/schedules/:movieId", async(req, res) => {
     const {movieId} = req.params;
-    const {selectedCity, selectedDate} = req.query;
 
+    const {selectedCity, selectedDate} = req.query;
+    console.log(req.query);
 
     const today = new Date();
     today.setDate(today.getDate() + 1);
@@ -181,13 +182,12 @@ router.get("/schedules/:movieId", async(req, res) => {
   var dateObject = { 
     year: parseInt(year),
     month: month,
-    monthNumber:parseInt(monthNumber),
-    day: parseInt(day)
-  };
+    day: parseInt(day),
+    date: dateString
+  }
   
   dateArray.push(dateObject);
 }
-    console.log(dateArray);
     
     try{
         const query = 'SELECT * FROM Movies WHERE status = $1;';
@@ -204,7 +204,7 @@ router.get("/schedules/:movieId", async(req, res) => {
                         console.log('/movie-test - Getting data error');
                     }else{
                         cities.rows.unshift({city: 'All' });
-                        console.log(cities.rows);
+       
                         const queryMovie = 'SELECT * FROM Movies WHERE movie_id = $1;';
                         const values = [movieId];
                         await db.query(queryMovie , values, async (err, movie) => {
@@ -224,6 +224,7 @@ router.get("/schedules/:movieId", async(req, res) => {
                                 }
 
                                 let date = today;
+
                                 if(selectedDate){
                                     date = selectedDate;
                                 }else{
@@ -243,7 +244,7 @@ router.get("/schedules/:movieId", async(req, res) => {
                                         console.log(err);
                                         console.log('/schedules - Getting data error');
                                     }else{
-                                        console.log(querySchedule);
+                        
                                      
                                         res.render('movie.ejs', {movies : movies.rows, 
                                             movie: movie.rows[0], 
@@ -252,7 +253,9 @@ router.get("/schedules/:movieId", async(req, res) => {
                                             nextWeek, 
                                             movieVideo: extractedId, 
                                             session:store_session,
-                                            dateSelector : dateArray
+                                            dateSelector : dateArray,
+                                            cityFilter : selectedCity,
+                                            dateFilter : selectedDate
                                         });
                                     }
                                 });
