@@ -31,6 +31,7 @@
     <h1 class="mb-6 text-4xl font-semibold text-cfab7a">Theaters List</h1>
   </div>
   <div class="grid grid-cols-1 gap-4 p-4 text-cfab7a sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    
     <% theaters.forEach(function(theater) { %>
       <a href="/theater/<%= theater.location %>"
         class="max-w-sm overflow-hidden transition-all duration-200 transform bg-gray-800 rounded shadow-lg hover:scale-105">

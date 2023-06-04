@@ -4,7 +4,6 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const paypal = require('paypal-rest-sdk');
 const bcrypt = require('bcrypt');
-const axios = require('axios');
 const multer = require('multer');
 const fs = require('fs');
 
@@ -14,8 +13,6 @@ const router = express.Router();
 const { Client } = require('pg');
 
 const port = 3000;
-
-
 
 // Create a PostgreSQL connection pool
 const db = new Client({
@@ -27,17 +24,19 @@ const db = new Client({
     ssl:{rejectUnauthorized: false}, 
 });
 
+//Cost to store file storage configuration
 const fileStorage = multer.diskStorage({
     destination: (req, file, callback) => {
         callback(null, 'public/images/');
     },
     filename: (req, file, callback) => {
         const extension = file.originalname.split('.').pop(); // Get the file extension
-        const filename = req.body.title.toLowerCase().replace(/[^a-z0-9]/g, '-'); // Generate filename from the input
+        const filename = req.body.name.toLowerCase().replace(/[^a-z0-9]/g, '-'); // Generate filename from the input
         callback(null, Date.now() + ' - ' + filename + '.' + extension);
     }
 });
 
+//Const to filter file that uploaded to server. Only png, jpg, and jpeg accepted
 const fileFilter = (req,file,callback) => { 
     if(file.mimetype === 'image/png' || 
        file.mimetype === 'image/jpg' || 
@@ -47,28 +46,31 @@ const fileFilter = (req,file,callback) => {
         callback(null, false);
     }
 }
-  app.use(express.static('public'));
+
+//Allow multer to access public folder
+app.use(express.static('public'));
+
+//Initialize the app to use multer
 app.use(multer({storage:fileStorage, fileFilter:fileFilter}).single('image'));
-const upload = multer({ storage: fileStorage });
-  // Configure PayPal Sandbox credentials
+
+
+//Configure PayPal Sandbox credentials
 paypal.configure({
     mode : 'sandbox',
     client_id: 'AXGCErbNw-M4COGxcnG2NkdhhyHPJDqyyAC2NTwIemP7b7i0FXAwkWOI_4YC2nk2VIuF7XeKv6SfIlAZ',
     client_secret: 'EEuMnCqlUcqyAkK5zuW4GuYbjj4mJUY4dcB2v4dMuKcWObaPHKBT5aB3FXl2cCcVU2i27cWCOtGsvl5Z'
-  });
+});
 
-//Melakukan koneksi dan menunjukkan indikasi database terhubung
-
-//jalankan koneksi ke database
+//Connect to database
 db.connect((err)=>{
     if (err) {
-        console.log(err);
+        console.log("Error connect database : " + err);
         return;
     }
     console.log("Database connected.");
 });
  
-//middleware (session)
+//Middleware (session)
 app.use(
     session({
         secret: 'ini contoh secret',
@@ -86,9 +88,9 @@ app.use(
 );
 
 
-app.use(express.static('public'));
 app.use(express.urlencoded({extended: false}));
 
+//Variable to store session of user
 var store_session;
  
 app.use('/', router);
@@ -101,15 +103,17 @@ app.listen(port, () => {
 //Landing page
 router.get('/', async (req, res) => {
     try{
+        //Get movie list that are showing right now 
         const query = 'SELECT * FROM movies WHERE status = $1;'
     
         await db.query(query, ['SHOWING'], async (err, moviesShowing) => {
             if(err){
-                console.log(err);
-                return res.json({ message: 'Retrive data failed.' });
+                console.log('(/) Error on getting data showing movies : ' + err);
+                return;
             }else{
+                //Get movie list that are upcoming
                 const query = 'SELECT * FROM movies WHERE status = $1;';
-        
+                
                 await db.query(query, ['UPCOMING'], (err, moviesUpcoming) => {
                     if(err){
                         console.log(err);
@@ -117,7 +121,9 @@ router.get('/', async (req, res) => {
                     }else{
                         console.log("This is /");
                         console.log(store_session);
-                        res.render('home.ejs',{
+
+                        //Open home.ejs
+                        return res.status(200).render('home.ejs',{
                             moviesShowing:moviesShowing.rows, 
                             moviesUpcoming:moviesUpcoming.rows,
                             session:store_session
@@ -128,67 +134,95 @@ router.get('/', async (req, res) => {
         });
 
     }catch(err){
+        console.error('(/) Page is not availible', error);
+        return res.status(500).json({ message: 'An error occurred during showing page.' });
+    }
+});
+
+
+//Showing theaters page
+router.get('/theaters', async (req,res) => {
+    try{
+        const query = 'SELECT * FROM Studios;'
+
+        await db.query(query, (err, results) => {
+            if(err){
+                console.log(err);
+                return res.json({ message: 'Retrive data failed.' });
+            }else{
+                
+            }
+        });
+    }catch(error){
         console.error('Page is not availible', error);
         return res.status(500).json({ message: 'An error occurred during showing page.' });
     }
 });
 
+router.get 
+//Movie page that redirect to /schedules
 router.get("/movies", async(req, res) => {
-
     try{
+        //Get movie list that are showing right now 
         const query = 'SELECT * FROM Movies WHERE status = $1 ORDER BY movie_id ASC;';
 
         await db.query(query, ['SHOWING'], async (err, movies) => {
             if(err){
-                console.log('/movie-test - Getting data error');
+                console.log('(/movies) Error on getting data showing movies : ' + err);
             }else{
+                //Get current date
                 const today = new Date();
-                today.setDate(today.getDate() + 1);
+                //Set today to +7 hours because in indonesia GMT +7
+                today.setHours(today.getHours() + 7);
+                //Extract the date only
                 const date = today.toISOString().split('T')[0];
-
-                console.log(date);
-                console.log(movies.rows);
+                //Get first movie on the list to be default if user havent choose what movie
                 const movieId = movies.rows[0].movie_id;
-                const url = '/schedules/' + movieId + '?selectedCity=All&selectedDate=' + date;
-                res.redirect(url);
+                //Redirect to /schedules/
+                const url = '/schedules-movie/' + movieId + '?selectedCity=All&selectedDate=' + date;
+                return res.status(200).redirect(url);
             }
         });
     }catch(error){
+        console.error('(/movies) Page is not availible', error);
+        return res.status(500).json({ message: 'An error occurred during showing page.' });
     }
 });
 
-router.get("/schedules/:movieId", async(req, res) => {
+router.get("/schedules-movie/:movieId", async(req, res) => {
     const {movieId} = req.params;
 
     const {selectedCity, selectedDate} = req.query;
     console.log(req.query);
 
     const today = new Date();
-    today.setDate(today.getDate() + 1);
+    //Set today to +7 hours because in indonesia GMT +7
+    today.setHours(today.getHours() + 7);
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-
+    console.log(today);
     var monthNames = [
         "January", "February", "March", "April", "May", "June", "July",
         "August", "September", "October", "November", "December"
-      ];
+    ];
+
     var dateArray = []; // Initialize the array
   
     for (var i = 0; i < 7; i++) {
-  var nextDate = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
-  var dateString = nextDate.toISOString().split('T')[0];
-  
-  var [year, monthNumber, day] = dateString.split('-');
-  var month = monthNames[nextDate.getMonth()];
-  var dateObject = { 
-    year: parseInt(year),
-    month: month,
-    day: parseInt(day),
-    date: dateString
-  }
-  
-  dateArray.push(dateObject);
-}
-    
+        var nextDate = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
+        var dateString = nextDate.toISOString().split('T')[0];
+        
+        var [year, monthNumber, day] = dateString.split('-');
+        var month = monthNames[nextDate.getMonth()];
+
+        var dateObject = { 
+            year: parseInt(year),
+            month: month,
+            day: parseInt(day),
+            date: dateString
+        }
+        dateArray.push(dateObject);
+    }
+    console.log(dateArray);
     try{
         const query = 'SELECT * FROM Movies WHERE status = $1;';
 
@@ -196,7 +230,7 @@ router.get("/schedules/:movieId", async(req, res) => {
             if(err){
                 console.log('/schedules 1 - Getting data error');
             }else{
-                const query = 'SELECT DISTINCT city FROM Studios;';
+                const query = 'SELECT city FROM Theaters;';
         
                 await db.query(query, async (err, cities) => {
 
@@ -231,12 +265,12 @@ router.get("/schedules/:movieId", async(req, res) => {
                                     date = today.toISOString().split('T')[0];
                                 }
                           
-                                let querySchedule = `SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Schedule.movie_id = '${movieId}' AND Schedule.date ='${date}'`;
+                                let querySchedule = `SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id WHERE Schedule.movie_id = '${movieId}' AND Schedule.date ='${date}'`;
                                 
                                 if(selectedCity && (selectedCity !== 'All')){
                                     querySchedule += ` AND Studios.city = '${selectedCity}'`;
                                 }
-                                querySchedule += 'ORDER BY hours ASC;';
+                                querySchedule += 'ORDER BY type, hours ASC;';
                                 
 
                                 await db.query(querySchedule, (err, results) => {
@@ -244,8 +278,7 @@ router.get("/schedules/:movieId", async(req, res) => {
                                         console.log(err);
                                         console.log('/schedules - Getting data error');
                                     }else{
-                        
-                                     
+                    
                                         res.render('movie.ejs', {movies : movies.rows, 
                                             movie: movie.rows[0], 
                                             schedules : results.rows, 
@@ -270,6 +303,58 @@ router.get("/schedules/:movieId", async(req, res) => {
     }
 });
 
+
+//ADMIN Theaters ROUTER & PAGES
+//Page for theaters list
+router.get('/admin/theaters', async (req, res) => {
+    try{
+        const query ='SELECT * FROM Theaters ORDER BY theater_id ASC;';
+
+        await db.query(query, (err, results) => {
+            if(err){
+            }else{
+                res.render('admin-theaters.ejs', {theaters : results.rows});
+            }
+        });
+    }catch(error){
+    }
+});
+
+//Page for add theaters
+router.get('/admin/theaters/add', async(req,res)=> {
+    try{
+        res.render('admin-theaters-add.ejs');
+    }catch(error){
+
+    }
+});
+
+//API to create theater
+router.post('/create-theater', async (req,res)=>{
+    const { name, address, city} = req.body;
+    const image = req.file.filename;
+
+    try{
+        const query = 'INSERT INTO Theaters (name, address, city, theater_images) VALUES ($1, $2, $3, $4);';
+        const values = [name, address, city, image];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log("Making theater error.")
+                console.log(err);
+            }else{
+                console.log("Theater created");
+                res.redirect('/admin/theaters');
+            }
+        });
+
+    }catch(err){
+        console.log(err);
+    }
+});
+
+//ADMIN MOVIES ROUTERS & PAGES
+//Page for add movies
 router.get('/admin/movies/add', async(req,res)=> {
     try{
         res.render('admin-movies-add.ejs');
@@ -278,6 +363,7 @@ router.get('/admin/movies/add', async(req,res)=> {
     }
 });
 
+//Page for edit movies
 router.get('/admin/movies/edit/:movieId', async(req, res)=> {
     const {movieId} = req.params;
     try{
@@ -295,6 +381,7 @@ router.get('/admin/movies/edit/:movieId', async(req, res)=> {
     }
 });
 
+//Page for movies list
 router.get('/admin/movies', async (req, res) => {
     try{
         const query ='SELECT * FROM Movies ORDER BY movie_id ASC;';
@@ -311,6 +398,7 @@ router.get('/admin/movies', async (req, res) => {
     }
 });
 
+//API to create movies
 router.post('/create-movie', async (req,res)=>{
     const { title, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
     console.log(req.body);
@@ -335,7 +423,7 @@ router.post('/create-movie', async (req,res)=>{
     }
 });
 
-
+//API to edit movies
 router.post('/edit-movie/:id', async (req,res)=>{
     const movie_id = req.params.id;
     const { title, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
@@ -422,6 +510,7 @@ router.post('/edit-movie/:id', async (req,res)=>{
     }
 });
 
+//API to delete movie
 router.post('/delete-movie/:id', async (req,res)=>{
     const movie_id = req.params.id;
 
@@ -801,46 +890,6 @@ router.get('/detail/:location/:movieId', async (req, res) => {
     }
 });
 
-//Showing movies list that is playing on selected theater's location page
-router.get('/theater/:location', async (req,res) => {
-    const {location} = req.params;
-
-    try{
-        const query = 'SELECT DISTINCT Movies.*, Studios.location FROM Movies JOIN Schedule ON Movies.movie_id = Schedule.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id WHERE Studios.location = $1;';
-        const values = [location];
-
-        await db.query(query, values, (err, results) => {
-            if(err){
-                console.log(err);
-                return res.json({ message: 'Retrive data failed.' });
-            }else{
-                res.render('theater-selected.ejs', {movies : results.rows});
-            }
-        });
-    }catch(error){
-        console.error('Page is not availible', error);
-        return res.status(500).json({ message: 'An error occurred during showing page.' });
-    }
-});
- 
-//Showing theaters location page
-router.get('/theaters', async (req,res) => {
-    try{
-        const query = 'SELECT DISTINCT name, location, city FROM studios;'
-
-        await db.query(query, (err, results) => {
-            if(err){
-                console.log(err);
-                return res.json({ message: 'Retrive data failed.' });
-            }else{
-                res.render('theaters-list.ejs', {theaters : results.rows});
-            }
-        });
-    }catch(error){
-        console.error('Page is not availible', error);
-        return res.status(500).json({ message: 'An error occurred during showing page.' });
-    }
-});
 
 router.post('/logout', async (req,res) => {
     try{

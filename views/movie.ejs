@@ -98,18 +98,18 @@
         <h3>Schedules:</h3>
         <% let scheduleByLocation={}; %>
           <% schedules.forEach(schedule=> {
-            if (!scheduleByLocation[schedule.location]) {
-            scheduleByLocation[schedule.location] = [];
+            if (!scheduleByLocation[schedule.name]) {
+            scheduleByLocation[schedule.name] = [];
             }
-            scheduleByLocation[schedule.location].push(schedule);
+            scheduleByLocation[schedule.name].push(schedule);
             }); %>
-            <% Object.keys(scheduleByLocation).forEach(location=> { %>
+            <% Object.keys(scheduleByLocation).forEach(name=> { %>
               <h2>
-                <%= location %>
+                <%= name %>
               </h2>
               <ul>
             
-                <% scheduleByLocation[location].forEach(schedule=> { %>
+                <% scheduleByLocation[name].forEach(schedule=> { %>
                   <div   class="inline-block <%if(((new Date().getUTCHours() + 7) + ":" + new Date().getUTCMinutes()>schedule.hours) && (today.toLocaleDateString('en-GB') === schedule.date.toLocaleDateString('en-GB'))){%>
                     pointer-events-none
                     <% }%>

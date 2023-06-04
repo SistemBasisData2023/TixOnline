@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Table Example</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/fe_style.css">
+  <link rel="stylesheet" href="/styles/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div>
+    <a href="/admin/theaters/add">Add New Item</a>
+  </div>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Address</th>
+      <th>City</th>
+      <th>Image</th>
+    </tr>
+    <% theaters.forEach(function(theater) { %>
+      <tr>
+        <td><%= theater.name %></td>
+        <td><%= theater.address %></td>
+        <td><%= theater.city %></td>
+        <td>
+          <img src='/images/<%= theater.theater_images %> ' width="100" height="150"> 
+        </td>
+        <td>
+          <a href="/admin/theaters/edit/<%= theater.theater_id %>">Edit</button>
+
+          <form action="/delete-theater/<%= theater.theater_id %>" method="post">
+            <input type="submit" value="Delete">
+          </form>
+        </td>
+      </tr>
+    <% }); %>
+  </table>
+
+
+</body>
+</html>
