@@ -9,6 +9,7 @@
   <p>Name: <%= user.username %></p>
   <p>Email: <%= user.email %></p>
   <!--Display Transactions History-->
+  <table>
   <% purchases.forEach((purchase) => { %>
     <tr>
       <td><%= purchase.transaction_id %></td>
@@ -17,6 +18,7 @@
       <td><%= purchase.transaction_status %></td>
     </tr>
   <% }); %>
+  </table>
   <!-- Display other user information as needed -->
 </body>
 </html>
