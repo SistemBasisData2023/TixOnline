@@ -8,6 +8,15 @@
   <h1>User Profile</h1>
   <p>Name: <%= user.username %></p>
   <p>Email: <%= user.email %></p>
+  <!--Display Transactions History-->
+  <% purchases.forEach((purchase) => { %>
+    <tr>
+      <td><%= purchase.transaction_id %></td>
+      <td><%= purchase.user_id %></td>
+      <td><%= purchase.transaction_date %></td>
+      <td><%= purchase.transaction_status %></td>
+    </tr>
+  <% }); %>
   <!-- Display other user information as needed -->
 </body>
 </html>

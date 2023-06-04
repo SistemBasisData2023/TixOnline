@@ -1279,7 +1279,7 @@ async function getAllPurchases() {
         });
       }
   
-      res.render('transactionDetails.ejs', { purchases }); // Render the "transactionDetails.ejs" template and pass the purchases data
+      res.render('profile.ejs', { purchases }); // Render the "transactionDetails.ejs" template and pass the purchases data
     } catch (error) {
       console.error('Error fetching purchase information:', error);
       res.status(500).json({ message: 'An error occurred while fetching purchase information.' });
@@ -1300,14 +1300,26 @@ async function getAllPurchases() {
       
           const query = 'SELECT * FROM users WHERE username = $1';
           const values = [store_session.username];
-      
+          const purchases = await getAllPurchases();
+          if (purchases.length === 0) {
+            console.log('No purchase information available.');
+          } else {
+            console.log('Purchase Information:');
+            purchases.forEach((purchase) => {
+              console.log('Transaction ID:', purchase.transaction_id);
+              console.log('User ID:', purchase.user_id);
+              console.log('Transaction Date:', purchase.transaction_date);
+              console.log('Transaction Status:', purchase.transaction_status);
+              console.log('------------------------');
+            });
+          }
           await db.query(query, values, (err, results) => {
             if (err) {
               console.log(err);
               return res.json({ message: 'Error retrieving user information.' });
             } else {
               const user = results.rows[0];
-              res.render('profile.ejs', { user });
+              res.render('profile.ejs', { user, purchases });
             }
           });
       
@@ -1317,4 +1329,4 @@ async function getAllPurchases() {
         }
       });
       
-      
+   
