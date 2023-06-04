@@ -133,7 +133,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get("/movie-test", async(req, res) => {
+router.get("/movies", async(req, res) => {
 
     try{
         const query = 'SELECT * FROM Movies WHERE status = $1 ORDER BY movie_id ASC;';
@@ -793,48 +793,6 @@ router.get('/detail/:location/:movieId', async (req, res) => {
                     moviePlayedAtCity : results.rows[0].city,
                     username : req.session.username
                 });
-            }
-        });
-    }catch(error){
-        console.error('Page is not availible', error);
-        return res.status(500).json({ message: 'An error occurred during showing page.' });
-    }
-});
-
-//Showing theaters list where the selected movie is playing page
-router.get('/movie/:movieTitle', async (req,res) => {
-    const {movieTitle} = req.params;
-    console.log(store_session);
-    try{
-        const query = 'SELECT DISTINCT Studios.location, Movies.movie_id FROM Studios JOIN Schedule ON Studios.studio_id = Schedule.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id WHERE Movies.title = $1;';
-        const values = [movieTitle];
-
-        await db.query(query, values, (err, results) => {
-            if(err){
-                console.log(err);
-                return res.json({ message: 'Retrive data failed.' });
-            }else{
-                res.render('movie-selected.ejs', {theaters : results.rows});
-            }
-        });
-    }catch(error){
-        console.error('Page is not availible', error);
-        return res.status(500).json({ message: 'An error occurred during showing page.' });
-    }
-});
-
-//Showing movies list page
-router.get('/movies', async (req,res) => {
-    console.log(store_session);
-    try{
-        const query = 'SELECT * FROM movies;'
-
-        await db.query(query, (err, results) => {
-            if(err){
-                console.log(err);
-                return res.json({ message: 'Retrive data failed.' });
-            }else{
-                res.render('movies-list.ejs', {movies : results.rows});
             }
         });
     }catch(error){
