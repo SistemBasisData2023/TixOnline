@@ -12,20 +12,23 @@
 </head>
 
 <body class="bg-black font-raleway text-cfab7a">
-  <a href="/" class="absolute top-0 right-0 m-4 text-4xl font-semibold hover:text-white">TixOnline</a>
-  <div class="flex flex-col items-center justify-center min-h-screen">
-    <h1 class="mb-6 text-3xl font-semibold">Create Movie</h1>
-    <div class="w-full max-w-lg p-6 mx-auto rounded-md shadow-md custom-btn">
-      <form action="/create-movie" method="POST" enctype="multipart/form-data" class="w-full">
-        <div class="flex flex-wrap mb-6 -mx-3">
-          <div class="w-full px-3">
-            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase " for="title">Title</label>
+  <div class="absolute top-0 right-0 m-4">
+    <a href="/" class="text-4xl font-semibold hover:text-white">TixOnline</a>
+  </div>
+  <div class="flex flex-col items-center justify-start h-screen pt-20">
+    <div>
+      <h1 class="mb-3 text-3xl font-semibold">Create Movie</h1>
+      <form action="/create-movie" method="POST" enctype="multipart/form-data"
+        class="w-full max-w-lg p-8 rounded-md custom-btn">
+        <div class="flex flex-wrap mb-3 -mx-3">
+          <div class="w-full px-3 mb-3">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="title">Title</label>
             <input
-              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
               type="text" id="title" name="title" required>
           </div>
-          <div class="w-full px-3 mb-6 text-black md:w-1/2 md:mb-0">
-            <label class="block mb-2 text-xs font-bold tracking-wide uppercase" for="genre">Genre</label>
+          <div class="w-full px-3 mb-3">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="genre">Genre</label>
             <div class="relative">
               <select
                 class="block w-full px-4 py-3 pr-8 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
@@ -49,36 +52,66 @@
               </div>
             </div>
           </div>
-          <div class="w-full px-3 mb-6 md:w-1/2 md:mb-0">
+          <div class="w-full px-3 mb-3">
             <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase"
               for="duration">Duration</label>
             <input
-              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
               type="text" id="duration" name="duration" required>
           </div>
-          <div class="w-full px-3 mb-6 md:w-1/2 md:mb-0">
+          <div class="w-full px-3 mb-3">
             <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="release_date">Release
               Date</label>
             <input
-              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
               type="text" id="release_date" name="release_date" required>
           </div>
-          <div class="w-full px-3 mb-6 md:mb-0">
+          <div class="w-full px-3 mb-3">
             <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase"
               for="synopsis">Synopsis</label>
             <textarea
-              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
               id="synopsis" name="synopsis" rows="4" cols="50" required></textarea>
           </div>
-          <div class="w-full px-3 mb-6 md:mb-0">
+          <div class="w-full px-3 mb-3">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="status">Status</label>
+            <div class="relative">
+              <select
+                class="block w-full px-4 py-3 pr-8 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                id="status" name="status" required>
+                <option value="UPCOMING">Upcoming</option>
+                <option value="SHOWING">Showing</option>
+                <option value="SHOWED">Showed</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M10 12l-6-6 1.414-1.414L10 9.172l4.586-4.586L16 6z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="w-full px-3 mb-3">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="rating">Rating</label>
+            <input
+              class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              type="text" id="rating" name="rating" required>
+          </div>
+          <div class="w-full px-3 mb-3">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="trailer_link">Trailer
+              Link</label>
+            <input
+              class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              type="text" id="trailer_link" name="trailer_link" required>
+          </div>
+          <div class="w-full px-3 mb-3">
             <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="image">Image</label>
             <input
-              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
               type="file" id="image" name="image" accept="image/*" required>
           </div>
-          <div class="flex justify-end w-full px-3 py-4">
+          <div class="w-full px-3 py-4 text-right">
             <input
-              class="px-4 py-2 mt-auto font-bold text-white bg-gray-200 bg-red-600 rounded cursor-pointer hover:bg-red-800 focus:outline-none focus:shadow-outline"
+              class="px-4 py-2 font-bold text-black text-white bg-red-600 rounded cursor-pointer hover:bg-red-800 focus:outline-none focus:shadow-outline"
               type="submit" value="Submit">
           </div>
         </div>
