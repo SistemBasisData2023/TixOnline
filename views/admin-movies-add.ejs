@@ -1,55 +1,90 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Create Movie</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/fe_style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <h1>Create Movie</h1>
-  <form action="/create-movie" method="POST" enctype="multipart/form-data">
-    <label for="title">Title:</label>
-    <input type="text" id="title" name="title" required><br><br>
-    
-    <label for="genre">Genre:</label>
-    <select id="genre" name="genre" required>
-      <option value="Action">Action</option>
-      <option value="Adventure">Adventure</option>
-      <option value="Comedy">Comedy</option>
-      <option value="Drama">Drama</option>
-      <option value="Fantasy">Fantasy</option>
-      <option value="Horror">Horror</option>
-      <option value="Mystery">Mystery</option>
-      <option value="Romance">Romance</option>
-      <option value="Sci-Fi">Sci-Fi</option>
-      <option value="Thriller">Thriller</option>
-      <option value="Other">Other</option>
-    </select><br><br>
-    
-    <label for="duration">Duration:</label>
-    <input type="text" id="duration" name="duration" required><br><br>
-    
-    <label for="release_date">Release Date:</label>
-    <input type="text" id="release_date" name="release_date" required><br><br>
-    
-    <label for="synopsis">Synopsis:</label><br>
-    <textarea id="synopsis" name="synopsis" rows="4" cols="50" required></textarea><br><br>
-    
-    <label for="status">Status:</label>
-    <select id="status" name="status" required>
-      <option value="UPCOMING">Upcoming</option>
-      <option value="SHOWING">Showing</option>
-      <option value="SHOWED">Showed</option>
-    </select><br><br>
 
-    <label for="rating">Rating:</label>
-    <input type="text" id="rating" name="rating"><br><br>
-
-    <label for="trailer_link">Trailer Link:</label>
-    <input type="text" id="trailer_link" name="trailer_link" required><br><br>
-    
-    <label for="image">Image:</label>
-    <input type="file" id="image" name="image" accept="image/*" required><br><br>
-    
-    <input type="submit" value="Submit">
-  </form>
+<body class="bg-black font-raleway text-cfab7a">
+  <a href="/" class="absolute top-0 right-0 m-4 text-4xl font-semibold hover:text-white">TixOnline</a>
+  <div class="flex flex-col items-center justify-center min-h-screen">
+    <h1 class="mb-6 text-3xl font-semibold">Create Movie</h1>
+    <div class="w-full max-w-lg p-6 mx-auto rounded-md shadow-md custom-btn">
+      <form action="/create-movie" method="POST" enctype="multipart/form-data" class="w-full">
+        <div class="flex flex-wrap mb-6 -mx-3">
+          <div class="w-full px-3">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase " for="title">Title</label>
+            <input
+              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              type="text" id="title" name="title" required>
+          </div>
+          <div class="w-full px-3 mb-6 text-black md:w-1/2 md:mb-0">
+            <label class="block mb-2 text-xs font-bold tracking-wide uppercase" for="genre">Genre</label>
+            <div class="relative">
+              <select
+                class="block w-full px-4 py-3 pr-8 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                id="genre" name="genre" required>
+                <option value="Action">Action</option>
+                <option value="Adventure">Adventure</option>
+                <option value="Comedy">Comedy</option>
+                <option value="Drama">Drama</option>
+                <option value="Fantasy">Fantasy</option>
+                <option value="Horror">Horror</option>
+                <option value="Mystery">Mystery</option>
+                <option value="Romance">Romance</option>
+                <option value="Sci-Fi">Sci-Fi</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Other">Other</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M10 12l-6-6 1.414-1.414L10 9.172l4.586-4.586L16 6z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="w-full px-3 mb-6 md:w-1/2 md:mb-0">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase"
+              for="duration">Duration</label>
+            <input
+              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              type="text" id="duration" name="duration" required>
+          </div>
+          <div class="w-full px-3 mb-6 md:w-1/2 md:mb-0">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="release_date">Release
+              Date</label>
+            <input
+              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              type="text" id="release_date" name="release_date" required>
+          </div>
+          <div class="w-full px-3 mb-6 md:mb-0">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase"
+              for="synopsis">Synopsis</label>
+            <textarea
+              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              id="synopsis" name="synopsis" rows="4" cols="50" required></textarea>
+          </div>
+          <div class="w-full px-3 mb-6 md:mb-0">
+            <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="image">Image</label>
+            <input
+              class="block w-full px-4 py-3 mb-3 leading-tight bg-white bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
+              type="file" id="image" name="image" accept="image/*" required>
+          </div>
+          <div class="flex justify-end w-full px-3 py-4">
+            <input
+              class="px-4 py-2 mt-auto font-bold text-white bg-gray-200 bg-red-600 rounded cursor-pointer hover:bg-red-800 focus:outline-none focus:shadow-outline"
+              type="submit" value="Submit">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
+
 </html>
