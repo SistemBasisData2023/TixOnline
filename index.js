@@ -142,10 +142,30 @@ router.get('/', async (req, res) => {
 
 //Showing theaters page
 router.get('/theaters', async (req,res) => {
+    const {selectedCity} = req.query;
     try{
-        const query = 'SELECT * FROM Theaters;'
+        const query = 'SELECT city FROM Theaters;';
+        
+        await db.query(query, async (err, cities) => {
 
-        await db.query(query, (err, results) => {
+            if(err){
+
+            }else{
+                const query = 'SELECT city FROM Theaters;';
+        
+                await db.query(query, async (err, cities) => {
+if(err){
+}else{
+   cities.rows.unshift({city: 'All' });
+
+ let queryTheaters = 'SELECT * FROM Theaters'
+
+ if(selectedCity && (selectedCity !== 'All')){
+    queryTheaters += ` WHERE Theaters.city = '${selectedCity}'`;
+                                }
+                                queryTheaters += ';';
+
+        await db.query(queryTheaters, (err, results) => {
             if(err){
                 console.log(err);
                 return res.json({ message: 'Retrive data failed.' });
@@ -161,7 +181,19 @@ router.get('/theaters', async (req,res) => {
                    //Redirect to /schedules/
                    console.log(results.rows);
                    const url = '/schedules-theater/' + theaterId + '?selectedCity=' + results.rows[0].city + '&selectedDate=' + date;
-                   return res.status(200).redirect(url);
+                   return res.status(200).render('theaters.ejs', {
+                    cities : cities.rows,
+                    cityFilter : selectedCity,
+                    theaters : results.rows});
+
+            }
+        });
+}
+
+
+
+
+});
             }
         });
     }catch(error){
@@ -187,7 +219,7 @@ router.get('/schedules-theater/:theaterId', async (req, res) => {
     ];
 
     var dateArray = []; // Initialize the array
-  
+    
     for (var i = 0; i < 7; i++) {
         var nextDate = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
         var dateString = nextDate.toISOString().split('T')[0];
@@ -210,17 +242,20 @@ router.get('/schedules-theater/:theaterId', async (req, res) => {
             if(err){
                 console.log('/schedules-theater - Getting data theaters error');
             }else{
-                
-                if(!selectedCity){
-                    selectedCity = cities.rows[0].city;
+                let city = cities.rows[0].city;
+
+                if(selectedCity){
+                    city = selectedCity;
+                }else{
+                    city = cities.rows[0].city;
                 }
                 const query = 'SELECT * FROM Theaters  WHERE city = $1;';
         
-                await db.query(query, [selectedCity] ,async (err, theaters) => {
+                await db.query(query, [city] ,async (err, theaters) => {
                     if(err){
                         console.log(err);
                     }else{
-
+                       
                         const queryTheater = 'SELECT * FROM Theaters WHERE theater_id = $1;';
                         const values = [theaterId];
                         await db.query(queryTheater , values, async (err, theater) => {
@@ -242,10 +277,10 @@ router.get('/schedules-theater/:theaterId', async (req, res) => {
                                 let querySchedule = `SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id WHERE Theaters.theater_id = '${theaterId}' AND Schedule.date ='${date}'`;
                                 
                                 if(selectedCity && (selectedCity !== 'All')){
-                                    querySchedule += ` AND Theaters.city = '${selectedCity}'`;
+                                    querySchedule += ` AND Theaters.city = '${city}'`;
                                 }
                                 
-                                querySchedule += ';';
+                                querySchedule += 'ORDER BY type, hours ASC;';
                                 
         
                                 await db.query(querySchedule, (err, results) => {
@@ -253,7 +288,7 @@ router.get('/schedules-theater/:theaterId', async (req, res) => {
                                         console.log(err);
                                         console.log('/schedules - Getting data error');
                                     }else{
-                                        console.log(results.rows)
+                                    
                                         res.render('theaters-list.ejs', {
                                             theaters : theaters.rows, 
                                             theater: theater.rows[0], 
@@ -313,7 +348,6 @@ router.get("/schedules-movie/:movieId", async(req, res) => {
     const {movieId} = req.params;
 
     const {selectedCity, selectedDate} = req.query;
-    console.log(req.query);
 
     const today = new Date();
     //Set today to +7 hours because in indonesia GMT +7
@@ -350,7 +384,7 @@ router.get("/schedules-movie/:movieId", async(req, res) => {
             if(err){
                 console.log('/schedules 1 - Getting data error');
             }else{
-                const query = 'SELECT city FROM Theaters;';
+                const query = 'SELECT DISTINCT city FROM Theaters;';
         
                 await db.query(query, async (err, cities) => {
 

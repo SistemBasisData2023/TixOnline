@@ -10,6 +10,25 @@
   <link rel="stylesheet" href="/styles/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 2rem;
+      background-color: white;
+      border-radius: 0.5rem;
+      z-index: 9999;
+    }
+  </style>
+  <script>
+    function showPopup() {
+      var popup = document.getElementById("popup");
+      popup.style.display = "block";
+    }
+  </script>
 </head>
 
 <body class="bg-black">
@@ -127,6 +146,19 @@
                     <% } %>
   </section>
 
+  <div id="popup" class="popup">
+    <h2>This is a pop-up!</h2>
+    <p>Please login first to buy ticket</p>
+    <button onclick="hidePopup()"
+      class="px-4 py-2 mt-4 font-semibold text-white bg-red-500 rounded hover:bg-red-600">Close</button>
+  </div>
+
+  <script>
+    function hidePopup() {
+      var popup = document.getElementById("popup");
+      popup.style.display = "none";
+    }
+  </script>
 </body>
 
 </html>
