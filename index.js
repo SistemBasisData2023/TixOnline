@@ -6,12 +6,13 @@ const paypal = require('paypal-rest-sdk');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const fs = require('fs');
+const cookieParser = require('cookie-parser');
 
 //initialize the app as an express app
 const app = express();
 const router = express.Router();
 const { Client } = require('pg');
-
+app.use(cookieParser());
 const port = 3000;
 
 // Create a PostgreSQL connection pool
@@ -88,6 +89,28 @@ app.use(
 );
 
 
+
+  // Middleware to check if the user is logged in
+app.use(async (req, res, next) => {
+    const rememberToken = req.cookies.remember_token;
+  
+    if (rememberToken) {
+      try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM remember_me_tokens WHERE remember_token = $1 AND expires_at > NOW()', [rememberToken]);
+        client.release();
+  
+        if (result.rows.length === 1) {
+          req.user = result.rows[0];
+        }
+      } catch (err) {
+        console.error('Error during remember me:', err);
+      }
+    }
+  
+    next();
+  });
+  
 app.use(express.urlencoded({extended: false}));
 
 //Variable to store session of user
@@ -184,6 +207,7 @@ if(err){
                    return res.status(200).render('theaters.ejs', {
                     cities : cities.rows,
                     cityFilter : selectedCity,
+                    session:store_session,
                     theaters : results.rows});
 
             }
@@ -1068,7 +1092,7 @@ router.get('/login-account', async (req, res) =>{
 
 //Login button API
 router.post('/login', async (req, res) => {
-    const { username, password} = req.body;
+    const { username, password, remember} = req.body;
 
     try{
         const query = 'SELECT password FROM users WHERE username = $1';
@@ -1094,10 +1118,30 @@ router.post('/login', async (req, res) => {
                                 if(err){
 
                                 }else{
-                                    console.log(results.rows[0]);
+                   
                                     store_session = req.session;
                                     store_session.username = results.rows[0].username;
                                     store_session.user_id = results.rows[0].user_id;
+                                    let rememberToken = null;
+                                    if (remember) {
+                                        // Generate a unique token
+                                        rememberToken = generateToken();
+                                  
+                                        // Calculate the expiration date (e.g., 30 days from now)
+                                        const expiresAt = new Date();
+                                        expiresAt.setDate(expiresAt.getDate() + 30);
+                                  
+                                        // Store the token in the remember_me_tokens table
+                                        await db.query(
+                                          'INSERT INTO remember_me_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+                                          [store_session.user_id, rememberToken, expiresAt]
+                                        );
+                                  
+                                        // Set a cookie with the token
+                                 
+                                        res.cookie('remember_me_token', rememberToken, { expires: expiresAt, httpOnly: true, secure: true });
+                                      }
+
                                     res.redirect('/');
                                 }
                             });
@@ -1118,6 +1162,14 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/logout', async(req, res) => {
+    try{
+        store_session = '';
+        res.redirect('/');
+    }catch(error){
+
+    }
+});
 //Register account page
 router.get('/register-account', async (req, res) => {
     try{
@@ -1303,7 +1355,20 @@ async function checkUsernameAvailability(username) {
         }
       }
       
+// Utility function to generate a random token
+function generateToken() {
+    const tokenLength = 32;
+    const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let token = '';
+  
+    for (let i = 0; i < tokenLength; i++) {
+      token += characters[Math.floor(Math.random() * characters.length)];
+    }
+  
+    return token;
+  }
 
+  
   //Register Admin 
 router.get('/admin/register', async (req, res) => {
     try {
@@ -1456,7 +1521,7 @@ router.post('/login-admin', async (req, res) => {
 //function to get all purchases
 async function getAllPurchases() {
     try {
-      const query = 'SELECT * FROM Transactions';
+      const query = 'SELECT * FROM Transactions JOIN tickets ON tickets.transaction_id = transactions.transaction_id;';
       const result = await db.query(query);
       return result.rows;
     } catch (error) {
