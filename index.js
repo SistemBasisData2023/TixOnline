@@ -112,15 +112,39 @@ app.use(async (req, res, next) => {
     next();
   });
 
+  // '* * * * *' run every 1 minute
+  // '*/5 * * * *' run every 5 minute
 cron.schedule( '* * * * *', async () => {
   try {
     await db.query(`
       UPDATE transactions
       SET transaction_status = 'CANCELED'
       WHERE transaction_status = 'WAITING' AND transaction_date >= NOW() - INTERVAL '1 minutes'
-    `);
+    `, (err, results)=> {
+        if(err){
+
+        }else{
+            const scheduleId = store_session.schedule_id;
+    const seatsId = store_session.seats_id;
+  
+        const query = 'DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;';
+        seatsId.forEach(async (seatId) => {
+            const values = [scheduleId, seatId];
+            await db.query(query, values, (err, results) => {
+                if(err){
+                    console.log(err);
+                    return res.json({ message: 'Delete data failed.' });
+                }else{
+                    store_session.seats_id = null;
+                    console.log("Selected seat deleted from server.");
+                    console.log('Transaction statuses updated successfully.');
+                }
+            });
+        });
+  
+        }
+    });
     
-    console.log('Transaction statuses updated successfully.');
   } catch (error) {
     console.error('An error occurred:', error);
   }
