@@ -71,6 +71,62 @@
       </a>
       <% }) %>
   </div>
+
+  <section id="movieDetail" class="bg-black py-16 text-[#cfab7a] ">
+    <h1 class="flex justify-center mb-16 text-4xl font-semibold">
+      <%= theater.name %>
+    </h1>
+    <!--Movie Selected Info-->
+ 
+  </section>
+  
+  <%  const today = new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0);%>
+  <section id="schedule" class="bg-black py-16 text-[#cfab7a] ">
+    <% if (schedules !=null ) { %>
+      <% if (schedules.length> 0) { %>
+        <h3>Schedules:</h3>
+        <% let scheduleByLocation={}; %>
+          <% schedules.forEach(schedule=> {
+            if (!scheduleByLocation[schedule.title]) {
+            scheduleByLocation[schedule.title] = [];
+            }
+            scheduleByLocation[schedule.title].push(schedule);
+            }); %>
+            <% Object.keys(scheduleByLocation).forEach(title=> { %>
+              <h2>
+                <%= title %>
+              </h2>
+              <ul>
+            
+                <% scheduleByLocation[title].forEach(schedule=> { %>
+                  <div   class="inline-block <%if(((new Date().getUTCHours() + 7) + ":" + new Date().getUTCMinutes()>schedule.hours) && (today.toLocaleDateString('en-GB') === schedule.date.toLocaleDateString('en-GB'))){%>
+                    pointer-events-none
+                    <% }%>
+                    ">
+                  <% if(session !=null) {%>
+                    <a href="/seat/<%= schedule.schedule_id %>"
+                      class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600">
+                      <%= schedule.hours %>
+                        <%= schedule.type %>
+                    </a>
+                    <% }else{ %>
+                      <a onclick="showPopup()"
+                        class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600">
+                        <%= schedule.hours %>
+                          <%= schedule.type %>
+                      </a>
+                      <% }%>
+                        <% }); %>
+                      </div>
+
+              </ul>
+              <% }); %>
+                <% } else { %>
+                  <p>No schedules available for this movie.</p>
+                  <% } %>
+                    <% } %>
+  </section>
+
 </body>
 
 </html>

@@ -210,20 +210,16 @@ router.get('/schedules-theater/:theaterId', async (req, res) => {
             if(err){
                 console.log('/schedules-theater - Getting data theaters error');
             }else{
-                cities.rows.unshift({city: 'All' });
-
-                let query = 'SELECT * FROM Theaters';
-
-                if(selectedCity !== 'All'){
-                    query += ` WHERE city = '${selectedCity}'`;
+                
+                if(!selectedCity){
+                    selectedCity = cities.rows[0].city;
                 }
-                query += ';';
+                const query = 'SELECT * FROM Theaters  WHERE city = $1;';
         
-                await db.query(query, async (err, theaters) => {
+                await db.query(query, [selectedCity] ,async (err, theaters) => {
                     if(err){
                         console.log(err);
                     }else{
-                        console.log(theaters.rows);
 
                         const queryTheater = 'SELECT * FROM Theaters WHERE theater_id = $1;';
                         const values = [theaterId];
@@ -249,7 +245,7 @@ router.get('/schedules-theater/:theaterId', async (req, res) => {
                                     querySchedule += ` AND Theaters.city = '${selectedCity}'`;
                                 }
                                 
-                                querySchedule += 'ORDER BY type, hours ASC;';
+                                querySchedule += ';';
                                 
         
                                 await db.query(querySchedule, (err, results) => {
@@ -257,7 +253,7 @@ router.get('/schedules-theater/:theaterId', async (req, res) => {
                                         console.log(err);
                                         console.log('/schedules - Getting data error');
                                     }else{
-                    
+                                        console.log(results.rows)
                                         res.render('theaters-list.ejs', {
                                             theaters : theaters.rows, 
                                             theater: theater.rows[0], 
