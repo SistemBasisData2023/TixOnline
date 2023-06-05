@@ -988,75 +988,78 @@ router.get('/register-account', async (req, res) => {
 router.post('/register', async (req, res) => {
     const { username, email, password, first_name, last_name, phone_number } = req.body;
 
-    //Regex
-    const usernameRegex = /^[a-zA-Z0-9_-]{8,30}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\S]{8,}$/;
-    const phoneNumberRegex = /^\+?\d{1,3}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}$/;
+  //Regex
+  const usernameRegex = /^[a-zA-Z0-9_-]{8,30}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\S]{8,}$/;
+  const phoneNumberRegex = /^\+?\d{1,3}[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}$/;
 
-    //allows usernames that consist of 8 to 30 characters, including uppercase and lowercase letters, numbers, underscores, and hyphens.
-    const usernameRegexAllowed = usernameRegex.test(username);
-    //Ensures that the email address contains a username part, followed by the "@" symbol, a domain part, and a valid top-level domain.
-    const emailRegexAllowed = emailRegex.test(email);
-    //At least one lowercase letter,  at least one uppercase letter, at least one digit, matches any combination of alphanumeric characters and special characters (non-whitespace) with a minimum length of 8.
-    const passwordRegexAllowed = passwordRegex.test(password);
-    //Allows variations such as the presence of a country code, parentheses around the area code, and the use of hyphens, dots, or spaces as separators.
-    const phoneNumberRegexAllowed = phoneNumberRegex.test(phone_number);
+  //allows usernames that consist of 8 to 30 characters, including uppercase and lowercase letters, numbers, underscores, and hyphens.
+  const usernameRegexAllowed = usernameRegex.test(username);
+  //Ensures that the email address contains a username part, followed by the "@" symbol, a domain part, and a valid top-level domain.
+  const emailRegexAllowed = emailRegex.test(email);
+  //At least one lowercase letter,  at least one uppercase letter, at least one digit, matches any combination of alphanumeric characters and special characters (non-whitespace) with a minimum length of 8.
+  const passwordRegexAllowed = passwordRegex.test(password);
+  //Allows variations such as the presence of a country code, parentheses around the area code, and the use of hyphens, dots, or spaces as separators.
+  const phoneNumberRegexAllowed = phoneNumberRegex.test(phone_number);
 
-    try{
-        //Check username availability
-        const UsernameAvailability = await checkUsernameAvailability(username);
-        const PhoneNumberAvailability = await checkPhoneNumberAvailability(phone_number);
-        const EmailAvailability = await checkEmailAvailability(email);
+  try{
+      //Check username availability
+      const UsernameAvailability = await checkUsernameAvailability(username);
+      const PhoneNumberAvailability = await checkPhoneNumberAvailability(phone_number);
+      const EmailAvailability = await checkEmailAvailability(email);
 
-        console.log(UsernameAvailability);
-        console.log(EmailAvailability);
-        console.log(PhoneNumberAvailability);
+      console.log(UsernameAvailability);
+      console.log(EmailAvailability);
+      console.log(PhoneNumberAvailability);
 
-        //Username is not already taken
-        if((UsernameAvailability == true) && (EmailAvailability == true) && (PhoneNumberAvailability == true) && (usernameRegexAllowed == true) && (emailRegexAllowed == true) && (passwordRegexAllowed == true) && (phoneNumberRegexAllowed == true)){
-            bcrypt.hash(password, 10, async (err, hash) => {
-                if (err) {
-                    //Hash failed
-                    res.status(500).send('Error hashing the string');
+      //Username is not already taken
+      if((UsernameAvailability == true) && (EmailAvailability == true) && (PhoneNumberAvailability == true) && (usernameRegexAllowed == true) && (emailRegexAllowed == true) && (passwordRegexAllowed == true) && (phoneNumberRegexAllowed == true)){
+          bcrypt.hash(password, 10, async (err, hash) => {
+              if (err) {
+                  //Hash failed
+                  console.log(err);
+                  res.status(500).send('Error hashing the string');
 
-                } else {
-                    // Insert new user into the database
-                    const query = `INSERT INTO users (username, email, password, first_name, last_name, phone_number) VALUES ($1, $2, $3, $4, $5, $6);`
-                    const values = [username, email, hash, first_name, last_name, phone_number];
-                    console.log(hash);
-                    await db.query(query, values, (err, results) => {
-                        if(err){
-                            console.log(err);
-                            return res.json({ message: 'Insert account data failed' });
-                        } else{
-                            // Set session data for the registered user
-                            store_session = req.session;
-                            store_session.user_id = req.body.user_id;
-                            console.log("Register Successfull!");
-                            res.redirect('/');
-                        }
-                    });
-                }
-            });
-        }else{
-            res.status(500);
-            res.render('register.ejs', 
-                {UsernameAvailability: await checkUsernameAvailability(username),
-                 PhoneNumberAvailability: await checkPhoneNumberAvailability(phone_number),
-                 EmailAvailability: await checkEmailAvailability(email),
-                 usernameRegexAllowed : usernameRegex.test(username),
-                 emailRegexAllowed : emailRegex.test(email),
-                 passwordRegexAllowed : passwordRegex.test(password),
-                 phoneNumberRegexAllowed : phoneNumberRegex.test(phone_number)
-                });
-        }
+              } else {
+                  // Insert new user into the database
+                  console.log("Hashing Successfull!");
+                  const query = `INSERT INTO users (username, email, password, first_name, last_name, phone_number) VALUES ($1, $2, $3, $4, $5, $6);`
+                  const values = [username, email, hash, first_name, last_name, phone_number];
+                  console.log(hash);
+                  await db.query(query, values, (err, results) => {
+                      if(err){
+                          console.log(err);
+                          return res.json({ message: 'Insert account data failed' });
+                      } else{
+                          // Set session data for the registered user
+                          store_session = req.session;
+                          store_session.user_id = req.body.user_id;
+                          console.log("Register Successfull!");
+                          res.redirect('/');
+                      }
+                  });
+              }
+          });
+      }else{
+        console.log("Register Failed!");
+          res.status(500);
+          res.render('register.ejs', 
+              {UsernameAvailability: await checkUsernameAvailability(username),
+               PhoneNumberAvailability: await checkPhoneNumberAvailability(phone_number),
+               EmailAvailability: await checkEmailAvailability(email),
+               usernameRegexAllowed : usernameRegex.test(username),
+               emailRegexAllowed : emailRegex.test(email),
+               passwordRegexAllowed : passwordRegex.test(password),
+               phoneNumberRegexAllowed : phoneNumberRegex.test(phone_number)
+              });
+      }
 
-    }catch(error){
-        console.error('Error during registration:', error);
-        return res.status(500).json({ message: 'An error occurred during registration.' });
-    }
-  });
+  }catch(error){
+      console.error('Error during registration:', error);
+      return res.status(500).json({ message: 'An error occurred during registration.' });
+  }
+});
 
 //FUNCTION
 //Function to check wether the username is already taken or not
