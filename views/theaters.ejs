@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Theaters List</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/fe_style.css">
+  <link rel="stylesheet" href="/styles/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-black">
+  <!-- Navbar -->
+  <nav class="p-10 bg-black text-cfab7a">
+    <div class="container flex flex-col items-center justify-between mx-auto lg:flex-row">
+      <a href="#" class="text-3xl font-semibold">TixOnline</a>
+      <div class="text-[#cfab7a] mt-4 lg:mt-0">
+        <a href="/" class="px-4 hover:text-white">Home</a>
+        <a href="/#nowplaying" class="px-4 hover:text-white smooth-scroll">Now Playing</a>
+        <a href="/#comingsoon" class="px-4 hover:text-white smooth-scroll">Coming Soon</a>
+        <a href="/theaters" class="px-4 hover:text-white">Theaters</a>
+        <a href="/#about" class="px-4 hover:text-white smooth-scroll">About</a>
+      </div>
+      <div class="flex items-center mt-4 lg:mt-0">
+        <% if (session && session.username) { %>
+          <a href="/profile" class="px-4 hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </a>
+          <% } else { %>
+            <button id="registerBtn" class="w-auto px-3 py-1 mr-2 text-black rounded custom-btn hover:text-white"><a
+                href="/register-account">Register</a></button>
+            <button id="loginBtn" class="w-auto px-3 py-1 text-black rounded custom-btn hover:text-white"><a
+                href="/login-account">Log in</a></button>
+            <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <!--Filter-->
+  <section id="filter" class="bg-black py-16 text-[#cfab7a] ">
+    <form id="filterForm" action="/theaters" method="GET">
+      <select id="selectedCity" name="selectedCity" onchange="this.form.submit();">
+        <% cities.forEach((city)=> { %>
+          <option value="<%= city.city %>" <% if(city.city==cityFilter){ %> selected <%}%>><%= city.city %>
+          </option>
+          <% }) %>
+      </select>
+    </form>
+  </section>
+
+  <div class="flex items-center justify-center">
+    <h1 class="mb-6 text-4xl font-semibold text-cfab7a">Theaters List</h1>
+  </div>
+  <div class="grid grid-cols-1 gap-4 p-4 text-cfab7a sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <% const today=new Date(); today.setHours(today.getHours() + 7); today.toISOString().split('T')[0];%>
+      <% theaters.forEach(function(theater) { %>
+        <a href="/schedules-theater/<%= theater.theater_id %>?selectedCity=<%=theater.city%>&selectedDate=<%=today.toISOString().split('T')[0]%>"
+          class="max-w-sm overflow-hidden transition-all duration-200 transform bg-gray-800 rounded shadow-lg hover:scale-105">
+          <img class="object-cover w-full h-64" src='/images/<%= theater.theater_images %> ' alt="<%= theater.city %>">
+          <div class="px-6 py-4">
+            <div class="mb-2 text-xl font-bold">
+              <%= theater.name %>
+            </div>
+            <p class="text-base">
+              <!-- Replace the text below with the description of the theater -->
+              This is a world class theater located at <%= theater.address %>.
+            </p>
+          </div>
+          <!-- Theater City -->
+          <div class="px-6 py-4">
+            <span class="inline-block px-3 py-1 mr-2 text-sm font-semibold bg-gray-200 rounded-full">
+              <%= theater.city %>
+            </span>
+          </div>
+        </a>
+        <% }) %>
+  </div>
+
+</body>
+
+</html>

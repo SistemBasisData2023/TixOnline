@@ -6,12 +6,14 @@ const paypal = require('paypal-rest-sdk');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const fs = require('fs');
+const cookieParser = require('cookie-parser');
+const cron = require('node-cron');
 
 //initialize the app as an express app
 const app = express();
 const router = express.Router();
 const { Client } = require('pg');
-
+app.use(cookieParser());
 const port = 3000;
 
 // Create a PostgreSQL connection pool
@@ -88,6 +90,66 @@ app.use(
 );
 
 
+
+  // Middleware to check if the user is logged in
+app.use(async (req, res, next) => {
+    const rememberToken = req.cookies.remember_token;
+  
+    if (rememberToken) {
+      try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM remember_me_tokens WHERE remember_token = $1 AND expires_at > NOW()', [rememberToken]);
+        client.release();
+  
+        if (result.rows.length === 1) {
+          req.user = result.rows[0];
+        }
+      } catch (err) {
+        console.error('Error during remember me:', err);
+      }
+    }
+  
+    next();
+  });
+
+  // '* * * * *' run every 1 minute
+  // '*/5 * * * *' run every 5 minute
+cron.schedule( '* * * * *', async () => {
+  try {
+    await db.query(`
+      UPDATE transactions
+      SET transaction_status = 'CANCELED'
+      WHERE transaction_status = 'WAITING' AND transaction_date >= NOW() - INTERVAL '1 minutes'
+    `, (err, results)=> {
+        if(err){
+
+        }else{
+            const scheduleId = store_session.schedule_id;
+    const seatsId = store_session.seats_id;
+  
+        const query = 'DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;';
+        seatsId.forEach(async (seatId) => {
+            const values = [scheduleId, seatId];
+            await db.query(query, values, (err, results) => {
+                if(err){
+                    console.log(err);
+                    return res.json({ message: 'Delete data failed.' });
+                }else{
+                    store_session.seats_id = null;
+                    console.log("Selected seat deleted from server.");
+                    console.log('Transaction statuses updated successfully.');
+                }
+            });
+        });
+  
+        }
+    });
+    
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+});
+
 app.use(express.urlencoded({extended: false}));
 
 //Variable to store session of user
@@ -142,15 +204,171 @@ router.get('/', async (req, res) => {
 
 //Showing theaters page
 router.get('/theaters', async (req,res) => {
+    const {selectedCity} = req.query;
     try{
-        const query = 'SELECT * FROM Studios;'
+        const query = 'SELECT city FROM Theaters;';
+        
+        await db.query(query, async (err, cities) => {
 
-        await db.query(query, (err, results) => {
+            if(err){
+
+            }else{
+                const query = 'SELECT city FROM Theaters;';
+        
+                await db.query(query, async (err, cities) => {
+if(err){
+}else{
+   cities.rows.unshift({city: 'All' });
+
+ let queryTheaters = 'SELECT * FROM Theaters'
+
+ if(selectedCity && (selectedCity !== 'All')){
+    queryTheaters += ` WHERE Theaters.city = '${selectedCity}'`;
+                                }
+                                queryTheaters += ';';
+
+        await db.query(queryTheaters, (err, results) => {
             if(err){
                 console.log(err);
                 return res.json({ message: 'Retrive data failed.' });
             }else{
-                
+                   //Get current date
+                   const today = new Date();
+                   //Set today to +7 hours because in indonesia GMT +7
+                   today.setHours(today.getHours() + 7);
+                   //Extract the date only
+                   const date = today.toISOString().split('T')[0];
+                   //Get first movie on the list to be default if user havent choose what movie
+                   const theaterId = results.rows[0].theater_id;
+                   //Redirect to /schedules/
+                   console.log(results.rows);
+                   const url = '/schedules-theater/' + theaterId + '?selectedCity=' + results.rows[0].city + '&selectedDate=' + date;
+                   return res.status(200).render('theaters.ejs', {
+                    cities : cities.rows,
+                    cityFilter : selectedCity,
+                    session:store_session,
+                    theaters : results.rows});
+
+            }
+        });
+}
+
+
+
+
+});
+            }
+        });
+    }catch(error){
+        console.error('Page is not availible', error);
+        return res.status(500).json({ message: 'An error occurred during showing page.' });
+    }
+});
+
+router.get('/schedules-theater/:theaterId', async (req, res) => {
+    const {theaterId} = req.params;
+
+    const {selectedCity, selectedDate} = req.query;
+    console.log(req.query);
+
+    const today = new Date();
+    //Set today to +7 hours because in indonesia GMT +7
+    today.setHours(today.getHours() + 7);
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    console.log(today);
+    var monthNames = [
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"
+    ];
+
+    var dateArray = []; // Initialize the array
+    
+    for (var i = 0; i < 7; i++) {
+        var nextDate = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
+        var dateString = nextDate.toISOString().split('T')[0];
+        
+        var [year, monthNumber, day] = dateString.split('-');
+        var month = monthNames[nextDate.getMonth()];
+
+        var dateObject = { 
+            year: parseInt(year),
+            month: month,
+            day: parseInt(day),
+            date: dateString
+        }
+        dateArray.push(dateObject);
+    }
+
+    try{
+        const queryCity = 'SELECT DISTINCT city FROM Theaters;';
+        await db.query(queryCity, async (err, cities) => {
+            if(err){
+                console.log('/schedules-theater - Getting data theaters error');
+            }else{
+                let city = cities.rows[0].city;
+
+                if(selectedCity){
+                    city = selectedCity;
+                }else{
+                    city = cities.rows[0].city;
+                }
+                const query = 'SELECT * FROM Theaters  WHERE city = $1;';
+        
+                await db.query(query, [city] ,async (err, theaters) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                       
+                        const queryTheater = 'SELECT * FROM Theaters WHERE theater_id = $1;';
+                        const values = [theaterId];
+                        await db.query(queryTheater , values, async (err, theater) => {
+                            if(err){
+                                console.log(err);
+        
+                                console.log('/schedules-theater - Getting data theater movie error');
+                            }else{
+                           
+        
+                                let date = today;
+        
+                                if(selectedDate){
+                                    date = selectedDate;
+                                }else{
+                                    date = today.toISOString().split('T')[0];
+                                }
+                          
+                                let querySchedule = `SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id WHERE Theaters.theater_id = '${theaterId}' AND Schedule.date ='${date}'`;
+                                
+                                if(selectedCity && (selectedCity !== 'All')){
+                                    querySchedule += ` AND Theaters.city = '${city}'`;
+                                }
+                                
+                                querySchedule += 'ORDER BY type, hours ASC;';
+                                
+        
+                                await db.query(querySchedule, (err, results) => {
+                                    if(err){
+                                        console.log(err);
+                                        console.log('/schedules - Getting data error');
+                                    }else{
+                                    
+                                        res.render('theaters-list.ejs', {
+                                            theaters : theaters.rows, 
+                                            theater: theater.rows[0], 
+                                            schedules : results.rows, 
+                                            cities : cities.rows, 
+                                            nextWeek, 
+                                            session:store_session,
+                                            dateSelector : dateArray,
+                                            cityFilter : selectedCity,
+                                            dateFilter : selectedDate
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
             }
         });
     }catch(error){
@@ -193,7 +411,6 @@ router.get("/schedules-movie/:movieId", async(req, res) => {
     const {movieId} = req.params;
 
     const {selectedCity, selectedDate} = req.query;
-    console.log(req.query);
 
     const today = new Date();
     //Set today to +7 hours because in indonesia GMT +7
@@ -230,7 +447,7 @@ router.get("/schedules-movie/:movieId", async(req, res) => {
             if(err){
                 console.log('/schedules 1 - Getting data error');
             }else{
-                const query = 'SELECT city FROM Theaters;';
+                const query = 'SELECT DISTINCT city FROM Theaters;';
         
                 await db.query(query, async (err, cities) => {
 
@@ -914,7 +1131,7 @@ router.get('/login-account', async (req, res) =>{
 
 //Login button API
 router.post('/login', async (req, res) => {
-    const { username, password} = req.body;
+    const { username, password, remember} = req.body;
 
     try{
         const query = 'SELECT password FROM users WHERE username = $1';
@@ -940,10 +1157,30 @@ router.post('/login', async (req, res) => {
                                 if(err){
 
                                 }else{
-                                    console.log(results.rows[0]);
+                   
                                     store_session = req.session;
                                     store_session.username = results.rows[0].username;
                                     store_session.user_id = results.rows[0].user_id;
+                                    let rememberToken = null;
+                                    if (remember) {
+                                        // Generate a unique token
+                                        rememberToken = generateToken();
+                                  
+                                        // Calculate the expiration date (e.g., 30 days from now)
+                                        const expiresAt = new Date();
+                                        expiresAt.setDate(expiresAt.getDate() + 30);
+                                  
+                                        // Store the token in the remember_me_tokens table
+                                        await db.query(
+                                          'INSERT INTO remember_me_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+                                          [store_session.user_id, rememberToken, expiresAt]
+                                        );
+                                  
+                                        // Set a cookie with the token
+                                 
+                                        res.cookie('remember_me_token', rememberToken, { expires: expiresAt, httpOnly: true, secure: true });
+                                      }
+
                                     res.redirect('/');
                                 }
                             });
@@ -964,6 +1201,14 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/logout', async(req, res) => {
+    try{
+        store_session = '';
+        res.redirect('/');
+    }catch(error){
+
+    }
+});
 //Register account page
 router.get('/register-account', async (req, res) => {
     try{
@@ -1152,7 +1397,20 @@ async function checkUsernameAvailability(username) {
         }
       }
       
+// Utility function to generate a random token
+function generateToken() {
+    const tokenLength = 32;
+    const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let token = '';
+  
+    for (let i = 0; i < tokenLength; i++) {
+      token += characters[Math.floor(Math.random() * characters.length)];
+    }
+  
+    return token;
+  }
 
+  
   //Register Admin 
 router.get('/admin/register', async (req, res) => {
     try {
@@ -1305,7 +1563,7 @@ router.post('/login-admin', async (req, res) => {
 //function to get all purchases
 async function getAllPurchases() {
     try {
-      const query = 'SELECT * FROM Transactions';
+      const query = 'SELECT * FROM Transactions JOIN tickets ON tickets.transaction_id = transactions.transaction_id;';
       const result = await db.query(query);
       return result.rows;
     } catch (error) {

@@ -31,18 +31,34 @@
 </head>
 
 <body>
-  <!-- Navbar -->
-  <nav class="p-10 bg-black text-cfab7a">
-    <div class="container flex items-center justify-between mx-auto">
-      <a href="#" class="text-3xl font-semibold">TixOnline</a>
-      <div class="text-[#cfab7a]">
-        <a href="/home" class="px-4 hover:text-white">Home</a>
-        <a href="#nowplaying" class="px-4 hover:text-white">Now Playing</a>
-        <a href="#comingsoon" class="px-4 hover:text-white">Coming Soon</a>
-        <a href="/theaters" class="px-4 hover:text-white">Theaters</a>
-        <a href="#about" class="px-4 hover:text-white">About</a>
+     <!-- Navbar -->
+     <nav class="p-10 bg-black text-cfab7a">
+      <div class="container flex flex-col items-center justify-between mx-auto lg:flex-row">
+          <a href="#" class="text-3xl font-semibold">TixOnline</a>
+          <div class="text-[#cfab7a] mt-4 lg:mt-0">
+              <a href="/" class="px-4 hover:text-white">Home</a>
+              <a href="/#nowplaying" class="px-4 hover:text-white smooth-scroll">Now Playing</a>
+              <a href="/#comingsoon" class="px-4 hover:text-white smooth-scroll">Coming Soon</a>
+              <a href="/theaters" class="px-4 hover:text-white">Theaters</a>
+              <a href="/#about" class="px-4 hover:text-white smooth-scroll">About</a>
+          </div>
+          <div class="flex items-center mt-4 lg:mt-0">
+              <% if (session && session.username) { %>
+                  <a href="/profile" class="px-4 hover:text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                          stroke="currentColor" class="w-6 h-6">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                      </svg>
+                  </a>
+                  <% } else { %>
+                      <button id="registerBtn" class="w-auto px-3 py-1 mr-2 text-black rounded custom-btn hover:text-white"><a
+                              href="/register-account">Register</a></button>
+                      <button id="loginBtn" class="w-auto px-3 py-1 text-black rounded custom-btn hover:text-white"><a
+                              href="/login-account">Log in</a></button>
+                      <% } %>
+          </div>
       </div>
-    </div>
   </nav>
       <!--Filter-->
       <section id="filter" class="bg-black py-16 text-[#cfab7a] ">
@@ -77,6 +93,7 @@
       </div>
     </div>
   </section>
+  
   <section id="movieDetail" class="bg-black py-16 text-[#cfab7a] ">
     <h1 class="flex justify-center mb-16 text-4xl font-semibold">
       <%= movie.title %>
