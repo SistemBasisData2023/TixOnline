@@ -268,7 +268,7 @@ router.get("/schedules-movie/:movieId", async(req, res) => {
                                 let querySchedule = `SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id WHERE Schedule.movie_id = '${movieId}' AND Schedule.date ='${date}'`;
                                 
                                 if(selectedCity && (selectedCity !== 'All')){
-                                    querySchedule += ` AND Studios.city = '${selectedCity}'`;
+                                    querySchedule += ` AND Theaters.city = '${selectedCity}'`;
                                 }
                                 querySchedule += 'ORDER BY type, hours ASC;';
                                 

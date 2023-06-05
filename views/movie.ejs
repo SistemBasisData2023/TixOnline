@@ -44,14 +44,31 @@
       </div>
     </div>
   </nav>
-
+      <!--Filter-->
+      <section id="filter" class="bg-black py-16 text-[#cfab7a] ">
+        <form id="filterForm" action="/schedules-movie/<%= movie.movie_id %>" method="GET">
+          <select id="selectedCity" name="selectedCity" onchange="this.form.submit();">
+            <% cities.forEach((city)=> { %>
+              <option value="<%= city.city %>" <% if(city.city==cityFilter){ %> selected <%}%>><%= city.city %>
+              </option>
+              <% }) %>
+          </select>
+          <select id="selectedDate" name="selectedDate" onchange="this.form.submit();">
+            <% dateSelector.forEach((date)=> { %>
+              <option value="<%= date.date %>" <% if(date.date==dateFilter){ %> selected <%}%>><%= date.date %>
+              </option>
+              <% }) %>
+          </select>
+        </form>
+      </section>
+    
   <section id="movieList" class="bg-black py-16 text-[#cfab7a]">
     <div class="container mx-auto">
       <div class="kodfun-galeri">
         <% movies.forEach(movie=> { %>
           <div style="background-image: url('/images/<%= movie.images %>');">
             <div class="overlay">
-              <a href="/schedules/<%= movie.movie_id %>" class="font-semibold ">
+              <a href="/schedules-movie/<%= movie.movie_id %>?selectedCity=<%=cityFilter%>&selectedDate=<%=dateFilter%>" class="font-semibold ">
                 <%= movie.title %>
               </a>
             </div>
@@ -72,24 +89,7 @@
         allowfullscreen></iframe>
     </div>
   </section>
-
-  <section id="filter" class="bg-black py-16 text-[#cfab7a] ">
-    <!--Filter-->
-    <form id="filterForm" action="/schedules/<%= movie.movie_id %>" method="GET">
-      <select id="selectedCity" name="selectedCity" onchange="this.form.submit();">
-        <% cities.forEach((city)=> { %>
-          <option value="<%= city.city %>" <% if(city.city==cityFilter){ %> selected <%}%>><%= city.city %>
-          </option>
-          <% }) %>
-      </select>
-      <select id="selectedDate" name="selectedDate" onchange="this.form.submit();">
-        <% dateSelector.forEach((date)=> { %>
-          <option value="<%= date.date %>" <% if(date.date==dateFilter){ %> selected <%}%>><%= date.date %>
-          </option>
-          <% }) %>
-      </select>
-    </form>
-  </section>
+  
 
   <%  const today = new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0);%>
   <section id="schedule" class="bg-black py-16 text-[#cfab7a] ">
