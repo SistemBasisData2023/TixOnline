@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const multer = require('multer');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
+const cron = require('node-cron');
 
 //initialize the app as an express app
 const app = express();
@@ -110,7 +111,21 @@ app.use(async (req, res, next) => {
   
     next();
   });
-  
+
+cron.schedule( '* * * * *', async () => {
+  try {
+    await db.query(`
+      UPDATE transactions
+      SET transaction_status = 'CANCELED'
+      WHERE transaction_status = 'WAITING' AND transaction_date >= NOW() - INTERVAL '1 minutes'
+    `);
+    
+    console.log('Transaction statuses updated successfully.');
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+});
+
 app.use(express.urlencoded({extended: false}));
 
 //Variable to store session of user
