@@ -22,10 +22,11 @@
 
 <body class="font-raleway">
     <!-- Navbar -->
+    <!-- Navbar -->
     <nav class="p-10 bg-black text-cfab7a">
         <div class="container flex flex-col items-center justify-between mx-auto lg:flex-row">
             <a href="#" class="text-3xl font-semibold">TixOnline</a>
-            <div class="text-[#cfab7a] mt-4 lg:mt-0">
+            <div class="text-[#cfab7a] mt-4 lg:mt-0 flex flex-wrap justify-center">
                 <a href="/" class="px-4 hover:text-white">Home</a>
                 <a href="#nowplaying" class="px-4 hover:text-white smooth-scroll">Now Playing</a>
                 <a href="#comingsoon" class="px-4 hover:text-white smooth-scroll">Coming Soon</a>
@@ -42,7 +43,8 @@
                         </svg>
                     </a>
                     <% } else { %>
-                        <button id="registerBtn" class="w-auto px-3 py-1 mr-2 text-black rounded custom-btn hover:text-white"><a
+                        <button id="registerBtn"
+                            class="w-auto px-3 py-1 mr-2 text-black rounded custom-btn hover:text-white"><a
                                 href="/register-account">Register</a></button>
                         <button id="loginBtn" class="w-auto px-3 py-1 text-black rounded custom-btn hover:text-white"><a
                                 href="/login-account">Log in</a></button>
@@ -51,13 +53,14 @@
         </div>
     </nav>
 
+
     <script src="/script/script.js" defer></script>
 
 </body>
 
 <!-- Video Trailer-->
 <section id="home" class="bg-black">
-    <div class="container p-6 mx-auto">
+    <div class="container mx-auto"> <!-- Added pt-16 to align with other sections -->
         <div class="relative">
             <video class="w-full" controls width="100%" height="100%">
                 <source src="/images/gotg3trailer.mp4" type="video/mp4">
@@ -66,10 +69,10 @@
                 <h3 class="text-2xl font-semibold">Guardians of the Galaxy Vol.3 | Action, Adventure, Comedy | PG-13
                 </h3>
             </div>
-
         </div>
     </div>
 </section>
+
 
 <!-- Now Playing Movie Gallery Section -->
 <section id="nowplaying" class="bg-black py-16 text-[#cfab7a]">
