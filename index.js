@@ -124,23 +124,27 @@ cron.schedule( '* * * * *', async () => {
         if(err){
 
         }else{
-            const scheduleId = store_session.schedule_id;
-    const seatsId = store_session.seats_id;
-  
-        const query = 'DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;';
-        seatsId.forEach(async (seatId) => {
-            const values = [scheduleId, seatId];
-            await db.query(query, values, (err, results) => {
-                if(err){
-                    console.log(err);
-                    return res.json({ message: 'Delete data failed.' });
-                }else{
-                    store_session.seats_id = null;
-                    console.log("Selected seat deleted from server.");
-                    console.log('Transaction statuses updated successfully.');
-                }
+            //Mesti dibenerin
+            if(store_session){
+                const scheduleId = store_session.schedule_id;
+                const seatsId = store_session.seats_id;
+      
+            const query = 'DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;';
+            seatsId.forEach(async (seatId) => {
+                const values = [scheduleId, seatId];
+                await db.query(query, values, (err, results) => {
+                    if(err){
+                        console.log(err);
+                        return res.json({ message: 'Delete data failed.' });
+                    }else{
+                        store_session.seats_id = null;
+                        console.log("Selected seat deleted from server.");
+                        console.log('Transaction statuses updated successfully.');
+                    }
+                });
             });
-        });
+            }
+           
   
         }
     });
@@ -1110,8 +1114,10 @@ router.get('/detail/:location/:movieId', async (req, res) => {
 
 router.post('/logout', async (req,res) => {
     try{
-
+        req.session.destroy();
+        res.clearCookie('remember_me_token');
         store_session = null;
+        res.redirect('/');
     }catch(error){
 
     }
