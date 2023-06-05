@@ -143,14 +143,138 @@ router.get('/', async (req, res) => {
 //Showing theaters page
 router.get('/theaters', async (req,res) => {
     try{
-        const query = 'SELECT * FROM Studios;'
+        const query = 'SELECT * FROM Theaters;'
 
         await db.query(query, (err, results) => {
             if(err){
                 console.log(err);
                 return res.json({ message: 'Retrive data failed.' });
             }else{
-                
+                   //Get current date
+                   const today = new Date();
+                   //Set today to +7 hours because in indonesia GMT +7
+                   today.setHours(today.getHours() + 7);
+                   //Extract the date only
+                   const date = today.toISOString().split('T')[0];
+                   //Get first movie on the list to be default if user havent choose what movie
+                   const theaterId = results.rows[0].theater_id;
+                   //Redirect to /schedules/
+                   console.log(results.rows);
+                   const url = '/schedules-theater/' + theaterId + '?selectedCity=' + results.rows[0].city + '&selectedDate=' + date;
+                   return res.status(200).redirect(url);
+            }
+        });
+    }catch(error){
+        console.error('Page is not availible', error);
+        return res.status(500).json({ message: 'An error occurred during showing page.' });
+    }
+});
+
+router.get('/schedules-theater/:theaterId', async (req, res) => {
+    const {theaterId} = req.params;
+
+    const {selectedCity, selectedDate} = req.query;
+    console.log(req.query);
+
+    const today = new Date();
+    //Set today to +7 hours because in indonesia GMT +7
+    today.setHours(today.getHours() + 7);
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    console.log(today);
+    var monthNames = [
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"
+    ];
+
+    var dateArray = []; // Initialize the array
+  
+    for (var i = 0; i < 7; i++) {
+        var nextDate = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
+        var dateString = nextDate.toISOString().split('T')[0];
+        
+        var [year, monthNumber, day] = dateString.split('-');
+        var month = monthNames[nextDate.getMonth()];
+
+        var dateObject = { 
+            year: parseInt(year),
+            month: month,
+            day: parseInt(day),
+            date: dateString
+        }
+        dateArray.push(dateObject);
+    }
+
+    try{
+        const queryCity = 'SELECT DISTINCT city FROM Theaters;';
+        await db.query(queryCity, async (err, cities) => {
+            if(err){
+                console.log('/schedules-theater - Getting data theaters error');
+            }else{
+                cities.rows.unshift({city: 'All' });
+
+                let query = 'SELECT * FROM Theaters';
+
+                if(selectedCity !== 'All'){
+                    query += ` WHERE city = '${selectedCity}'`;
+                }
+                query += ';';
+        
+                await db.query(query, async (err, theaters) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        console.log(theaters.rows);
+
+                        const queryTheater = 'SELECT * FROM Theaters WHERE theater_id = $1;';
+                        const values = [theaterId];
+                        await db.query(queryTheater , values, async (err, theater) => {
+                            if(err){
+                                console.log(err);
+        
+                                console.log('/schedules-theater - Getting data theater movie error');
+                            }else{
+                           
+        
+                                let date = today;
+        
+                                if(selectedDate){
+                                    date = selectedDate;
+                                }else{
+                                    date = today.toISOString().split('T')[0];
+                                }
+                          
+                                let querySchedule = `SELECT * FROM Schedule JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id WHERE Theaters.theater_id = '${theaterId}' AND Schedule.date ='${date}'`;
+                                
+                                if(selectedCity && (selectedCity !== 'All')){
+                                    querySchedule += ` AND Theaters.city = '${selectedCity}'`;
+                                }
+                                
+                                querySchedule += 'ORDER BY type, hours ASC;';
+                                
+        
+                                await db.query(querySchedule, (err, results) => {
+                                    if(err){
+                                        console.log(err);
+                                        console.log('/schedules - Getting data error');
+                                    }else{
+                    
+                                        res.render('theaters-list.ejs', {
+                                            theaters : theaters.rows, 
+                                            theater: theater.rows[0], 
+                                            schedules : results.rows, 
+                                            cities : cities.rows, 
+                                            nextWeek, 
+                                            session:store_session,
+                                            dateSelector : dateArray,
+                                            cityFilter : selectedCity,
+                                            dateFilter : selectedDate
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
             }
         });
     }catch(error){

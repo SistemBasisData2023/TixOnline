@@ -26,30 +26,46 @@
       </div>
     </div>
   </nav>
-
+       <!--Filter-->
+       <section id="filter" class="bg-black py-16 text-[#cfab7a] ">
+        <form id="filterForm" action="/schedules-theater/<%= theater.theater_id %>" method="GET">
+          <select id="selectedCity" name="selectedCity" onchange="this.form.submit();">
+            <% cities.forEach((city)=> { %>
+              <option value="<%= city.city %>" <% if(city.city==cityFilter){ %> selected <%}%>><%= city.city %>
+              </option>
+              <% }) %>
+          </select>
+          <select id="selectedDate" name="selectedDate" onchange="this.form.submit();">
+            <% dateSelector.forEach((date)=> { %>
+              <option value="<%= date.date %>" <% if(date.date==dateFilter){ %> selected <%}%>><%= date.date %>
+              </option>
+              <% }) %>
+          </select>
+        </form>
+      </section>
   <div class="flex items-center justify-center">
     <h1 class="mb-6 text-4xl font-semibold text-cfab7a">Theaters List</h1>
   </div>
   <div class="grid grid-cols-1 gap-4 p-4 text-cfab7a sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
     
     <% theaters.forEach(function(theater) { %>
-      <a href="/theater/<%= theater.location %>"
+      <a href="/schedules-theater/<%= theater.theater_id %>?selectedCity=<%=cityFilter%>&selectedDate=<%=dateFilter%>"
         class="max-w-sm overflow-hidden transition-all duration-200 transform bg-gray-800 rounded shadow-lg hover:scale-105">
-        <img class="object-cover w-full h-64" src="/images/theater/<%= theater.location %>.jpg"
-          alt="<%= theater.location %>">
+        <img class="object-cover w-full h-64" src='/images/<%= theater.theater_images %> '
+          alt="<%= theater.city %>">
         <div class="px-6 py-4">
           <div class="mb-2 text-xl font-bold">
-            <%= theater.location %>
+            <%= theater.name %>
           </div>
           <p class="text-base">
             <!-- Replace the text below with the description of the theater -->
-            This is a world class theater located at <%= theater.location %>.
+            This is a world class theater located at <%= theater.address %>.
           </p>
         </div>
         <!-- Theater City -->
         <div class="px-6 py-4">
           <span class="inline-block px-3 py-1 mr-2 text-sm font-semibold bg-gray-200 rounded-full">
-            #<%= theater.location %>
+            #<%= theater.city %>
           </span>
         </div>
       </a>
