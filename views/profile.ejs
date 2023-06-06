@@ -10,10 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/styles/fe_style.css">
   <link rel="stylesheet" href="/styles/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <body class="leading-normal tracking-normal bg-black font-raleway text-cfab7a">
@@ -27,24 +24,8 @@
       <!--Display Transactions History-->
       <h2 class="mb-2 text-2xl font-bold">Transaction History</h2>
       <div class="p-6 border-2 border-white rounded shadow-md">
-        <%  const today = new Date(); 
-  today.setHours(today.getHours() + 0); 
-  today.setDate(today.getDate()+0);
-  const now = new Date();
-  now.setUTCHours(now.getUTCHours() + 7);
-  
-  const hours = String(now.getUTCHours()).padStart(2, '0');
-  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-  
-  const timeString = hours + ':' + minutes;
-  console.log(timeString);
-  
-  
-  %>
 
   <!--Display Transactions History-->
-
-  
   <%  const today = new Date(); 
   today.setHours(today.getHours() + 0); 
   today.setDate(today.getDate()+0);
@@ -121,39 +102,5 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 </head>
-
-<body class="leading-normal tracking-normal bg-black font-raleway text-cfab7a">
-  <div class="container p-5 mx-auto my-5">
-    <h1 class="mb-2 text-4xl font-bold">Profile</h1>
-    <div class="p-4 mb-6 border-2 border-white rounded shadow-md">
-      <p class="mb-2 text-xl"><strong><%= user.username %></strong> </p>
-      <p class="mb-2 text-xl"><%= user.email %></p>
-      <p class="mb-2 text-xl"><%= user.phone_number %></p>
-    </div>
-    <!--Display Transactions History-->
-    <h2 class="mb-2 text-2xl font-bold">Transaction History</h2>
-    <div class="p-6 border-2 border-white rounded shadow-md">
-      <table class="w-full table-auto">
-        <thead>
-          <tr>
-            <th class="px-4 py-2">Transaction ID</th>
-            <th class="px-4 py-2">User ID</th>
-            <th class="px-4 py-2">Transaction Date</th>
-            <th class="px-4 py-2">Transaction Status</th>
-          </tr>
-        </thead>
-        <tbody>
-        <% purchases.forEach((purchase) => { %>
-          <tr>
-            <td class="px-4 py-2 border"><%= purchase.transaction_id %></td>
-            <td class="px-4 py-2 border"><%= purchase.user_id %></td>
-            <td class="px-4 py-2 border"><%= purchase.transaction_date %></td>
-            <td class="px-4 py-2 border"><%= purchase.transaction_status %></td>
-          </tr>
-        <% }); %>
-        </tbody>
-      </table>
-    </div>
-  </div>
 </body>
 </html>
