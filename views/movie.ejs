@@ -141,25 +141,45 @@
               <ul>
             
                 <% scheduleByLocation[name].forEach(schedule=> { %>
-                  <div   class="inline-block <%if((timeString >schedule.hours) && (today.toLocaleDateString('en-GB') === schedule.date.toLocaleDateString('en-GB'))){%>
-                    pointer-events-none
-                    <% } console.log(timeString + "  "+ schedule.hours); %>
-                    ">
-                  <% if(session !=null) {%>
-                    <a href="/seat/<%= schedule.schedule_id %>"
-                      class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600">
-                      <%= schedule.hours %>
-                        <%= schedule.type %>
-                    </a>
-                    <% }else{ %>
-                      <a onclick="showPopup()"
-                        class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600">
+
+                  <%if((timeString > schedule.hours) && (today.toLocaleDateString('en-GB') >= schedule.date.toLocaleDateString('en-GB'))           ){%>
+                    
+                    <% if(session !=null) {%>
+                      <a href="/seat/<%= schedule.schedule_id %>"
+                        class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600 pointer-events-none">
                         <%= schedule.hours %>
                           <%= schedule.type %>
                       </a>
-                      <% }%>
-                        <% }); %>
-                      </div>
+                      <% }else{ %>
+                        <a onclick="showPopup()"
+                          class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600 pointer-events-none">
+                          <%= schedule.hours %>
+                            <%= schedule.type %>
+                        </a>
+                        <% }%>
+             
+                          
+                    <%}else{%>
+
+                      <% if(session !=null) {%>
+                        <a href="/seat/<%= schedule.schedule_id %>"
+                          class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600">
+                          <%= schedule.hours %>
+                            <%= schedule.type %>
+                        </a>
+                        <% }else{ %>
+                          <a onclick="showPopup()"
+                            class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600">
+                            <%= schedule.hours %>
+                              <%= schedule.type %>
+                          </a>
+                          <% }%>
+                            
+             
+                            
+                      <%} %>
+                 
+                      <% }); %>
 
               </ul>
               <% }); %>
