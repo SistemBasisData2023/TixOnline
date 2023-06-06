@@ -3,22 +3,91 @@
 <html>
 <head>
   <title>User Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/fe_style.css">
+  <link rel="stylesheet" href="/styles/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <h1>User Profile</h1>
   <p>Name: <%= user.username %></p>
   <p>Email: <%= user.email %></p>
   <!--Display Transactions History-->
-  <table>
-  <% purchases.forEach((purchase) => { %>
-    <tr>
-      <td><%= purchase.transaction_id %></td>
-      <td><%= purchase.user_id %></td>
-      <td><%= purchase.transaction_date %></td>
-      <td><%= purchase.transaction_status %></td>
-    </tr>
-  <% }); %>
+
+  
+  <%  const today = new Date(); 
+  today.setHours(today.getHours() + 0); 
+  today.setDate(today.getDate()+0);
+  const now = new Date();
+  now.setUTCHours(now.getUTCHours() + 7);
+  
+  const hours = String(now.getUTCHours()).padStart(2, '0');
+  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+  
+  const timeString = hours + ':' + minutes;
+  console.log(timeString);
+  
+  
+  %>
+
+
+   <table>
+    <% purchases.forEach((purchase) => { 
+      if((purchase.transaction_status !== 'CANCELED') && ((timeString < purchase.hours) && (today.toLocaleDateString('en-GB') <= purchase.date.toLocaleDateString('en-GB'))) ){%>
+        <tr>
+          <td><%= purchase.title %></td>
+          <td><%= purchase.date.toLocaleDateString() %></td>
+          <td><%= purchase.hours %></td>
+          <td><%= purchase.studio_name%></td>
+          <td><%= purchase.theater_name%></td>
+          <td><%= purchase.transaction_status %></td>
+          <%purchase.seat_numbers.forEach((seat)=>{%>
+            <td><%= seat %></td>
+          <%});%>
+
+
+            <td>
+              <span class="countdown">
+                <span style="--value:57;">tes</span>
+              </span>
+            </td>
+    
+         
+        </tr>
+      <%}
+      %>
+      
+    <% }); %>
   </table>
+  <br>
+  <br>
+  <br>
+  <table>
+    <% purchases.forEach((purchase) => { 
+      if((purchase.transaction_status === 'CANCELED') || ((timeString > purchase.hours) && (today.toLocaleDateString('en-GB') >= purchase.date.toLocaleDateString('en-GB'))) ){%>
+        <tr>
+          <td><%= purchase.title %></td>
+          <td><%= purchase.date.toLocaleDateString() %></td>
+          <td><%= purchase.hours %></td>
+          <td><%= purchase.studio_name%></td>
+          <td><%= purchase.theater_name%></td>
+          <td><%= purchase.transaction_status %></td>
+          <%purchase.seat_numbers.forEach((seat)=>{%>
+            <td><%= seat %></td>
+
+          <%});%>
+        </tr>
+      <%}
+      %>
+      
+    <% }); %>
+  </table>
+
   <!-- Display other user information as needed -->
+  <form action="/logout" method="post">
+    <button type="submit">Logout</button>
+  </form>
+
 </body>
 </html>

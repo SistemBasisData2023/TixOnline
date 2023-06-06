@@ -13,6 +13,7 @@ const cron = require('node-cron');
 const app = express();
 const router = express.Router();
 const { Client } = require('pg');
+const { render } = require('ejs');
 app.use(cookieParser());
 const port = 3000;
 
@@ -1081,8 +1082,9 @@ router.get('/seat/:scheduleId', async (req, res) => {
                             console.log(err);
                             return res.json({ message: 'Retrive data failed.' });
                         }else{
+                            console.log(store_session);
                             store_session.ticketPrices = results.rows[0].prices;
-                            res.render('seats.ejs', {seats : results.rows, scheduleId:scheduleId, soldSeats:soldSeats.rows});
+                            res.render('seats.ejs', {seats : results.rows, scheduleId:scheduleId, soldSeats:soldSeats.rows,originalMaxAge: store_session.cookie.originalMaxAge});
                         }
                     });
                 }
@@ -1096,6 +1098,8 @@ router.get('/seat/:scheduleId', async (req, res) => {
     }
 
 });
+
+  
 
 //Selected seat API
 router.post('/select-seat', async (req, res) => {
@@ -1784,5 +1788,41 @@ async function getAllPurchases() {
           return res.status(500).json({ message: 'An error occurred while retrieving user profile.' });
         }
       });
+
+//Timer
+const timeLimit = 1 * 10;
+
+let countdownTimer;
+
+function updateTimerDisplay(remainingTime) {
+  const minutes = Math.floor(remainingTime / 60);
+  const seconds = remainingTime % 60;
+  console.log(`Time remaining: ${minutes}:${seconds.toString().padStart(2, '0')}`);
+}
+
+function startTimer() {
+  let remainingTime = timeLimit;
+
+  // Update the timer display initially
+  updateTimerDisplay(remainingTime);
+
+  // Start the countdown timer
+  countdownTimer = setInterval(() => {
+    remainingTime--;
+
+    // Update the timer display on each tick
+    updateTimerDisplay(remainingTime);
+
+    // Check if the time limit has been reached
+    if (remainingTime === 0) {
+      clearInterval(countdownTimer);
+      console.log('Time limit reached. Selection expired.');
+      // Handle the expiration logic here
+      return false
+    }
+  }, 1000); // Update the timer every 1 second
+}
+
+      
       
    
