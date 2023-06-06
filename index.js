@@ -115,6 +115,7 @@ app.use(async (req, res, next) => {
   // '* * * * *' run every 1 minute
   // '*/5 * * * *' run every 5 minute
 cron.schedule( '* * * * *', async () => {
+    if((store_session.schedule !== null) && (store_session.seats_id !== null )){
   try {
     await db.query(`
       UPDATE transactions
@@ -124,23 +125,27 @@ cron.schedule( '* * * * *', async () => {
         if(err){
 
         }else{
-            const scheduleId = store_session.schedule_id;
-    const seatsId = store_session.seats_id;
-  
-        const query = 'DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;';
-        seatsId.forEach(async (seatId) => {
-            const values = [scheduleId, seatId];
-            await db.query(query, values, (err, results) => {
-                if(err){
-                    console.log(err);
-                    return res.json({ message: 'Delete data failed.' });
-                }else{
-                    store_session.seats_id = null;
-                    console.log("Selected seat deleted from server.");
-                    console.log('Transaction statuses updated successfully.');
-                }
+            //Mesti dibenerin
+       
+                const scheduleId = store_session.schedule_id;
+                const seatsId = store_session.seats_id;
+      
+            const query = 'DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;';
+            seatsId.forEach(async (seatId) => {
+                const values = [scheduleId, seatId];
+                await db.query(query, values, (err, results) => {
+                    if(err){
+                        console.log(err);
+                        return res.json({ message: 'Delete data failed.' });
+                    }else{
+                        store_session.seats_id = null;
+                        console.log("Selected seat deleted from server.");
+                        console.log('Transaction statuses updated successfully.');
+                    }
+                });
             });
-        });
+            
+           
   
         }
     });
@@ -148,6 +153,9 @@ cron.schedule( '* * * * *', async () => {
   } catch (error) {
     console.error('An error occurred:', error);
   }
+}else{
+
+}
 });
 
 app.use(express.urlencoded({extended: false}));
@@ -643,15 +651,15 @@ router.post('/create-movie', async (req,res)=>{
 //API to edit movies
 router.post('/edit-movie/:id', async (req,res)=>{
     const movie_id = req.params.id;
-    const { title, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
-
+    const { name, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
+    console.log(req.body);
     try{
         let query = 'UPDATE Movies SET';
 
         const updateFields = [];
     
-        if (title) {
-            const escapedTitle = title.replace(/'/g, "''"); // Escape single quotes
+        if (name) {
+            const escapedTitle = name.replace(/'/g, "''"); // Escape single quotes
             updateFields.push(`title = '${escapedTitle}'`);
         }
     
@@ -1110,8 +1118,10 @@ router.get('/detail/:location/:movieId', async (req, res) => {
 
 router.post('/logout', async (req,res) => {
     try{
-
+        req.session.destroy();
+        res.clearCookie('remember_me_token');
         store_session = null;
+        res.redirect('/');
     }catch(error){
 
     }
@@ -1161,6 +1171,8 @@ router.post('/login', async (req, res) => {
                                     store_session = req.session;
                                     store_session.username = results.rows[0].username;
                                     store_session.user_id = results.rows[0].user_id;
+                                    store_session.schedule = null;
+                                    store_session.seats_id = null;
                                     let rememberToken = null;
                                     if (remember) {
                                         // Generate a unique token
@@ -1563,8 +1575,9 @@ router.post('/login-admin', async (req, res) => {
 //function to get all purchases
 async function getAllPurchases() {
     try {
-      const query = 'SELECT * FROM Transactions JOIN tickets ON tickets.transaction_id = transactions.transaction_id;';
+      const query = 'SELECT * FROM Transactions JOIN tickets ON tickets.transaction_id = transactions.transaction_id JOIN schedule ON tickets.schedule_id = schedule.schedule_id;';
       const result = await db.query(query);
+      console.log(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Error retrieving purchase information:', error);

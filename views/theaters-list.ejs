@@ -114,7 +114,21 @@
 
   </section>
 
-  <% const today=new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0);%>
+  <%  const today = new Date(); 
+  today.setHours(today.getHours() + 0); 
+  today.setDate(today.getDate()+0);
+  const now = new Date();
+  now.setUTCHours(now.getUTCHours() + 7);
+  
+  const hours = String(now.getUTCHours()).padStart(2, '0');
+  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+  
+  const timeString = hours + ':' + minutes;
+  console.log(today);
+  
+  
+  %>
+
     <section id="schedule" class="bg-black py-16 text-[#cfab7a] ">
       <% if (schedules !=null ) { %>
         <% if (schedules.length> 0) { %>
@@ -133,8 +147,7 @@
                 <ul>
 
                   <% scheduleByLocation[title].forEach(schedule=> { %>
-                    <div class="inline-block <%if(((new Date().getUTCHours() + 7) + " :" + new Date().getUTCMinutes()>
-                      schedule.hours) && (today.toLocaleDateString('en-GB') ===
+                    <div class="inline-block <%if((timeString >schedule.hours) && (today.toLocaleDateString('en-GB') ===
                       schedule.date.toLocaleDateString('en-GB'))){%>
                       pointer-events-none
                       <% }%>
