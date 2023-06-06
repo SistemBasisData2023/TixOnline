@@ -55,15 +55,14 @@
           <%purchase.seat_numbers.forEach((seat)=>{%>
             <td><%= seat %></td>
           <%});%>
-
-
             <td>
-              <span class="countdown">
-                <span style="--value:57;">tes</span>
-              </span>
+              <div class="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+                <span class="countdown font-mono text-5xl">
+                  <span id="seconds" style="--value:0;"></span>
+                </span>
+                Seconds
+              </div>
             </td>
-    
-         
         </tr>
       <%}
       %>
@@ -104,3 +103,31 @@
 </head>
 </body>
 </html>
+
+<script>
+  function startCountdown(secondsElement) {
+    let remainingTime = 57;
+
+    function updateCountdown() {
+      secondsElement.style.setProperty('--value', remainingTime);
+
+      remainingTime--;
+
+      if (remainingTime >= 0) {
+        setTimeout(updateCountdown, 1000);
+      }
+    }
+
+    updateCountdown();
+  }
+
+  // Start the countdown for purchases with a "WAITING" transaction status
+  const purchaseRows = document.querySelectorAll('tr');
+  purchaseRows.forEach((row) => {
+    const transactionStatus = row.querySelector('td:nth-child(6)').textContent.trim();
+    if (transactionStatus === 'WAITING') {
+      const secondsElement = row.querySelector('.countdown span');
+      startCountdown(secondsElement);
+    }
+  });
+</script>
