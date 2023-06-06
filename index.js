@@ -785,7 +785,6 @@ router.post('/create-movie', async (req,res)=>{
 router.post('/edit-movie/:id', async (req,res)=>{
     const movie_id = req.params.id;
     const { name, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
-    console.log(req.body);
     try{
         let query = 'UPDATE Movies SET';
 
@@ -857,14 +856,16 @@ router.post('/edit-movie/:id', async (req,res)=>{
         await db.query(query, (err, results) => {
             if(err){
                 console.log("Edit data failed : ", err);
+                return res.status(304).redirect('/admin/movies');
             }else{
                 console.log(query);
                 console.log("Data edited.");
-                res.redirect('/admin/movies');
+                return res.status(200).redirect('/admin/movies');
             }
         });
     }catch(err){
         console.log(err);
+        return res.status(500).redirect('/admin/movies');
     }
 });
 
