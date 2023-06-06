@@ -554,6 +554,25 @@ router.get('/admin/theaters/add', async(req,res)=> {
     }
 });
 
+//Page for edit theaters
+router.get('/admin/theaters/edit/:theaterId', async(req, res)=> {
+    const {theaterId} = req.params;
+    try{
+        const query = 'SELECT * FROM theaters WHERE theater_id = $1;';
+
+        await db.query(query, [theaterId], (err, results) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.render('admin-theaters-edit.ejs',{theater : results.rows[0]});
+            }
+        });
+    }catch(error){
+
+    }
+});
+
+
 //API to create theater
 router.post('/create-theater', async (req,res)=>{
     const { name, address, city} = req.body;
@@ -573,6 +592,120 @@ router.post('/create-theater', async (req,res)=>{
             }
         });
 
+    }catch(err){
+        console.log(err);
+    }
+});
+
+//API to delete movie
+router.post('/delete-theater/:id', async (req,res)=>{
+    const theater_id = req.params.id;
+
+    try{
+        const query = 'SELECT theater_images FROM Theaters WHERE theater_id = $1;';
+        const values = [theater_id ];
+
+        await db.query(query, values, async (err, results) => {
+            if(err){
+                console.log(err);
+                res.redirect('/admin/theaters');
+            }else{
+                const filename = results.rows[0].theater_images;
+                const filePath = `public/images/${filename}`;
+
+                fs.unlink(filePath, async (err) => {
+                    if (err) {
+                      console.error(err);
+                      res.redirect('/admin/theaters');
+                    } else {
+        
+                      const query = 'DELETE FROM theaters WHERE theater_id = $1;';
+                      const values = [theater_id];
+              
+                      await db.query(query, values, async (err, results) => {
+                          if(err){
+                              console.log(err);
+                              res.redirect('/admin/theaters');
+                          }else{
+                              console.log("deleted.")
+                              res.redirect('/admin/theaters');
+                          }
+                      });
+                    }
+                  });
+
+             
+            }
+        });
+
+    }catch(err){
+        console.log(err);
+    }
+});
+
+//API to edit theaters
+router.post('/edit-theater/:id', async (req,res)=>{
+    const theater_id = req.params.id;
+    const { name, address, city} = req.body;
+    console.log(req.body);
+    console.log(req.file);
+    try{
+        let query = 'UPDATE theaters SET';
+
+        const updateFields = [];
+    
+        if (name) {
+            const escapedName = name.replace(/'/g, "''"); // Escape single quotes
+            updateFields.push(`name = '${escapedName}'`);
+        }
+    
+        if (address) {
+            updateFields.push(`address = '${address}'`);
+        }
+    
+        if (city) {
+          updateFields.push(`city = '${city}'`);
+        }
+      
+        if(req.file){
+            const image = req.file.filename;
+            updateFields.push(`theater_images = '${image}'`);
+
+             //Delete previous photo
+
+            const queryDeletePhoto = 'SELECT theater_images FROM theaters WHERE theater_id = $1;';
+            const values = [theater_id];
+
+            await db.query(queryDeletePhoto, values, async (err, results) => {
+                if(err){
+                    console.log(err);
+                    res.redirect('/admin/theaters');
+                }else{
+                    const filename = results.rows[0].images;
+                    const filePath = `public/images/${filename}`;
+
+                    fs.unlink(filePath, async (err) => {
+                        if (err) {
+                            console.log(err);
+                        } else {    
+                            console.log("Photo deleted.");
+                        }
+                    });
+                }
+            });
+        }
+    
+        query += ` ${updateFields.join(', ')} WHERE theater_id = ${theater_id};`;
+        console.log(query);
+        await db.query(query, (err, results) => {
+            if(err){
+                console.log("Edit data failed : ", err);
+            }else{
+                console.log(query);
+                console.log("Data edited.");
+                res.redirect('/admin/theaters');
+            }
+        });
     }catch(err){
         console.log(err);
     }
@@ -625,13 +758,13 @@ router.get('/admin/movies', async (req, res) => {
 
 //API to create movies
 router.post('/create-movie', async (req,res)=>{
-    const { title, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
+    const { name, genre, duration, release_date, synopsis, status, trailer_link, rating} = req.body;
     console.log(req.body);
     const image = req.file.filename;
 
     try{
         const query = 'INSERT INTO Movies (title, genre, duration, release_date, synopsis, status, trailer_link, images, rating) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);';
-        const values = [title, genre, duration, release_date, synopsis, status, trailer_link, image, rating];
+        const values = [name, genre, duration, release_date, synopsis, status, trailer_link, image, rating];
 
         await db.query(query, values, (err, results) => {
             if(err){
@@ -668,7 +801,7 @@ router.post('/edit-movie/:id', async (req,res)=>{
         }
     
         if (duration) {
-            updateFields.push(`genre = '${genre}'`);
+            updateFields.push(`duration= '${duration}'`);
         }
     
         if (release_date) {
@@ -1575,7 +1708,7 @@ router.post('/login-admin', async (req, res) => {
 //function to get all purchases
 async function getAllPurchases() {
     try {
-      const query = 'SELECT * FROM Transactions JOIN tickets ON tickets.transaction_id = transactions.transaction_id JOIN schedule ON tickets.schedule_id = schedule.schedule_id;';
+      const query = 'SELECT * FROM transactions_details_seats;';
       const result = await db.query(query);
       console.log(result.rows);
       return result.rows;
