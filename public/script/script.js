@@ -8,11 +8,17 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 const loginBtn = document.getElementById('loginBtn');
 const loginModal = document.getElementById('loginModal');
 const closeLoginModalBtn = document.getElementById('closeLoginModalBtn');
+const movieLinkElement = document.getElementById('movieLink');
         
 
-function showMovieDetails(movieTitle, movieSynopsis) {
+function showMovieDetails(movieTitle, movieSynopsis, movieId) {
+    const today = new Date();
+    today.setHours(today.getHours() + 7);
+    const date = today.toISOString().split('T')[0];
+    
     movieTitleElement.textContent = movieTitle;
     movieSynopsisElement.textContent = movieSynopsis;
+    movieLinkElement.setAttribute("href", "/schedules-movie/" + movieId + "?selectedCity=All&selectedDate=" + date);
     movieDetailsPopup.classList.remove('hidden');
     closeMovieDetailsBtn.addEventListener('click', () => {
     movieDetailsPopup.classList.add('hidden');
@@ -71,3 +77,4 @@ loginBtn.addEventListener('click', () => {
 closeLoginModalBtn.addEventListener('click', () => {
     loginModal.classList.add('hidden');
 });
+

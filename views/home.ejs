@@ -82,7 +82,7 @@
         <div class="kodfun-galeri">
             <% moviesShowing.forEach(function(movieShowing) { %>
                 <div style="background-image: url('/images/<%= movieShowing.images %>');"
-                    onclick="showMovieDetails('<%= movieShowing.title %>','<%= movieShowing.synopsis %>')">
+                    onclick="showMovieDetails('<%= movieShowing.title %>','<%= movieShowing.synopsis %>','<%= movieShowing.movie_id %>')">
                     <div class="overlay">
                         <h4 class="font-semibold ">
                             <%= movieShowing.title %>
@@ -142,7 +142,7 @@
       </div>
       <h2 id="movieTitle" class="mb-4 text-2xl font-semibold text-white lg"></h2>
       <p id="movieSynopsis" class="mb-4 text-cfab7a"></p>
-        <a href="/schedules" class="px-4 py-2 font-semibold text-white bg-red-600 rounded hover:bg-red-700">Book Now</a>
+         <a id="movieLink" class="px-4 py-2 font-semibold text-white bg-red-600 rounded hover:bg-red-700">Book Now</a>
     </div>
   </div>
   
