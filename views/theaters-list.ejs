@@ -93,7 +93,7 @@
           </div>
           <p class="text-base">
             <!-- Replace the text below with the description of the theater -->
-            This is a world class theater located at <%= theater.address %>.
+            <%= theater.address %>.
           </p>
         </div>
         <!-- Theater City -->
@@ -151,13 +151,13 @@
                     
                       <% if(session !=null) {%>
                         <a href="/seat/<%= schedule.schedule_id %>"
-                          class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600 pointer-events-none">
+                          class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded pointer-events-none hover:bg-blue-600">
                           <%= schedule.hours %>
                             <%= schedule.type %>
                         </a>
                         <% }else{ %>
                           <a onclick="showPopup()"
-                            class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600 pointer-events-none">
+                            class="inline-block px-4 py-2 font-semibold text-white bg-blue-500 rounded pointer-events-none hover:bg-blue-600">
                             <%= schedule.hours %>
                               <%= schedule.type %>
                           </a>
