@@ -65,6 +65,20 @@ body{
     color: black;
 }
 
+.custom-btn:hover {
+    background-color: #A68961;
+    color: black;
+}
+
+.dead-btn {
+    background-color: #eee2d1;
+    color: black;
+}
+
+.border-cfab7a {
+    border-color: #cfab7a;
+}
+
 .w-full {
     width: 100%;
 }
