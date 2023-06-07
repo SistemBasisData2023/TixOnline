@@ -30,7 +30,6 @@
         </p>
       </div>
       <!--Display Transactions History-->
-      <h2 class="mb-2 text-2xl font-bold">Transaction History</h2>
       <div class="p-6 border-2 border-white rounded shadow-md">
 
         <!--Display Transactions History-->
@@ -72,6 +71,7 @@
                         <div class="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
                           <span class="font-mono text-5xl countdown">
                             <span id="seconds" style="--value:0;"></span>
+                            <span id="Minutes" style="--value:0;"></span>
                           </span>
                           Seconds
                         </div>
@@ -84,6 +84,7 @@
           <br>
           <br>
           <br>
+          <h2 class="mb-2 text-2xl font-bold">Transaction History</h2>
           <table>
             <% purchases.forEach((purchase)=> {
               if((purchase.transaction_status === 'CANCELED') || ((timeString > purchase.hours) &&
@@ -113,6 +114,12 @@
                   </td>
 
                   <%});%>
+                  <td>
+                    <%let today=new Date();
+                    let remainingTime = today - purchase.date;
+                    %>
+                   <%= remainingTime; %>
+                  </td>
               </tr>
               <%} %>
 

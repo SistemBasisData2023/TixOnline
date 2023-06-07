@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie Ticket Booking</title>
+</head>
+<body>
+    <h1>Movie Ticket Booking</h1>
+    <form action="/booking" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="ticket-type">Ticket Type:</label>
+        <select id="ticket-type" name="ticketType">
+            <option value="DELUXE">DELUXE</option>
+            <option value="REGULAR">REGULAR</option>
+        </select>
+
+        <label for="city">City:</label>
+        <select id="city" name="city">
+            <% cities.forEach((city) => { %>
+                <option value="<%=city.city%>"><%=city.city%></option>
+              <% })%>
+        </select>
+
+        <label for="theater">Theater:</label>
+        <select id="theater" name="theater">
+        </select>
+
+        <input type="submit" value="Book Now">
+    </form>
+
+    <script>
+          console.log("tes");
+    
+        function updateTheaterOptions() {
+          var citySelect = document.getElementById('city');
+          var theaterSelect = document.getElementById('theater');
+          var selectedCity = citySelect.value;
+          console.log("tes");
+          var jsonString = <%= JSON.stringify(theaters).replace(/&#34;/g, '"') %>;
+        
+          console.log("tes");
+ 
+        
+
+          theaterOptions.forEach(function (option) {
+              if (option.city === selectedCity) {
+                  var theaterOption = document.createElement('option');
+                  theaterOption.value = option.theater;
+                  theaterOption.textContent = option.theater;
+                  theaterSelect.appendChild(theaterOption);
+              }
+          });
+      }
+         // Attach the event listener after defining the function
+         document.getElementById('city').addEventListener('change', updateTheaterOptions);
+  </script>
+</body>
+</html>

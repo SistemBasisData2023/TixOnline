@@ -14,6 +14,7 @@ const app = express();
 const router = express.Router();
 const { Client } = require('pg');
 const { render } = require('ejs');
+const e = require('express');
 app.use(cookieParser());
 const port = 3000;
 
@@ -116,47 +117,51 @@ app.use(async (req, res, next) => {
   // '* * * * *' run every 1 minute
   // '*/5 * * * *' run every 5 minute
 cron.schedule( '* * * * *', async () => {
-    if((store_session.schedule !== null) && (store_session.seats_id !== null )){
+
   try {
-    await db.query(`
+    db.query(`
       UPDATE transactions
       SET transaction_status = 'CANCELED'
-      WHERE transaction_status = 'WAITING' AND transaction_date >= NOW() - INTERVAL '1 minutes'
-    `, (err, results)=> {
-        if(err){
+      WHERE transaction_status = 'WAITING' AND transaction_date >= NOW() - INTERVAL '1 minutes' RETURNING transaction_id;`, (err, transactions) => {
+          if (err) {
+              console.log(err);
+          } else {
+              //Get 
+              console.log('Transaction statuses updated successfully.');
 
-        }else{
-            //Mesti dibenerin
-       
-                const scheduleId = store_session.schedule_id;
-                const seatsId = store_session.seats_id;
-      
-            const query = 'DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;';
-            seatsId.forEach(async (seatId) => {
-                const values = [scheduleId, seatId];
-                await db.query(query, values, (err, results) => {
-                    if(err){
-                        console.log(err);
-                        return res.json({ message: 'Delete data failed.' });
-                    }else{
-                        store_session.seats_id = null;
-                        console.log("Selected seat deleted from server.");
-                        console.log('Transaction statuses updated successfully.');
-                    }
-                });
+              transactions.rows.forEach(async (transaction) => {
+                  const query = 'SELECT schedule_id, seats_ids FROM transactions_details_seats WHERE transaction_id = $1;';
+                  const values = [transaction.transaction_id];
+
+                  await db.query(query, values, async (err, results) => {
+                      if (err) {
+                          console.log("Getting schedule_id and seats_ids failed : " + err);
+                      } else {
+                          console.log("result" + results.rows);
+
+                          console.log(results.rows[0].seats_ids);
+                          results.rows[0].seats_ids.forEach(async (seatId) => {
+                              const queryDelete = 'DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;';
+                              const values = [results.rows.schedule_id, seatId];
+                            
+                                await db.query(queryDelete, values, (err, results) => {
+                                    if(err){
+                                        console.log("Delete schedule and seats failed : " + err);
+                                    }else{
+                                        console.log("Seat deleted.");
+                                    }
+                                });
+                          });
+                      }
+                 });
             });
-            
-           
-  
-        }
-    });
+          }
+      });
     
   } catch (error) {
     console.error('An error occurred:', error);
   }
-}else{
 
-}
 });
 
 app.use(express.urlencoded({extended: false}));
@@ -709,6 +714,75 @@ router.post('/edit-theater/:id', async (req,res)=>{
     }
 });
 
+//ADMIN STUDIOS ROUTER & PAGES
+//Page for show studios list
+router.get('/admin/studios', async (req, res) => {
+    try{
+        const query ='SELECT Studios.*, Theaters.name AS theater_name, theaters.city, theaters.address FROM Studios JOIN Theaters ON theaters.theater_id = studios.theater_id ORDER BY studio_id ASC;';
+        await db.query(query, (err, results) => {
+            if(err){
+                console.log(err);
+            }else{
+                console.log(results.rows);
+                res.render('admin-studios.ejs', {studios : results.rows});
+            }
+        });
+    }catch(error){
+    }
+});
+
+//Page for add studios
+router.get('/admin/studios/add', async(req,res)=> {
+    try{
+        //Get list of cities from theaters
+        const queryCity = 'SELECT DISTINCT city FROM Theaters;';
+        await db.query(queryCity, async (err, cities) => {
+            //Get theaters list based on city
+            const queryTheaters = 'SELECT * FROM Theaters';
+            await db.query(queryTheaters, async (err, theaters) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    res.render('admin-studios-add.ejs', {cities : cities.rows, theaters : theaters.rows});
+                }
+            });
+        });
+    }catch(error){
+
+    }
+});
+
+//API for add studios
+router.post('/create-studio', async (req,res)=>{});
+
+//Page for edit studios
+router.get('/admin/studios/edit/:studioId', async(req, res)=> {
+    const {studioId} = req.params;
+    try{
+        //Get city list from theaters
+        const queryCity = 'SELECT DISTINCT city FROM Theaters;';
+        await db.query(queryCity, async (err, cities) => {
+            //Get theaters list
+            const queryTheaters = 'SELECT * FROM Theaters';
+            //Values from req.body
+            await db.query(queryTheaters, async (err, theaters) => {
+                if(err){
+                    console.log(err);
+                }else{
+
+                }
+            });
+        });
+
+    }catch(error){
+    }
+});
+
+//API for edit studios
+router.post('/edit-studio/:id', async (req,res)=>{
+    const studio_id = req.params.id;
+    const { name, type, theater_id} = req.body;
+});
 //ADMIN MOVIES ROUTERS & PAGES
 //Page for add movies
 router.get('/admin/movies/add', async(req,res)=> {
@@ -1762,14 +1836,14 @@ async function getAllPurchases() {
           if (purchases.length === 0) {
             console.log('No purchase information available.');
           } else {
-            console.log('Purchase Information:');
-            purchases.forEach((purchase) => {
-              console.log('Transaction ID:', purchase.transaction_id);
-              console.log('User ID:', purchase.user_id);
-              console.log('Transaction Date:', purchase.transaction_date);
-              console.log('Transaction Status:', purchase.transaction_status);
-              console.log('------------------------');
-            });
+            // console.log('Purchase Information:');
+            // purchases.forEach((purchase) => {
+            //   console.log('Transaction ID:', purchase.transaction_id);
+            //   console.log('User ID:', purchase.user_id);
+            //   console.log('Transaction Date:', purchase.transaction_date);
+            //   console.log('Transaction Status:', purchase.transaction_status);
+            //   console.log('------------------------');
+            // });
           }
           await db.query(query, values, (err, results) => {
             if (err) {

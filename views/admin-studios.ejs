@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Theater Table</title>
+</head>
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>Column Name</th>
+        <th>Type</th>
+        <th>Theater Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% studios.forEach((studio) => { %>
+        <tr>
+          <td><%= studio.name %></td>
+          <td><%= studio.type %></td>
+          <td><%= studio.theater_name %></td>
+        </tr>
+      <% })%>
+    </tbody>
+  </table>
+</body>
+</html>
