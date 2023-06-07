@@ -66,7 +66,7 @@
                     </td>
                     <%});%>
                       <td>
-                        <div class="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+                        <div class="flex flex-col p-2 rounded-box text-neutral-content">
                           <span class="font-mono text-5xl countdown">
                             <span id="seconds" style="--value:0;"></span>
                             <span id="Minutes" style="--value:0;"></span>
@@ -78,19 +78,14 @@
                 <%} %>
 
                   <% }); %>
-                        ]
       </div>
     </div>
 
-    <!-- Logout Button -->
-    <div class="flex justify-center">
-      <form action="/logout" method="post">
-        <button type="submit">Logout</button>
-      </form>
-    </div>
+
     <!-- Display for Ongoing Transactions Today -->
 <div>
-  <h2>Ongoing Transactions Today</h2>
+  <div class="border-t-2 border-cfab7a my-5"></div>
+      <h2 class="mb-2 text-2xl font-bold text-cfab7a">Ongoing Transaction</h2>
   <table>
     <% purchases.forEach((purchase) => {
       const today = new Date();
@@ -113,11 +108,12 @@
       <% }
     }); %>
   </table>
-</div>
+
 
 <!-- Display for Transaction History -->
 <div>
-  <h2>Transaction History</h2>
+  <div class="border-t-2 border-cfab7a my-5"></div>
+      <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
   <table>
     <% purchases.forEach((purchase) => {
       const isTransactionHistory = purchase.transaction_status !== 'CANCELED';
@@ -139,11 +135,16 @@
   </table>
 </div>
 
-
+<!-- Logout Button -->
+    <div class="flex justify-center">
+      <form action="/logout" method="post">
+        <button type="submit">Logout</button>
+      </form>
+    </div>
     </head>
   </body>
-
 </html>
+
 
 <script>
   function startCountdown(secondsElement) {
