@@ -44,7 +44,7 @@
   </nav>
 
   <!--Filter-->
-  <section id="filter" class="bg-black py-16 text-[#cfab7a] ">
+  <section id="filter" class="bg-black py-10 text-[#cfab7a] ">
     <div class="container mx-auto">
       <h1 class="mb-6 text-4xl font-semibold text-cfab7a">Theaters List</h1>
       <form id="filterForm" action="/theaters" method="GET">
@@ -63,9 +63,9 @@
     <% const today=new Date(); today.setHours(today.getHours() + 7); today.toISOString().split('T')[0];%>
       <% theaters.forEach(function(theater) { %>
         <a href="/schedules-theater/<%= theater.theater_id %>?selectedCity=<%=theater.city%>&selectedDate=<%=today.toISOString().split('T')[0]%>"
-          class="max-w-sm overflow-hidden transition-all duration-200 transform bg-gray-800 rounded shadow-lg hover:scale-105">
+          class="flex flex-col max-w-sm overflow-hidden transition-all duration-200 transform bg-gray-800 rounded shadow-lg hover:scale-105">
           <img class="object-cover w-full h-64" src='/images/<%= theater.theater_images %> ' alt="<%= theater.city %>">
-          <div class="px-6 py-4">
+          <div class="flex-grow px-6 py-4">
             <div class="mb-2 text-xl font-bold">
               <%= theater.name %>
             </div>

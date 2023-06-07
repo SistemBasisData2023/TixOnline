@@ -1,49 +1,52 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <title>Movie List</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles/fe_style.css">
-  <link rel="stylesheet" href="/styles/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
-      .columns {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-  }
+    .columns {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
     .selected {
-      background-color: yellow;
+      background-color: #6a5840;
     }
 
     .sold {
-      background-color: gray;
-      pointer-events: none; /* Disable click events */
+      background-color: #c4c4c4;
+      pointer-events: none;
+      /* Disable click events */
     }
+
     .popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
 
-.popup-content {
-    background-color: #fff;
-    max-width: 300px;
-    margin: 100px auto;
-    padding: 20px;
-    border-radius: 5px;
-}
+    .popup-content {
+      background-color: #fff;
+      max-width: 300px;
+      margin: 100px auto;
+      padding: 20px;
+      border-radius: 5px;
+    }
 
-button {
-    margin-top: 10px;
-}
+    button {
+      margin-top: 10px;
+    }
   </style>
   <script>
     var selectedSeats = []; // Array to store selected seat numbers
@@ -53,18 +56,18 @@ button {
     window.ticketQuantity = selectedSeats.length;
 
     window.addEventListener('DOMContentLoaded', () => {
-    const showPopupButton = document.getElementById('showPopup');
-    const popup = document.getElementById('popup');
-    const cancelButton = document.getElementById('cancelButton');
+      const showPopupButton = document.getElementById('showPopup');
+      const popup = document.getElementById('popup');
+      const cancelButton = document.getElementById('cancelButton');
 
-    showPopupButton.addEventListener('click', () => {
+      showPopupButton.addEventListener('click', () => {
         popup.style.display = 'block';
-    });
+      });
 
-    cancelButton.addEventListener('click', () => {
+      cancelButton.addEventListener('click', () => {
         popup.style.display = 'none';
+      });
     });
-});
     function storeSeatNumber(seatNumber, buttonElement) {
       // Check if the seat is already selected
       var index = selectedSeats.indexOf(seatNumber);
@@ -83,118 +86,154 @@ button {
     }
 
     function bookSeats() {
-        fetch('http://localhost:3000/select-seat', {
+      fetch('http://localhost:3000/select-seat', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ seatsId: selectedSeats, scheduleId }),
-        })
+      })
         .then(function (response) {
-            // Handle the server response if needed
+          // Handle the server response if needed
         })
         .catch(function (error) {
-            // Handle any errors that occurred during the request
+          // Handle any errors that occurred during the request
         });
 
     }
-    
-    function cancelSeats(){
+
+    function cancelSeats() {
       //Delete selected-seats
       fetch('http://localhost:3000/delete-select-seat', {
         method: 'DELETE',
         headers: {
-            'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
         },
-        })
+      })
         .then(function (response) {
-            // Handle the server response if needed
+          // Handle the server response if needed
         })
         .catch(function (error) {
-            // Handle any errors that occurred during the request
+          // Handle any errors that occurred during the request
         });
     }
 
-    function confirmSeats(){
-          //tambah fetch POST insert transaction
-        fetch('http://localhost:3000/transaction-waiting', {
+    function confirmSeats() {
+      //tambah fetch POST insert transaction
+      fetch('http://localhost:3000/transaction-waiting', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
         },//quantity, transaction_date
-        body: JSON.stringify({ quantity : selectedSeats.length }),
-        })
+        body: JSON.stringify({ quantity: selectedSeats.length }),
+      })
         .then(function (response) {
-       
+
         })
         .catch(function (error) {
-            // Handle any errors that occurred during the request
+          // Handle any errors that occurred during the request
         });
 
-        setTimeout(function(){
-          makeTickets();
-        }, 500); 
+      setTimeout(function () {
+        makeTickets();
+      }, 500);
     }
 
-    function makeTickets(){
-         //tambah fetch POST insert ticket
-        fetch('http://localhost:3000/ticket-waiting', {
+    function makeTickets() {
+      //tambah fetch POST insert ticket
+      fetch('http://localhost:3000/ticket-waiting', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
         }, //schedule_date, seatsId
         body: JSON.stringify({ seatsId: selectedSeats, scheduleId }),
-        })
+      })
         .then(function (response) {
-            // Handle the server response if needed
+          // Handle the server response if needed
         })
         .catch(function (error) {
-            // Handle any errors that occurred during the request
+          // Handle any errors that occurred during the request
         });
     }
 
   </script>
 </head>
-<body>
-  <div class="grid grid-flow-col gap-5 text-center auto-cols-max">
-  <h1>Select Seat <%=scheduleId%></h1>
 
-  <ul>
-    <% var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; %>
-    <% alphabet.split('').forEach(function(letter) { %>
-      <li class="list-none">
-        <ul>
-          <% seats.forEach(function(seat) { %>
-            <% if (seat.seat_number.charAt(0) === letter) { %>
-              <button onclick="storeSeatNumber('<%= seat.seat_id %>', this)"
-                <% soldSeats.forEach(function(soldSeat){ if(soldSeat.seat_id == seat.seat_id) { %>
-                    class="sold"
-                    <% } })%>
-                >
-                <%= seat.seat_number %>
-              </button>
-            <% } %>
-          <% }) %>
-        </ul>
-      </li>
-    <% }) %>
-  </ul>
-  
+<body class="bg-black font-raleway text-cfab7a">
+  <section id="movieSeat" class="py-16">
+    <div class="container w-1/2 mx-auto">
+      <h1 class="mb-2 text-4xl font-bold">Movie Name</h1>
+      <div class="grid grid-cols-2 gap-4 p-4 lg:gap-8 lg:p-8">
+        <div class="space-y-4">
+          <h1 class="text-2xl font-semibold">Select Seat <%=scheduleId%>
+          </h1>
+          <hr class="border-cfab7a">
+          <p class="font-semibold">Theater Location: </p>
+          <p class="font-semibold">Time: </p>
+          <p class="font-semibold">Date: </p>
+          <div class="space-y-4">
+            <div class="flex justify-around">
+              <div class="flex items-center space-x-2">
+                <div class="w-4 h-4 booked-button"></div>
+                <span class="font-semibold">Booked</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <div class="w-4 h-4 selected-button"></div>
+                <span class="font-semibold">Selected</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <div class="w-4 h-4 avail-button"></div>
+                <span class="font-semibold">Available</span>
+              </div>
+            </div>
 
-  <button id="showPopup" onclick="bookSeats()">Open Pop-up</button>
 
-    <div id="popup" >
-        <div >
-            <h2>Confirmation</h2>
-            <p><This is a pop-up message>.</p>
-  
-            <button id="cancelButton" onclick="cancelSeats()">Cancel</button>
-          
-            <form action="/pay" method="post">
-              <input type="submit" value="Buy" onclick="confirmSeats()">
-            </form>
+            <ul>
+              <% var alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ' ; %>
+                <% alphabet.split('').forEach(function(letter) { %>
+                  <li class="flex justify-center mt-4 list-none">
+                    <ul>
+                      <% seats.forEach(function(seat) { %>
+                        <% if (seat.seat_number.charAt(0)===letter) { %>
+                          <button class="px-2 py-1 text-white rounded avail-button disabled:opacity-50"
+                            onclick="storeSeatNumber('<%= seat.seat_id %>', this)" <%
+                            soldSeats.forEach(function(soldSeat){ if(soldSeat.seat_id==seat.seat_id) { %>
+                            class="sold"
+                            <% } })%>
+                              >
+                              <%= seat.seat_number %>
+                          </button>
+                          <% } %>
+                            <% }) %>
+                    </ul>
+                  </li>
+                  <% }) %>
+            </ul>
+          </div>
+
+          <div class="text-center">
+            <h2 class="text-[#cfab7a] text-lg">Screen</h2>
+            <hr class="w-1/2 mx-auto mb-4 border-cfab7a">
+          </div>
+
+          <button id="cancelButton" class="px-4 py-2 mr-4 text-center text-white rounded custom-btn"
+            onclick="cancelSeats()">Cancel</button>
+
+          <button action="/pay" method="post">
+            <input type="submit" value="Buy" class="px-4 py-2 text-center text-white rounded cursor-pointer custom-btn"
+              onclick="confirmSeats()">
+          </button>
+
+          <div id="popup" class="fixed inset-0 flex items-center justify-center hidden bg-black bg-opacity-50">
+            <div class="p-6 text-black bg-white rounded">
+              <h2 class="mb-4 text-2xl font-semibold">Confirmation</h2>
+              <p class="mb-4">This is a pop-up message.</p>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </section>
 </body>
-</html>
 
+</html>

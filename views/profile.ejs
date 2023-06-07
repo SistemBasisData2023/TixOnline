@@ -10,15 +10,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/styles/style.css">
 </head>
 
 <body>
-
+  <!-- Navbar -->
+  <nav class="p-10 bg-black text-cfab7a">
+    <div class="container flex flex-col items-center justify-between mx-auto lg:flex-row">
+      <a href="/" class="text-3xl font-semibold">TixOnline</a>
+      <div class="text-[#cfab7a] mt-4 lg:mt-0 flex flex-wrap justify-center">
+        <a href="/" class="px-4 hover:text-white nav-item">Home</a>
+        <a href="/#nowplaying" class="px-4 hover:text-white smooth-scroll nav-item">Now Playing</a>
+        <a href="/#comingsoon" class="px-4 hover:text-white smooth-scroll nav-item">Coming Soon</a>
+        <a href="/theaters" class="px-4 hover:text-white nav-item">Theaters</a>
+        <a href="/#about" class="px-4 hover:text-white smooth-scroll nav-item">About</a>
+      </div>
+      <div class="flex items-center mt-4 lg:mt-0">
+          <a href="/profile" class="px-4 nav-item active hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </a>
+      </div>
+    </div>
+  </nav>
   <body class="leading-normal tracking-normal bg-black font-raleway text-cfab7a">
-    <div class="container p-5 mx-auto my-5">
+    <div class="container mx-auto">
       <h1 class="mb-5 text-4xl font-bold">Profile</h1>
-      <div class="px-8 py-4 mb-6 border-2 border-cfab7a rounded-md shadow-md">
+      <div class="px-8 py-4 mb-6 border-2 rounded-md shadow-md border-cfab7a">
         <p class="mb-2 text-xl"><strong>
             <%= user.username %>
           </strong> </p>
@@ -32,117 +52,148 @@
           points : <%= user.points %>
         </p>
       </div>
-        <!--Display Transactions History-->
-        <% const today=new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0); const now=new
-          Date(); now.setUTCHours(now.getUTCHours() + 7); const hours=String(now.getUTCHours()).padStart(2, '0' ); const
-          minutes=String(now.getUTCMinutes()).padStart(2, '0' ); const timeString=hours + ':' + minutes;
-          console.log(timeString); %>
-          <table>
-            <% purchases.forEach((purchase)=> {
-              if((purchase.transaction_status !== 'CANCELED') && ((timeString < purchase.hours) &&
-                (today.toLocaleDateString('en-GB') <=purchase.date.toLocaleDateString('en-GB'))) ){%>
-                <tr>
+      <!--Display Transactions History-->
+      <% const today=new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0); const now=new
+        Date(); now.setUTCHours(now.getUTCHours() + 7); const hours=String(now.getUTCHours()).padStart(2, '0' ); const
+        minutes=String(now.getUTCMinutes()).padStart(2, '0' ); const timeString=hours + ':' + minutes;
+        console.log(timeString); %>
+        <table>
+          <% purchases.forEach((purchase)=> {
+            if((purchase.transaction_status !== 'CANCELED') && ((timeString < purchase.hours) &&
+              (today.toLocaleDateString('en-GB') <=purchase.date.toLocaleDateString('en-GB'))) ){%>
+              <tr>
+                <td>
+                  <%= purchase.title %>
+                </td>
+                <td>
+                  <%= purchase.date.toLocaleDateString() %>
+                </td>
+                <td>
+                  <%= purchase.hours %>
+                </td>
+                <td>
+                  <%= purchase.studio_name%>
+                </td>
+                <td>
+                  <%= purchase.theater_name%>
+                </td>
+                <td>
+                  <%= purchase.transaction_status %>
+                </td>
+                <%purchase.seat_numbers.forEach((seat)=>{%>
                   <td>
-                    <%= purchase.title %>
+                    <%= seat %>
                   </td>
-                  <td>
-                    <%= purchase.date.toLocaleDateString() %>
-                  </td>
-                  <td>
-                    <%= purchase.hours %>
-                  </td>
-                  <td>
-                    <%= purchase.studio_name%>
-                  </td>
-                  <td>
-                    <%= purchase.theater_name%>
-                  </td>
-                  <td>
-                    <%= purchase.transaction_status %>
-                  </td>
-                  <%purchase.seat_numbers.forEach((seat)=>{%>
+                  <%});%>
                     <td>
-                      <%= seat %>
+                      <div class="flex flex-col p-2 rounded-box text-neutral-content">
+                        <span class="font-mono text-5xl countdown">
+                          <span id="seconds" style="--value:0;"></span>
+                          <span id="Minutes" style="--value:0;"></span>
+                        </span>
+                        Seconds
+                      </div>
                     </td>
-                    <%});%>
-                      <td>
-                        <div class="flex flex-col p-2 rounded-box text-neutral-content">
-                          <span class="font-mono text-5xl countdown">
-                            <span id="seconds" style="--value:0;"></span>
-                            <span id="Minutes" style="--value:0;"></span>
-                          </span>
-                          Seconds
-                        </div>
-                      </td>
-                </tr>
-                <%} %>
+              </tr>
+              <%} %>
 
-                  <% }); %>
-      </div>
+                <% }); %>
+    </div>
     </div>
 
 
     <!-- Display for Ongoing Transactions Today -->
-<div>
-  <div class="border-t-2 border-cfab7a my-5"></div>
+    <div>
+      <div class="my-5 border-t-2 border-cfab7a"></div>
       <h2 class="mb-2 text-2xl font-bold text-cfab7a">Ongoing Transaction</h2>
-  <table>
-    <% purchases.forEach((purchase) => {
-      const today = new Date();
-      const isOngoingTransaction =
-        purchase.transaction_status !== 'CANCELED' &&
-        today.toLocaleDateString('en-GB') === purchase.date.toLocaleDateString('en-GB');
-      if (isOngoingTransaction) { %>
-        <tr>
-          <td><%= purchase.title %></td>
-          <td><%= purchase.date.toLocaleDateString() %></td>
-          <td><%= purchase.hours %></td>
-          <td><%= purchase.studio_name %></td>
-          <td><%= purchase.theater_name %></td>
-          <td><%= purchase.transaction_status %></td>
-          <% purchase.seat_numbers.forEach((seat) => { %>
-            <td><%= seat %></td>
-          <% }); %>
-          <td><%= today - purchase.date %></td>
-        </tr>
-      <% }
-    }); %>
-  </table>
+      <table>
+        <% purchases.forEach((purchase)=> {
+          const today = new Date();
+          const isOngoingTransaction =
+          purchase.transaction_status !== 'CANCELED' &&
+          today.toLocaleDateString('en-GB') === purchase.date.toLocaleDateString('en-GB');
+          if (isOngoingTransaction) { %>
+          <tr>
+            <td>
+              <%= purchase.title %>
+            </td>
+            <td>
+              <%= purchase.date.toLocaleDateString() %>
+            </td>
+            <td>
+              <%= purchase.hours %>
+            </td>
+            <td>
+              <%= purchase.studio_name %>
+            </td>
+            <td>
+              <%= purchase.theater_name %>
+            </td>
+            <td>
+              <%= purchase.transaction_status %>
+            </td>
+            <% purchase.seat_numbers.forEach((seat)=> { %>
+              <td>
+                <%= seat %>
+              </td>
+              <% }); %>
+                <td>
+                  <%= today - purchase.date %>
+                </td>
+          </tr>
+          <% } }); %>
+      </table>
 
 
-<!-- Display for Transaction History -->
-<div>
-  <div class="border-t-2 border-cfab7a my-5"></div>
-      <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
-  <table>
-    <% purchases.forEach((purchase) => {
-      const isTransactionHistory = purchase.transaction_status !== 'CANCELED';
-      if (isTransactionHistory) { %>
-        <tr>
-          <td><%= purchase.title %></td>
-          <td><%= purchase.date.toLocaleDateString() %></td>
-          <td><%= purchase.hours %></td>
-          <td><%= purchase.studio_name %></td>
-          <td><%= purchase.theater_name %></td>
-          <td><%= purchase.transaction_status %></td>
-          <% purchase.seat_numbers.forEach((seat) => { %>
-            <td><%= seat %></td>
-          <% }); %>
-          <td><%= new Date() - purchase.date %></td>
-        </tr>
-      <% }
-    }); %>
-  </table>
-</div>
+      <!-- Display for Transaction History -->
+      <div>
+        <div class="my-5 border-t-2 border-cfab7a"></div>
+        <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
+        <table>
+          <% purchases.forEach((purchase)=> {
+            const isTransactionHistory = purchase.transaction_status !== 'CANCELED';
+            if (isTransactionHistory) { %>
+            <tr>
+              <td>
+                <%= purchase.title %>
+              </td>
+              <td>
+                <%= purchase.date.toLocaleDateString() %>
+              </td>
+              <td>
+                <%= purchase.hours %>
+              </td>
+              <td>
+                <%= purchase.studio_name %>
+              </td>
+              <td>
+                <%= purchase.theater_name %>
+              </td>
+              <td>
+                <%= purchase.transaction_status %>
+              </td>
+              <% purchase.seat_numbers.forEach((seat)=> { %>
+                <td>
+                  <%= seat %>
+                </td>
+                <% }); %>
+                  <td>
+                    <%= new Date() - purchase.date %>
+                  </td>
+            </tr>
+            <% } }); %>
+        </table>
+      </div>
 
-<!-- Logout Button -->
-    <div class="flex justify-center">
-      <form action="/logout" method="post">
-        <button type="submit">Logout</button>
-      </form>
-    </div>
-    </head>
+      <!-- Logout Button -->
+      <div class="flex justify-center">
+        <form action="/logout" method="post">
+          <button type="submit">Logout</button>
+        </form>
+      </div>
+      </head>
   </body>
+
 </html>
 
 
