@@ -17,12 +17,12 @@
   <nav class="p-10 bg-black text-cfab7a">
     <div class="container flex flex-col items-center justify-between mx-auto lg:flex-row">
       <a href="#" class="text-3xl font-semibold">TixOnline</a>
-      <div class="text-[#cfab7a] mt-4 lg:mt-0">
-        <a href="/" class="px-4 hover:text-white">Home</a>
-        <a href="/#nowplaying" class="px-4 hover:text-white smooth-scroll">Now Playing</a>
-        <a href="/#comingsoon" class="px-4 hover:text-white smooth-scroll">Coming Soon</a>
-        <a href="/theaters" class="px-4 hover:text-white">Theaters</a>
-        <a href="/#about" class="px-4 hover:text-white smooth-scroll">About</a>
+      <div class="text-[#cfab7a] mt-4 lg:mt-0 flex flex-wrap justify-center">
+        <a href="/" class="px-4 hover:text-white nav-item">Home</a>
+        <a href="/#nowplaying" class="px-4 hover:text-white smooth-scroll nav-item">Now Playing</a>
+        <a href="/#comingsoon" class="px-4 hover:text-white smooth-scroll nav-item">Coming Soon</a>
+        <a href="/theaters" class="px-4 hover:text-white nav-item active">Theaters</a>
+        <a href="/#about" class="px-4 hover:text-white smooth-scroll nav-item">About</a>
       </div>
       <div class="flex items-center mt-4 lg:mt-0">
         <% if (session && session.username) { %>
@@ -46,6 +46,7 @@
   <!--Filter-->
   <section id="filter" class="bg-black py-16 text-[#cfab7a] ">
     <div class="container mx-auto">
+      <h1 class="mb-6 text-4xl font-semibold text-cfab7a">Theaters List</h1>
       <form id="filterForm" action="/theaters" method="GET">
         <select id="selectedCity" name="selectedCity" class="px-4 py-2 mr-4 bg-black border-2 rounded border-cfab7a"
           onchange="this.form.submit();">
@@ -58,9 +59,6 @@
     </div>
   </section>
 
-  <div class="flex items-center justify-center">
-    <h1 class="mb-6 text-4xl font-semibold text-cfab7a">Theaters List</h1>
-  </div>
   <div class="container grid grid-cols-1 gap-4 p-4 mx-auto text-cfab7a sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
     <% const today=new Date(); today.setHours(today.getHours() + 7); today.toISOString().split('T')[0];%>
       <% theaters.forEach(function(theater) { %>

@@ -91,6 +91,31 @@ body{
     object-fit: cover;
 }
 
+.nav-item {
+    transition: transform 0.3s;
+    position: relative;
+}
+.nav-item:hover {
+    transform: scale(1.1);
+}
+.nav-item::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #cfab7a;
+    transition: width 0.3s;
+}
+.nav-item:hover::before {
+    width: 100%;
+}
+
+.active::before {
+    width: 100%;
+}
+
 #movieDetailsPopup {
     backdrop-filter: blur(5px);
     transition: opacity 1s ease-in-out;
