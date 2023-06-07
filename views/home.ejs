@@ -13,16 +13,15 @@
 
 <body class="font-raleway">
     <!-- Navbar -->
-    <!-- Navbar -->
     <nav class="p-10 bg-black text-cfab7a">
         <div class="container flex flex-col items-center justify-between mx-auto lg:flex-row">
             <a href="#" class="text-3xl font-semibold">TixOnline</a>
             <div class="text-[#cfab7a] mt-4 lg:mt-0 flex flex-wrap justify-center">
-                <a href="/" class="px-4 hover:text-white">Home</a>
-                <a href="#nowplaying" class="px-4 hover:text-white smooth-scroll">Now Playing</a>
-                <a href="#comingsoon" class="px-4 hover:text-white smooth-scroll">Coming Soon</a>
-                <a href="/theaters" class="px-4 hover:text-white">Theaters</a>
-                <a href="#about" class="px-4 hover:text-white smooth-scroll">About</a>
+                <a href="/" class="px-4 hover:text-white nav-item active">Home</a>
+                <a href="#nowplaying" class="px-4 hover:text-white smooth-scroll nav-item">Now Playing</a>
+                <a href="#comingsoon" class="px-4 hover:text-white smooth-scroll nav-item">Coming Soon</a>
+                <a href="/theaters" class="px-4 hover:text-white nav-item">Theaters</a>
+                <a href="#about" class="px-4 hover:text-white smooth-scroll nav-item">About</a>
             </div>
             <div class="flex items-center mt-4 lg:mt-0">
                 <% if (session && session.username) { %>
