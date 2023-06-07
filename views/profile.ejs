@@ -17,8 +17,8 @@
 
   <body class="leading-normal tracking-normal bg-black font-raleway text-cfab7a">
     <div class="container p-5 mx-auto my-5">
-      <h1 class="mb-2 text-4xl font-bold">Profile</h1>
-      <div class="p-4 mb-6 border-2 border-white rounded shadow-md">
+      <h1 class="mb-5 text-4xl font-bold">Profile</h1>
+      <div class="px-8 py-4 mb-6 border-2 border-cfab7a rounded-md shadow-md">
         <p class="mb-2 text-xl"><strong>
             <%= user.username %>
           </strong> </p>
@@ -28,17 +28,15 @@
         <p class="mb-2 text-xl">
           <%= user.phone_number %>
         </p>
+        <p class="mb-2 text-xl">
+          points : <%= user.points %>
+        </p>
       </div>
-      <!--Display Transactions History-->
-      <div class="p-6 border-2 border-white rounded shadow-md">
-
         <!--Display Transactions History-->
         <% const today=new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0); const now=new
           Date(); now.setUTCHours(now.getUTCHours() + 7); const hours=String(now.getUTCHours()).padStart(2, '0' ); const
           minutes=String(now.getUTCMinutes()).padStart(2, '0' ); const timeString=hours + ':' + minutes;
           console.log(timeString); %>
-
-
           <table>
             <% purchases.forEach((purchase)=> {
               if((purchase.transaction_status !== 'CANCELED') && ((timeString < purchase.hours) &&
@@ -80,51 +78,7 @@
                 <%} %>
 
                   <% }); %>
-          </table>
-          <br>
-          <br>
-          <br>
-          <h2 class="mb-2 text-2xl font-bold">Transaction History</h2>
-          <table>
-            <% purchases.forEach((purchase)=> {
-              if((purchase.transaction_status === 'CANCELED') || ((timeString > purchase.hours) &&
-              (today.toLocaleDateString('en-GB') >= purchase.date.toLocaleDateString('en-GB'))) ){%>
-              <tr>
-                <td>
-                  <%= purchase.title %>
-                </td>
-                <td>
-                  <%= purchase.date.toLocaleDateString() %>
-                </td>
-                <td>
-                  <%= purchase.hours %>
-                </td>
-                <td>
-                  <%= purchase.studio_name%>
-                </td>
-                <td>
-                  <%= purchase.theater_name%>
-                </td>
-                <td>
-                  <%= purchase.transaction_status %>
-                </td>
-                <%purchase.seat_numbers.forEach((seat)=>{%>
-                  <td>
-                    <%= seat %>
-                  </td>
-
-                  <%});%>
-                  <td>
-                    <%let today=new Date();
-                    let remainingTime = today - purchase.date;
-                    %>
-                   <%= remainingTime; %>
-                  </td>
-              </tr>
-              <%} %>
-
-                <% }); %>
-          </table>
+                        ]
       </div>
     </div>
 
@@ -134,7 +88,57 @@
         <button type="submit">Logout</button>
       </form>
     </div>
-        
+    <!-- Display for Ongoing Transactions Today -->
+<div>
+  <h2>Ongoing Transactions Today</h2>
+  <table>
+    <% purchases.forEach((purchase) => {
+      const today = new Date();
+      const isOngoingTransaction =
+        purchase.transaction_status !== 'CANCELED' &&
+        today.toLocaleDateString('en-GB') === purchase.date.toLocaleDateString('en-GB');
+      if (isOngoingTransaction) { %>
+        <tr>
+          <td><%= purchase.title %></td>
+          <td><%= purchase.date.toLocaleDateString() %></td>
+          <td><%= purchase.hours %></td>
+          <td><%= purchase.studio_name %></td>
+          <td><%= purchase.theater_name %></td>
+          <td><%= purchase.transaction_status %></td>
+          <% purchase.seat_numbers.forEach((seat) => { %>
+            <td><%= seat %></td>
+          <% }); %>
+          <td><%= today - purchase.date %></td>
+        </tr>
+      <% }
+    }); %>
+  </table>
+</div>
+
+<!-- Display for Transaction History -->
+<div>
+  <h2>Transaction History</h2>
+  <table>
+    <% purchases.forEach((purchase) => {
+      const isTransactionHistory = purchase.transaction_status !== 'CANCELED';
+      if (isTransactionHistory) { %>
+        <tr>
+          <td><%= purchase.title %></td>
+          <td><%= purchase.date.toLocaleDateString() %></td>
+          <td><%= purchase.hours %></td>
+          <td><%= purchase.studio_name %></td>
+          <td><%= purchase.theater_name %></td>
+          <td><%= purchase.transaction_status %></td>
+          <% purchase.seat_numbers.forEach((seat) => { %>
+            <td><%= seat %></td>
+          <% }); %>
+          <td><%= new Date() - purchase.date %></td>
+        </tr>
+      <% }
+    }); %>
+  </table>
+</div>
+
 
     </head>
   </body>
