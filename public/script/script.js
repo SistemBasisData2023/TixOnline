@@ -78,3 +78,20 @@ closeLoginModalBtn.addEventListener('click', () => {
     loginModal.classList.add('hidden');
 });
 
+function showPopup() {
+    var popup = document.getElementById("popup");
+    popup.style.display = "block";
+}
+
+function hidePopup() {
+    var popup = document.getElementById("popup");
+    popup.style.display = "none";
+}
+
+function checkSession() {
+    if (typeof session !== 'undefined' && session.hasOwnProperty('username') && session.username !== null) {
+        return true;
+    } else {
+        return false;
+    }
+}

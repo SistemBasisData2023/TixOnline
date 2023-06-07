@@ -12,96 +12,126 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles/style.css">
 </head>
+
 <body>
+
   <body class="leading-normal tracking-normal bg-black font-raleway text-cfab7a">
     <div class="container p-5 mx-auto my-5">
       <h1 class="mb-2 text-4xl font-bold">Profile</h1>
       <div class="p-4 mb-6 border-2 border-white rounded shadow-md">
-        <p class="mb-2 text-xl"><strong><%= user.username %></strong> </p>
-        <p class="mb-2 text-xl"><%= user.email %></p>
-        <p class="mb-2 text-xl"><%= user.phone_number %></p>
+        <p class="mb-2 text-xl"><strong>
+            <%= user.username %>
+          </strong> </p>
+        <p class="mb-2 text-xl">
+          <%= user.email %>
+        </p>
+        <p class="mb-2 text-xl">
+          <%= user.phone_number %>
+        </p>
       </div>
       <!--Display Transactions History-->
       <h2 class="mb-2 text-2xl font-bold">Transaction History</h2>
       <div class="p-6 border-2 border-white rounded shadow-md">
 
-  <!--Display Transactions History-->
-  <%  const today = new Date(); 
-  today.setHours(today.getHours() + 0); 
-  today.setDate(today.getDate()+0);
-  const now = new Date();
-  now.setUTCHours(now.getUTCHours() + 7);
-  
-  const hours = String(now.getUTCHours()).padStart(2, '0');
-  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-  
-  const timeString = hours + ':' + minutes;
-  console.log(timeString);
-  
-  
-  %>
+        <!--Display Transactions History-->
+        <% const today=new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0); const now=new
+          Date(); now.setUTCHours(now.getUTCHours() + 7); const hours=String(now.getUTCHours()).padStart(2, '0' ); const
+          minutes=String(now.getUTCMinutes()).padStart(2, '0' ); const timeString=hours + ':' + minutes;
+          console.log(timeString); %>
 
 
-   <table>
-    <% purchases.forEach((purchase) => { 
-      if((purchase.transaction_status !== 'CANCELED') && ((timeString < purchase.hours) && (today.toLocaleDateString('en-GB') <= purchase.date.toLocaleDateString('en-GB'))) ){%>
-        <tr>
-          <td><%= purchase.title %></td>
-          <td><%= purchase.date.toLocaleDateString() %></td>
-          <td><%= purchase.hours %></td>
-          <td><%= purchase.studio_name%></td>
-          <td><%= purchase.theater_name%></td>
-          <td><%= purchase.transaction_status %></td>
-          <%purchase.seat_numbers.forEach((seat)=>{%>
-            <td><%= seat %></td>
-          <%});%>
-            <td>
-              <div class="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
-                <span class="countdown font-mono text-5xl">
-                  <span id="seconds" style="--value:0;"></span>
-                </span>
-                Seconds
-              </div>
-            </td>
-        </tr>
-      <%}
-      %>
-      
-    <% }); %>
-  </table>
-  <br>
-  <br>
-  <br>
-  <table>
-    <% purchases.forEach((purchase) => { 
-      if((purchase.transaction_status === 'CANCELED') || ((timeString > purchase.hours) && (today.toLocaleDateString('en-GB') >= purchase.date.toLocaleDateString('en-GB'))) ){%>
-        <tr>
-          <td><%= purchase.title %></td>
-          <td><%= purchase.date.toLocaleDateString() %></td>
-          <td><%= purchase.hours %></td>
-          <td><%= purchase.studio_name%></td>
-          <td><%= purchase.theater_name%></td>
-          <td><%= purchase.transaction_status %></td>
-          <%purchase.seat_numbers.forEach((seat)=>{%>
-            <td><%= seat %></td>
+          <table>
+            <% purchases.forEach((purchase)=> {
+              if((purchase.transaction_status !== 'CANCELED') && ((timeString < purchase.hours) &&
+                (today.toLocaleDateString('en-GB') <=purchase.date.toLocaleDateString('en-GB'))) ){%>
+                <tr>
+                  <td>
+                    <%= purchase.title %>
+                  </td>
+                  <td>
+                    <%= purchase.date.toLocaleDateString() %>
+                  </td>
+                  <td>
+                    <%= purchase.hours %>
+                  </td>
+                  <td>
+                    <%= purchase.studio_name%>
+                  </td>
+                  <td>
+                    <%= purchase.theater_name%>
+                  </td>
+                  <td>
+                    <%= purchase.transaction_status %>
+                  </td>
+                  <%purchase.seat_numbers.forEach((seat)=>{%>
+                    <td>
+                      <%= seat %>
+                    </td>
+                    <%});%>
+                      <td>
+                        <div class="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+                          <span class="font-mono text-5xl countdown">
+                            <span id="seconds" style="--value:0;"></span>
+                          </span>
+                          Seconds
+                        </div>
+                      </td>
+                </tr>
+                <%} %>
 
-          <%});%>
-        </tr>
-      <%}
-      %>
-      
-    <% }); %>
-  </table>
+                  <% }); %>
+          </table>
+          <br>
+          <br>
+          <br>
+          <table>
+            <% purchases.forEach((purchase)=> {
+              if((purchase.transaction_status === 'CANCELED') || ((timeString > purchase.hours) &&
+              (today.toLocaleDateString('en-GB') >= purchase.date.toLocaleDateString('en-GB'))) ){%>
+              <tr>
+                <td>
+                  <%= purchase.title %>
+                </td>
+                <td>
+                  <%= purchase.date.toLocaleDateString() %>
+                </td>
+                <td>
+                  <%= purchase.hours %>
+                </td>
+                <td>
+                  <%= purchase.studio_name%>
+                </td>
+                <td>
+                  <%= purchase.theater_name%>
+                </td>
+                <td>
+                  <%= purchase.transaction_status %>
+                </td>
+                <%purchase.seat_numbers.forEach((seat)=>{%>
+                  <td>
+                    <%= seat %>
+                  </td>
 
-  <!-- Display other user information as needed -->
-  <form action="/logout" method="post">
-    <button type="submit">Logout</button>
-  </form>
+                  <%});%>
+              </tr>
+              <%} %>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
-</head>
-</body>
+                <% }); %>
+          </table>
+      </div>
+    </div>
+
+    <!-- Logout Button -->
+    <div class="flex justify-center">
+      <form action="/logout" method="post">
+        <button type="submit">Logout</button>
+      </form>
+    </div>
+        
+
+    </head>
+  </body>
+
 </html>
 
 <script>
