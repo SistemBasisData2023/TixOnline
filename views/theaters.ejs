@@ -45,20 +45,23 @@
 
   <!--Filter-->
   <section id="filter" class="bg-black py-16 text-[#cfab7a] ">
-    <form id="filterForm" action="/theaters" method="GET">
-      <select id="selectedCity" name="selectedCity" onchange="this.form.submit();">
-        <% cities.forEach((city)=> { %>
-          <option value="<%= city.city %>" <% if(city.city==cityFilter){ %> selected <%}%>><%= city.city %>
-          </option>
-          <% }) %>
-      </select>
-    </form>
+    <div class="container mx-auto">
+      <form id="filterForm" action="/theaters" method="GET">
+        <select id="selectedCity" name="selectedCity" class="px-4 py-2 mr-4 bg-black border-2 rounded border-cfab7a"
+          onchange="this.form.submit();">
+          <% cities.forEach((city)=> { %>
+            <option value="<%= city.city %>" <% if(city.city==cityFilter){ %> selected <%}%>><%= city.city %>
+            </option>
+            <% }) %>
+        </select>
+      </form>
+    </div>
   </section>
 
   <div class="flex items-center justify-center">
     <h1 class="mb-6 text-4xl font-semibold text-cfab7a">Theaters List</h1>
   </div>
-  <div class="grid grid-cols-1 gap-4 p-4 text-cfab7a sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+  <div class="container grid grid-cols-1 gap-4 p-4 mx-auto text-cfab7a sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
     <% const today=new Date(); today.setHours(today.getHours() + 7); today.toISOString().split('T')[0];%>
       <% theaters.forEach(function(theater) { %>
         <a href="/schedules-theater/<%= theater.theater_id %>?selectedCity=<%=theater.city%>&selectedDate=<%=today.toISOString().split('T')[0]%>"
