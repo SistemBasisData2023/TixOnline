@@ -70,6 +70,11 @@ body{
     color: black;
 }
 
+.gold-btn {
+    background-color: #cfab7b;
+    color: black;
+}
+
 .dead-btn {
     background-color: #eee2d1;
     color: black;
@@ -77,6 +82,10 @@ body{
 
 .border-cfab7a {
     border-color: #cfab7a;
+}
+
+.border-gold {
+    border-color: #cfab7b;
 }
 
 .w-full {

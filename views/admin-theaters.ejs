@@ -1,43 +1,62 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Table Example</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles/fe_style.css">
-  <link rel="stylesheet" href="/styles/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <div>
-    <a href="/admin/theaters/add">Add New Item</a>
+
+<body class="bg-black font-raleway text-cfab7a">
+  <header class="px-16 py-6">
+    <a href="/" class="text-4xl font-semibold hover:text-white">TixOnline</a>
+  </header>
+  <div class="flex justify-center">
+    <div class="relative w-full max-w-screen-xl overflow-x-auto overflow-y-auto rounded-lg shadow md:max-w-screen-2xl">
+      <div class="flex justify-end">
+        <a href="/admin/theaters/add" class="px-4 py-2 mb-4 text-black rounded-md custom-btn">Add New Item</a>
+      </div>
+      <table class="relative w-full whitespace-no-wrap border-2 border-gold table-auto table-striped">
+        <thead>
+          <tr class="text-left">
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Name</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Address</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">City</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Image</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% theaters.forEach(function(theater) { %>
+            <tr class="border-2 border-gold">
+              <td class="px-3 py-2 border-2 border-gold ">
+                <%= theater.name %>
+              </td>
+              <td class="px-3 py-2 border-2 border-gold ">
+                <%= theater.address %>
+              </td>
+              <td class="px-3 py-2 border-2 border-gold ">
+                <%= theater.city %>
+              </td>
+              <td class="px-3 py-2 border-2 border-gold ">
+                <img src='/images/<%= theater.theater_images %> ' class="w-16 h-24">
+              </td>
+              <td class="flex items-center px-3 py-2 space-x-2 border-t border-gold ">
+                <a href="/admin/theaters/edit/<%= theater.theater_id %>"
+                  class="text-blue-500 underline hover:text-blue-700">Edit</a>
+                <form action="/delete-theater/<%= theater.theater_id %>" method="post" class="inline">
+                  <input type="submit" value="Delete" class="text-red-500 bg-black underline cursor-pointer hover:text-red-700">
+                </form>
+              </td>
+            </tr>
+            <% }); %>
+        </tbody>
+      </table>
+    </div>
   </div>
-  <table>
-    <tr>
-      <th>Name</th>
-      <th>Address</th>
-      <th>City</th>
-      <th>Image</th>
-    </tr>
-    <% theaters.forEach(function(theater) { %>
-      <tr>
-        <td><%= theater.name %></td>
-        <td><%= theater.address %></td>
-        <td><%= theater.city %></td>
-        <td>
-          <img src='/images/<%= theater.theater_images %> ' width="100" height="150"> 
-        </td>
-        <td>
-          <a href="/admin/theaters/edit/<%= theater.theater_id %>">Edit</button>
-
-          <form action="/delete-theater/<%= theater.theater_id %>" method="post">
-            <input type="submit" value="Delete">
-          </form>
-        </td>
-      </tr>
-    <% }); %>
-  </table>
-
-
 </body>
+
+
 </html>

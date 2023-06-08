@@ -1,32 +1,59 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Seats Table</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/fe_style.css">
+  <link rel="stylesheet" href="/styles/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <a href="/admin/seats/add">Add Seat</a>
-  <table>
-    <thead>
-      <tr>
-        <th>Column Name</th>
-        <th>Type</th>
-        <th>Theater Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% seats.forEach((seat) => { %>
-        <tr>
-          <td><%= seat.seat_number %></td>
-          <td><%= seat.studio_name %></td>
-          <td><%= seat.name %></td>
-          <td><a href="/admin/seats/edit/<%= seat.seat_id %>">Edit</a></td>
-            <td><form action="/delete-seat/<%=seat.seat_id%>" method="POST">
-                <input type="submit" value="Delete">
-                 </form>
-            </td>
-        </tr>
-      <% })%>
-    </tbody>
-  </table>
+
+<body class="bg-black font-raleway text-cfab7a">
+  <header class="px-16 py-6">
+    <a href="/" class="text-4xl font-semibold hover:text-white">TixOnline</a>
+  </header>
+  <div class="flex justify-center">
+    <div class="relative w-full max-w-screen-xl overflow-x-auto overflow-y-auto rounded-lg shadow md:max-w-screen-2xl">
+      <div class="flex justify-end">
+        <a href="/admin/seats/add" class="px-4 py-2 mb-4 text-black rounded-md custom-btn">Add Seat</a>
+      </div>
+      <table class="relative w-full whitespace-no-wrap border-2 border-gold table-auto table-striped">
+        <thead>
+          <tr class="text-left">
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Seat Number</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Studio Name</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Theater Name</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% seats.forEach((seat)=> { %>
+            <tr class="border-2 border-gold">
+              <td class="px-3 py-2 border-2 border-gold ">
+                <%= seat.seat_number %>
+              </td>
+              <td class="px-3 py-2 border-2 border-gold ">
+                <%= seat.studio_name %>
+              </td>
+              <td class="px-3 py-2 border-2 border-gold ">
+                <%= seat.name %>
+              </td>
+              <td class="flex items-center px-3 py-2 space-x-2 border-t border-gold ">
+                <a href="/admin/seats/edit/<%= seat.seat_id %>"
+                  class="text-blue-500 underline hover:text-blue-700">Edit</a>
+                <form action="/delete-seat/<%=seat.seat_id%>" method="POST" class="inline">
+                  <input type="submit" value="Delete" class="text-red-500 underline cursor-pointer hover:text-red-700">
+                </form>
+              </td>
+            </tr>
+            <% })%>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </body>
+
+
 </html>

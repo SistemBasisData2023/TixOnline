@@ -9,10 +9,9 @@
   <link rel="stylesheet" href="/styles/fe_style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="leading-normal tracking-normal font-raleway bg-black text-cfab7a">
   <!-- Navbar -->
   <nav class="p-10 bg-black text-cfab7a">
     <div class="container flex flex-col items-center justify-between mx-auto lg:flex-row">
@@ -25,105 +24,51 @@
         <a href="/#about" class="px-4 hover:text-white smooth-scroll nav-item">About</a>
       </div>
       <div class="flex items-center mt-4 lg:mt-0">
-          <a href="/profile" class="px-4 nav-item active hover:text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
-          </a>
+        <a href="/profile" class="px-4 nav-item active hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          </svg>
+        </a>
       </div>
     </div>
   </nav>
-  <body class="leading-normal tracking-normal bg-black font-raleway text-cfab7a">
-    <div class="container mx-auto">
-      <h1 class="mb-5 text-4xl font-bold">Profile</h1>
-      <div class="px-8 py-4 mb-6 border-2 rounded-md shadow-md border-cfab7a">
-        <p class="mb-2 text-xl"><strong>
-            <%= user.username %>
-          </strong> </p>
-        <p class="mb-2 text-xl">
-          <%= user.email %>
-        </p>
-        <p class="mb-2 text-xl">
-          <%= user.phone_number %>
-        </p>
-        <p class="mb-2 text-xl">
-          points : <%= user.points %>
-        </p>
-      </div>
-   
+  <div class="container mx-auto">
+    <h1 class="mb-5 text-4xl font-bold">Profile</h1>
+    <div class="px-8 py-4 mb-6 border-2 rounded-md shadow-md border-cfab7a">
+      <p class="mb-2 text-xl"><strong>
+          <%= user.username %>
+        </strong> </p>
+      <p class="mb-2 text-xl">
+        <%= user.email %>
+      </p>
+      <p class="mb-2 text-xl">
+        <%= user.phone_number %>
+      </p>
+      <p class="mb-2 text-xl">
+        points : <%= user.points %>
+      </p>
     </div>
-    </div>
-
 
     <!-- Display for Ongoing Transactions Today -->
     <div>
-      <div class="my-5 border-t-2 border-cfab7a"></div>
-      <h2 class="mb-2 text-2xl font-bold text-cfab7a">Ongoing Transaction</h2>
-      <table>
-        <% purchases.forEach((purchase)=> {
-          const today = new Date();
-          const isOngoingTransaction =
-          purchase.transaction_status !== 'CANCELED' &&
-          today.toLocaleDateString('en-GB') === purchase.date.toLocaleDateString('en-GB');
-          if (isOngoingTransaction) { %>
-          <tr>
-            <td>
-              <%= purchase.title %>
-            </td>
-            <td>
-              <%= purchase.date.toLocaleDateString() %>
-            </td>
-            <td>
-              <%= purchase.hours %>
-            </td>
-            <td>
-              <%= purchase.studio_name %>
-            </td>
-            <td>
-              <%= purchase.theater_name %>
-            </td>
-            <td>
-              <%= purchase.transaction_status %>
-            </td>
-            <% purchase.seat_numbers.forEach((seat)=> { %>
-              <td>
-                <%= seat %>
-              </td>
-              <% }); %>
-                <td>
-                  <%= today - purchase.date %>
-                </td>
-                <%if(purchase.transaction-status === 'WAITING'){%>
-                  <td>
-                    <%var purchaseDate = new Date(purchase.date); purchaseDate.setMinutes(purchaseDate.getMinutes() + 10);%>
-                    <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
-                  </td>
-                  <td>
-                    <!--Button untuk bayar-->
-                    <button>Pay</button>
-                  </td>
-                  <%}%>
-          </tr>
-          <% } }); %>
-      </table>
-
-
-      <!-- Display for Transaction History -->
-      <div>
-        <div class="my-5 border-t-2 border-cfab7a"></div>
-        <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
+      <div class="px-8 py-4 mb-6 border-2 rounded-md shadow-md border-cfab7a">
+        <h2 class="mb-2 text-2xl font-bold text-cfab7a">Ongoing Transaction</h2>
         <table>
           <% purchases.forEach((purchase)=> {
-            const isTransactionHistory = purchase.transaction_status !== 'CANCELED';
-            if (isTransactionHistory) { %>
+            const today = new Date();
+            const isOngoingTransaction =
+            purchase.transaction_status !== 'CANCELED' &&
+            today.toLocaleDateString('en-GB') === purchase.date.toLocaleDateString('en-GB');
+            if (isOngoingTransaction) { %>
             <tr>
               <td>
                 <%= purchase.title %>
               </td>
               <td>
                 <%= purchase.date.toLocaleDateString() %>
+              </td>
               <td>
                 <%= purchase.hours %>
               </td>
@@ -142,58 +87,104 @@
                 </td>
                 <% }); %>
                   <td>
-                    <%= new Date() - purchase.date %>
+                    <%= today - purchase.date %>
                   </td>
+                  <%if(purchase.transaction-status==='WAITING' ){%>
+                    <td>
+                      <%var purchaseDate=new Date(purchase.date); purchaseDate.setMinutes(purchaseDate.getMinutes() +
+                        10);%>
+                        <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
+                    </td>
+                    <td>
+                      <!--Button untuk bayar-->
+                      <button>Pay</button>
+                    </td>
+                    <%}%>
             </tr>
             <% } }); %>
         </table>
-      </div>
 
-      <!-- Logout Button -->
-      <div class="flex justify-center">
-        <form action="/logout" method="post">
-          <button type="submit">Logout</button>
-        </form>
+        <!-- Display for Transaction History -->
+        <div>
+          <div class="my-5 border-t-2 border-cfab7a"></div>
+          <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
+          <table>
+            <% purchases.forEach((purchase)=> {
+              const isTransactionHistory = purchase.transaction_status !== 'CANCELED';
+              if (isTransactionHistory) { %>
+              <tr>
+                <td>
+                  <%= purchase.title %>
+                </td>
+                <td>
+                  <%= purchase.date.toLocaleDateString() %>
+                <td>
+                  <%= purchase.hours %>
+                </td>
+                <td>
+                  <%= purchase.studio_name %>
+                </td>
+                <td>
+                  <%= purchase.theater_name %>
+                </td>
+                <td>
+                  <%= purchase.transaction_status %>
+                </td>
+                <% purchase.seat_numbers.forEach((seat)=> { %>
+                  <td>
+                    <%= seat %>
+                  </td>
+                  <% }); %>
+                    <td>
+                      <%= new Date() - purchase.date %>
+                    </td>
+              </tr>
+              <% } }); %>
+          </table>
+        </div>
       </div>
-      </head>
-  </body>
+    </div>
+
+    <!-- Logout Button -->
+    <div class="flex justify-center mt-5">
+      <form action="/logout" method="post">
+        <button class="px-6 py-2 text-black custom-btn  rounded"
+          type="submit">Logout</button>
+      </form>
+    </div>
+    </head>
+  </div>
+
+  <script>
+    function countdown(element, timestamp) {
+      var targetDate = new Date(timestamp).getTime();
+      // Update the countdown every second
+      var countdownInterval = setInterval(function () {
+        var now = new Date().getTime();
+        var timeRemaining = targetDate - now;
+        // Calculate days, hours, minutes, and seconds
+        var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+        // Display the countdown
+        element.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+        // If the countdown is finished, clear the interval
+        if (timeRemaining <= 0) {
+          clearInterval(countdownInterval);
+          element.innerHTML = "Countdown Finished!";
+        }
+      }, 1000); // Update every second
+    }
+    // Get all elements with class "timer"
+    var timerElements = document.getElementsByClassName("timer");
+    // Iterate through each timer element and start the countdown
+    for (var i = 0; i < timerElements.length; i++) {
+      var element = timerElements[i];
+      var timestamp = element.getAttribute("data-timestamp");
+      countdown(element, timestamp);
+    }
+  </script>
+</body>
 
 </html>
-
-
-<script>
-  function countdown(element, timestamp) {
-    var targetDate = new Date(timestamp).getTime();
-
-    // Update the countdown every second
-    var countdownInterval = setInterval(function() {
-      var now = new Date().getTime();
-      var timeRemaining = targetDate - now;
-
-      // Calculate days, hours, minutes, and seconds
-      var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-      var hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      var minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-      var seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-
-      // Display the countdown
-      element.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
-
-      // If the countdown is finished, clear the interval
-      if (timeRemaining <= 0) {
-        clearInterval(countdownInterval);
-        element.innerHTML = "Countdown Finished!";
-      }
-    }, 1000); // Update every second
-  }
-
-  // Get all elements with class "timer"
-  var timerElements = document.getElementsByClassName("timer");
-
-  // Iterate through each timer element and start the countdown
-  for (var i = 0; i < timerElements.length; i++) {
-    var element = timerElements[i];
-    var timestamp = element.getAttribute("data-timestamp");
-    countdown(element, timestamp);
-  }
-</script>
