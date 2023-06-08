@@ -52,52 +52,7 @@
           points : <%= user.points %>
         </p>
       </div>
-      <!--Display Transactions History-->
-      <% const today=new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0); const now=new
-        Date(); now.setUTCHours(now.getUTCHours() + 7); const hours=String(now.getUTCHours()).padStart(2, '0' ); const
-        minutes=String(now.getUTCMinutes()).padStart(2, '0' ); const timeString=hours + ':' + minutes;
-        console.log(timeString); %>
-        <table>
-          <% purchases.forEach((purchase)=> {
-            if((purchase.transaction_status !== 'CANCELED') && ((timeString < purchase.hours) &&
-              (today.toLocaleDateString('en-GB') <=purchase.date.toLocaleDateString('en-GB'))) ){%>
-              <tr>
-                <td>
-                  <%= purchase.title %>
-                </td>
-                <td>
-                  <%= purchase.date.toLocaleDateString() %>
-                </td>
-                <td>
-                  <%= purchase.hours %>
-                </td>
-                <td>
-                  <%= purchase.studio_name%>
-                </td>
-                <td>
-                  <%= purchase.theater_name%>
-                </td>
-                <td>
-                  <%= purchase.transaction_status %>
-                </td>
-                <%purchase.seat_numbers.forEach((seat)=>{%>
-                  <td>
-                    <%= seat %>
-                  </td>
-                  <%});%>
-                    <td>
-                      <div class="flex flex-col p-2 rounded-box text-neutral-content">
-                        <span class="font-mono text-5xl countdown">
-                          <span id="seconds" style="--value:0;"></span>
-                          <span id="Minutes" style="--value:0;"></span>
-                        </span>
-                        Seconds
-                      </div>
-                    </td>
-              </tr>
-              <%} %>
-
-                <% }); %>
+   
     </div>
     </div>
 
@@ -140,6 +95,16 @@
                 <td>
                   <%= today - purchase.date %>
                 </td>
+                <%if(purchase.transaction-status === 'WAITING'){%>
+                  <td>
+                    <%var purchaseDate = new Date(purchase.date); purchaseDate.setMinutes(purchaseDate.getMinutes() + 10);%>
+                    <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
+                  </td>
+                  <td>
+                    <!--Button untuk bayar-->
+                    <button>Pay</button>
+                  </td>
+                  <%}%>
           </tr>
           <% } }); %>
       </table>
@@ -159,7 +124,6 @@
               </td>
               <td>
                 <%= purchase.date.toLocaleDateString() %>
-              </td>
               <td>
                 <%= purchase.hours %>
               </td>
@@ -198,29 +162,38 @@
 
 
 <script>
-  function startCountdown(secondsElement) {
-    let remainingTime = 57;
+  function countdown(element, timestamp) {
+    var targetDate = new Date(timestamp).getTime();
 
-    function updateCountdown() {
-      secondsElement.style.setProperty('--value', remainingTime);
+    // Update the countdown every second
+    var countdownInterval = setInterval(function() {
+      var now = new Date().getTime();
+      var timeRemaining = targetDate - now;
 
-      remainingTime--;
+      // Calculate days, hours, minutes, and seconds
+      var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
 
-      if (remainingTime >= 0) {
-        setTimeout(updateCountdown, 1000);
+      // Display the countdown
+      element.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+      // If the countdown is finished, clear the interval
+      if (timeRemaining <= 0) {
+        clearInterval(countdownInterval);
+        element.innerHTML = "Countdown Finished!";
       }
-    }
-
-    updateCountdown();
+    }, 1000); // Update every second
   }
 
-  // Start the countdown for purchases with a "WAITING" transaction status
-  const purchaseRows = document.querySelectorAll('tr');
-  purchaseRows.forEach((row) => {
-    const transactionStatus = row.querySelector('td:nth-child(6)').textContent.trim();
-    if (transactionStatus === 'WAITING') {
-      const secondsElement = row.querySelector('.countdown span');
-      startCountdown(secondsElement);
-    }
-  });
+  // Get all elements with class "timer"
+  var timerElements = document.getElementsByClassName("timer");
+
+  // Iterate through each timer element and start the countdown
+  for (var i = 0; i < timerElements.length; i++) {
+    var element = timerElements[i];
+    var timestamp = element.getAttribute("data-timestamp");
+    countdown(element, timestamp);
+  }
 </script>
