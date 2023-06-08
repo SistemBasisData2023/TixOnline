@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Theater Table</title>
+  <title>Studio Table</title>
 </head>
 <body>
+    <a href="/admin/studios/add">Add Studio</a>
   <table>
     <thead>
       <tr>
@@ -18,6 +19,11 @@
           <td><%= studio.name %></td>
           <td><%= studio.type %></td>
           <td><%= studio.theater_name %></td>
+          <td><a href="/admin/studios/edit/<%= studio.studio_id %>">Edit</a></td>
+            <td><form action="/delete-studio/<%=studio.studio_id%>" method="POST">
+                <input type="submit" value="Delete">
+                 </form>
+            </td>
         </tr>
       <% })%>
     </tbody>

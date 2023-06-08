@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Schedules Table</title>
+</head>
+<body>
+    <a href="/admin/Schedules/add">Add Schedule</a>
+  <table>
+    <thead>
+      <tr>
+        <th>Column Name</th>
+        <th>Type</th>
+        <th>Theater Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% schedules.forEach((schedule) => { %>
+        <tr>
+          <td><%= schedule.title %></td>
+          <td><%= schedule.studio_name %></td>
+          <td><%= schedule.name %></td>
+          <td><%= schedule.date %></td>
+          <td><%= schedule.hours %></td>
+          <td><a href="/admin/schedules/edit/<%= schedule.schedule_id %>">Edit</a></td>
+            <td><form action="/delete-schedule/<%=schedule.schedule_id%>" method="POST">
+                <input type="submit" value="Delete">
+                 </form>
+            </td>
+        </tr>
+      <% })%>
+    </tbody>
+  </table>
+</body>
+</html>

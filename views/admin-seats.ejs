@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Seats Table</title>
+</head>
+<body>
+    <a href="/admin/seats/add">Add Seat</a>
+  <table>
+    <thead>
+      <tr>
+        <th>Column Name</th>
+        <th>Type</th>
+        <th>Theater Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% seats.forEach((seat) => { %>
+        <tr>
+          <td><%= seat.seat_number %></td>
+          <td><%= seat.studio_name %></td>
+          <td><%= seat.name %></td>
+          <td><a href="/admin/seats/edit/<%= seat.seat_id %>">Edit</a></td>
+            <td><form action="/delete-seat/<%=seat.seat_id%>" method="POST">
+                <input type="submit" value="Delete">
+                 </form>
+            </td>
+        </tr>
+      <% })%>
+    </tbody>
+  </table>
+</body>
+</html>

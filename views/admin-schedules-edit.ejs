@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add New Seats </title>
+</head>
+<body>
+    <h1>Add New Schedule</h1>
+    <form action="/edit-schedule/<%=schedule.schedule_id%>" method="POST">
+        <label for="movie">movie:</label>
+        <select id="movie" name="movie">
+            <option value="" disabled selected>Select movie</option>
+            <% movies.forEach((movie) => { %>
+                <option value="<%=movie.movie_id%>"><%=movie.title%></option>
+              <% })%>
+        </select>
+
+        <label for="city">City:</label>
+        <select id="city" name="city">
+            <option value="" disabled selected>Select city</option>
+            <% cities.forEach((city) => { %>
+                <option value="<%=city.city%>"><%=city.city%></option>
+              <% })%>
+        </select>
+
+        <label for="theater">Theater:</label>
+        <select id="theater" name="theater" onchange="updateStudioOptions()">
+        </select>
+
+        <label for="studio">studio:</label>
+        <select id="studio" name="studio">
+        </select>
+        <input type="date" name="date" min="<%= minDate %>"/>
+
+        <label for="hours">Time:</label>
+        <input type="text" id="hours" name="hours">
+
+        <label for="prices">Price:</label>
+        <input type="text" id="prices" name="prices">
+
+
+        <input type="submit" value="Book Now">
+    </form>
+
+    <script>
+        function updateStudioOptions() {
+          var theaterSelect = document.getElementById('theater');
+          var studioSelect = document.getElementById('studio');
+          var selectedTheater = parseInt(theaterSelect.value);
+        console.log(selectedTheater);
+          var studioOptions = <%- JSON.stringify(studios) %>;
+    
+          while (studioSelect.options.length > 0) {
+            studioSelect.options[0].remove();
+        }
+                var newOption = document.createElement('option');
+                newOption.value = "None";
+                newOption.innerHTML = "None";
+                newOption.disabled = true;
+                newOption.selected = true;
+                studioSelect.appendChild(newOption);
+       
+            studioOptions.forEach(function(studio) {
+              if (studio.theater_id === selectedTheater) {
+                console.log("tes");
+                var newOption = document.createElement('option');
+                newOption.value = studio.studio_id;
+                newOption.innerHTML = studio.name;
+                studioSelect.appendChild(newOption);
+              }
+            });
+          
+      }
+    
+        function updateTheaterOptions() {
+          var citySelect = document.getElementById('city');
+          var theaterSelect = document.getElementById('theater');
+          var selectedCity = citySelect.value;
+          console.log(selectedCity);
+          var theaterOptions = <%- JSON.stringify(theaters) %>;
+        
+          while (theaterSelect.options.length > 0) {
+            theaterSelect.options[0].remove();
+        }
+                var newOption = document.createElement('option');
+                newOption.value = "None";
+                newOption.innerHTML = "None";
+                newOption.disabled = true;
+                newOption.selected = true;
+                theaterSelect.appendChild(newOption);
+        
+            theaterOptions.forEach(function(theater) {
+              if (theater.city === selectedCity) {
+                var newOption = document.createElement('option');
+                newOption.value = theater.theater_id;
+                newOption.innerHTML = theater.name;
+                theaterSelect.appendChild(newOption);
+              }
+            });
+          
+      }
+         // Attach the event listener after defining the function
+         document.getElementById('city').addEventListener('change', updateTheaterOptions);
+  </script>
+</body>
+</html>
