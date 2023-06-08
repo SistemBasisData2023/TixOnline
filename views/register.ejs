@@ -20,32 +20,6 @@
             <div class="w-full max-w-xl p-8">
                 <h2 class="mb-6 text-3xl font-bold font-raleway">Register</h2>
                 <form method="POST" action="/register">
-                    <% if (UsernameAvailability==false) { %>
-                        <p>Username is already taken.</p>
-                        <% } %>
-                            <% if (PhoneNumberAvailability==false) { %>
-                                <p>Phone number is already taken.</p>
-                                <% } %>
-                                    <% if ( EmailAvailability==false) { %>
-                                        <p>Email is already taken.</p>
-                                        <% } %>
-                                            <% if (usernameRegexAllowed==false) { %>
-                                                <p>consist of 8 to 30 characters, including uppercase and lowercase
-                                                    letters, numbers, underscores, and hyphens..</p>
-                                                <% } %>
-                                                    <% if (emailRegexAllowed==false) { %>
-                                                        <p>Ensures that the email address contains a username part,
-                                                            followed by the "@" symbol, a domain part, and a valid
-                                                            top-level domain.</p>
-                                                        <% } %>
-                                                            <% if (passwordRegexAllowed==false) { %>
-                                                                <p>At least one lowercase letter, at least one
-                                                                    uppercase letter, at least one digit, matches
-                                                                    any combination of alphanumeric characters and
-                                                                    special characters (non-whitespace) with a
-                                                                    minimum length of 8.</p>
-                                                                <% } %>
-                                            
                                                                             <div
                                                                                 class="px-3 py-8 font-semibold rounded custom-btn">
                                                                                 <div class="mb-4">
@@ -56,6 +30,13 @@
                                                                                         class="w-full px-4 py-2 border border-gray-300 rounded"
                                                                                         placeholder="Insert username"
                                                                                         required>
+                                                                                    <% if (UsernameAvailability==false) { %>
+                                                                                    <p>Username is already taken.</p>
+                                                                                    <% } %>
+                                                                                    <% if (usernameRegexAllowed==false) { %>
+                                                                                        <p>consist of 8 to 30 characters, including uppercase and lowercase
+                                                                                            letters, numbers, underscores, and hyphens..</p>
+                                                                                        <% } %>
                                                                                 </div>
                                                                                 <div class="mb-4">
                                                                                     <label for="email"
@@ -65,6 +46,14 @@
                                                                                         class="w-full px-4 py-2 border border-gray-300 rounded"
                                                                                         placeholder="example@email.com"
                                                                                         required>
+                                                                                        <% if (PhoneNumberAvailability==false) { %>
+                                                                                            <p>Phone number is already taken.</p>
+                                                                                        <% } %>
+                                                                                        <% if (emailRegexAllowed==false) { %>
+                                                                                            <p>Ensures that the email address contains a username part,
+                                                                                            followed by the "@" symbol, a domain part, and a valid
+                                                                                            top-level domain.</p>
+                                                                                        <% } %>
                                                                                 </div>
                                                                                 <div class="grid grid-cols-2 gap-4">
                                                                                     <div class="mb-4">
@@ -76,6 +65,16 @@
                                                                                             class="w-full px-4 py-2 border border-gray-300 rounded"
                                                                                             placeholder="Insert password"
                                                                                             required>
+                                                                                        <% if ( EmailAvailability==false) { %>
+                                                                                            <p>Email is already taken.</p>
+                                                                                            <% } %>
+                                                                                            <% if (passwordRegexAllowed==false) { %>
+                                                                                                <p>At least one lowercase letter, at least one
+                                                                                                uppercase letter, at least one digit, matches
+                                                                                                any combination of alphanumeric characters and
+                                                                                                special characters (non-whitespace) with a
+                                                                                                minimum length of 8.</p>
+                                                                                                <% } %>
                                                                                     </div>
                                                                                     <div class="mb-4">
                                                                                         <label for="confirmPassword"
