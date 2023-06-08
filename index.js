@@ -580,13 +580,15 @@ router.get('/admin/schedules/add', async(req,res)=> {
                                 tomorrow.setDate(tomorrow.getDate() + 3);
                               
                                 const minDate = tomorrow.toISOString().split('T')[0];
+                                const username = req.query.username;
 
                                 res.render('admin-schedules-add.ejs', {
                                     movies : movies.rows, 
                                     theaters : theaters.rows, 
                                     studios : studios.rows, 
                                     cities:cities.rows,
-                                    minDate
+                                    minDate,
+                                    username:username
                                 });
                             }
                         });
@@ -777,7 +779,8 @@ router.get('/admin/seats/add', async(req,res)=> {
                             if(err){
                                 console.log(err);
                             }else{
-                                res.render('admin-seats-add.ejs', {cities : cities.rows, theaters : theaters.rows, studios : studios.rows});
+                                const username = req.query.username;
+                                res.render('admin-seats-add.ejs', {cities : cities.rows, theaters : theaters.rows, studios : studios.rows, username : username});
                             }
                         });
                     }
@@ -936,7 +939,8 @@ router.get('/admin/theaters/edit/:theaterId', async(req, res)=> {
             if(err){
                 console.log(err);
             }else{
-                res.render('admin-theaters-edit.ejs',{theater : results.rows[0]});
+                const username = req.query.username;
+                res.render('admin-theaters-edit.ejs',{theater : results.rows[0], username : username});
             }
         });
     }catch(error){
@@ -1111,7 +1115,8 @@ router.get('/admin/studios/add', async(req,res)=> {
                 if(err){
                     console.log(err);
                 }else{
-                    res.render('admin-studios-add.ejs', {cities : cities.rows, theaters : theaters.rows});
+                    const username = req.query.username;
+                    res.render('admin-studios-add.ejs', {cities : cities.rows, theaters : theaters.rows, username : username});
                 }
             });
         });
@@ -1265,7 +1270,8 @@ router.get('/admin/movies', async (req, res) => {
             if(err){
 
             }else{
-                res.render('admin-movies.ejs', {movies : results.rows});
+                const username = req.query.username;
+                res.render('admin-movies.ejs', {movies : results.rows, username:username});
             }
         });
 
@@ -2153,7 +2159,7 @@ router.get('/admin/register', async (req, res) => {
   
             // Set session data for the registered user
             req.session.username = username;
-            return res.json({ message: 'Registration successful.' });
+            res.redirect('/admin/movies');
           } catch (error) {
             console.log(error);
             return res.json({ message: 'Insert account data failed' });
@@ -2177,8 +2183,7 @@ router.get('/admin/register', async (req, res) => {
 router.get('/admin/login', async (req, res) =>{
     try{
         res.render('loginAdmin.ejs');
-
-        console.log("Open /loginAdmin");
+        console.log("Open /login-admin");
     }catch(error){
         console.error('Page is not availible', error);
         return res.status(500).json({ message: 'An error occurred during showing page.' });
@@ -2188,7 +2193,6 @@ router.get('/admin/login', async (req, res) =>{
 //Login button API
 router.post('/login-admin', async (req, res) => {
     const { username, password} = req.body;
-
     try{
         const query = 'SELECT password FROM Admins WHERE username = $1';
         const values = [username];
@@ -2213,10 +2217,10 @@ router.post('/login-admin', async (req, res) => {
                                 if(err){
                                 console.log(err);
                                 }else{
-                                    console.log(results.rows[0].user_id);
                                     store_session = req.session;
                                     store_session.user_id = results.rows[0].admin_id;
-                                    res.redirect('/');
+                                    console.log(username);
+                                    res.redirect(`/admin/movies?username=${encodeURIComponent(username)}`);
                                 }
                             });
                         }else{
@@ -2350,6 +2354,9 @@ function startTimer() {
   }, 1000); // Update the timer every 1 second
 }
 
+router.get('/adminHome', (req, res) => {
+    res.render('admin-home.ejs');
+});
       
       
    
