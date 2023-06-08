@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Table Example</title>
+  <title>Admin | Theaters</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles/fe_style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -10,15 +10,27 @@
 </head>
 
 <body class="bg-black font-raleway text-cfab7a">
-  <header class="px-16 py-6">
-    <a href="/" class="text-4xl font-semibold hover:text-white">TixOnline</a>
-  </header>
-  <div class="flex justify-center">
-    <div class="relative w-full max-w-screen-xl overflow-x-auto overflow-y-auto rounded-lg shadow md:max-w-screen-2xl">
-      <div class="flex justify-end">
+  <div class="flex">
+    <div class="w-64 gold-btn text-white">
+      <!-- Navigation Bar -->
+      <div class="text-xl font-semibold py-4 px-6">Admin Name</div>
+      <hr class="border-t border-gray-600">
+      <ul class="space-y-2">
+        <li><a href="/admin/movies" class="block py-2 px-6 custom-btn">Movies</a></li>
+        <li><a href="/admin/theaters" class="block py-2 px-6 custom-btn">Theaters</a></li>
+        <li><a href="/admin/studios" class="block py-2 px-6 custom-btn">Studios</a></li>
+        <li><a href="/admin/seats" class="block py-2 px-6 custom-btn">Seats</a></li>
+        <li><a href="/admin/schedules" class="block py-2 px-6 custom-btn">Schedules</a></li>
+      </ul>
+    </div>
+    <div class="flex-1 max-w-screen-xl mx-auto overflow-x-auto overflow-y-auto rounded-lg shadow-md">
+      <header class="py-6">
+        <a href="/" class="text-4xl font-semibold hover:text-white">TixOnline</a>
+      </header>
+      <div class="flex justify-end px-6 py-4">
         <a href="/admin/theaters/add" class="px-4 py-2 mb-4 text-black rounded-md custom-btn">Add New Item</a>
       </div>
-      <table class="relative w-full whitespace-no-wrap border-2 border-gold table-auto table-striped">
+      <table class="w-full whitespace-no-wrap border-2 border-gold table-auto table-striped">
         <thead>
           <tr class="text-left">
             <th class="sticky top-0 px-3 py-2 border-2 border-gold">Name</th>
@@ -31,23 +43,24 @@
         <tbody>
           <% theaters.forEach(function(theater) { %>
             <tr class="border-2 border-gold">
-              <td class="px-3 py-2 border-2 border-gold ">
+              <td class="px-3 py-2 border-2 border-gold">
                 <%= theater.name %>
               </td>
-              <td class="px-3 py-2 border-2 border-gold ">
+              <td class="px-3 py-2 border-2 border-gold">
                 <%= theater.address %>
               </td>
-              <td class="px-3 py-2 border-2 border-gold ">
+              <td class="px-3 py-2 border-2 border-gold">
                 <%= theater.city %>
               </td>
-              <td class="px-3 py-2 border-2 border-gold ">
-                <img src='/images/<%= theater.theater_images %> ' class="w-16 h-24">
+              <td class="px-3 py-2 border-2 border-gold">
+                <img src='/images/<%= theater.theater_images %>' class="w-16 h-24">
               </td>
-              <td class="flex items-center px-3 py-2 space-x-2 border-t border-gold ">
+              <td class="flex items-center px-3 py-2 space-x-2 border-t border-gold">
                 <a href="/admin/theaters/edit/<%= theater.theater_id %>"
                   class="text-blue-500 underline hover:text-blue-700">Edit</a>
                 <form action="/delete-theater/<%= theater.theater_id %>" method="post" class="inline">
-                  <input type="submit" value="Delete" class="text-red-500 bg-black underline cursor-pointer hover:text-red-700">
+                  <input type="submit" value="Delete"
+                    class="text-red-500 bg-black underline cursor-pointer hover:text-red-700">
                 </form>
               </td>
             </tr>
@@ -57,6 +70,5 @@
     </div>
   </div>
 </body>
-
 
 </html>
