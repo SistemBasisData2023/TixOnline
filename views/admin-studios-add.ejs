@@ -1,68 +1,73 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Movie Ticket Booking</title>
+  <title>Movie Ticket Booking</title>
 </head>
+
 <body>
-    <h1>Movie Ticket Booking</h1>
-    <form action="/create-studio" method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
+  <h1>Movie Ticket Booking</h1>
+  <form action="/create-studio" method="POST">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
 
-        <label for="type">Ticket Type:</label>
-        <select id="type" name="type" required>
-            <option value="" disabled selected>Select type</option>
-            <option value="Deluxe">Deluxe</option>
-            <option value="Reguler">Reguler</option>
-        </select>
+    <label for="type">Ticket Type:</label>
+    <select id="type" name="type" required>
+      <option value="" disabled selected>Select type</option>
+      <option value="Deluxe">Deluxe</option>
+      <option value="Reguler">Reguler</option>
+    </select>
 
-        <label for="city">City:</label>
-        <select id="city" name="city" required>
-            <option value="" disabled selected>Select city</option>
-            <% cities.forEach((city) => { %>
-                <option value="<%=city.city%>"><%=city.city%></option>
-              <% })%>
-        </select>
+    <label for="city">City:</label>
+    <select id="city" name="city" required>
+      <option value="" disabled selected>Select city</option>
+      <% cities.forEach((city)=> { %>
+        <option value="<%=city.city%>">
+          <%=city.city%>
+        </option>
+        <% })%>
+    </select>
 
-        <label for="theater">Theater:</label>
-        <select id="theater" name="theater" required>
-        </select>
+    <label for="theater">Theater:</label>
+    <select id="theater" name="theater" required>
+    </select>
 
-        <input type="submit" value="Book Now">
-    </form>
+    <input type="submit" value="Book Now">
+  </form>
 
-    <script>
- 
-    
-        function updateTheaterOptions() {
-          var citySelect = document.getElementById('city');
-          var theaterSelect = document.getElementById('theater');
-          var selectedCity = citySelect.value;
-        
-          var theaterOptions = <%- JSON.stringify(theaters) %>;
-          
-        
-          while (theaterSelect.options.length > 0) {
-            theaterSelect.options[0].remove();
-        }
-                var newOption = document.createElement('option');
-                newOption.value = "None";
-                newOption.innerHTML = "None";
-                newOption.disabled = true;
-                newOption.selected = true;
-                theaterSelect.appendChild(newOption);
-        
-            theaterOptions.forEach(function(theater) {
-              if (theater.city === selectedCity) {
-                var newOption = document.createElement('option');
-                newOption.value = theater.theater_id;
-                newOption.innerHTML = theater.name;
-                theaterSelect.appendChild(newOption);
-              }
-            });
+  <script>
+
+
+    function updateTheaterOptions() {
+      var citySelect = document.getElementById('city');
+      var theaterSelect = document.getElementById('theater');
+      var selectedCity = citySelect.value;
+
+      var theaterOptions = <% - JSON.stringify(theaters) %>;
+
+
+      while (theaterSelect.options.length > 0) {
+        theaterSelect.options[0].remove();
       }
-         // Attach the event listener after defining the function
-         document.getElementById('city').addEventListener('change', updateTheaterOptions);
+      var newOption = document.createElement('option');
+      newOption.value = "None";
+      newOption.innerHTML = "None";
+      newOption.disabled = true;
+      newOption.selected = true;
+      theaterSelect.appendChild(newOption);
+
+      theaterOptions.forEach(function (theater) {
+        if (theater.city === selectedCity) {
+          var newOption = document.createElement('option');
+          newOption.value = theater.theater_id;
+          newOption.innerHTML = theater.name;
+          theaterSelect.appendChild(newOption);
+        }
+      });
+    }
+    // Attach the event listener after defining the function
+    document.getElementById('city').addEventListener('change', updateTheaterOptions);
   </script>
 </body>
+
 </html>

@@ -70,6 +70,11 @@ body{
     color: black;
 }
 
+.chosen.btn {
+    background-color: #A68961;
+    color: black;
+}
+
 .gold-btn {
     background-color: #cfab7b;
     color: black;
