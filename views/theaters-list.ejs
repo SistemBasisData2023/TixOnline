@@ -63,7 +63,7 @@
   </nav>
 
   <!--Filter-->
-  <section id="filter" class="bg-black py-16 text-[#cfab7a]">
+  <section id="filter" class="bg-black py-10 text-[#cfab7a]">
     <div class="container mx-auto">
       <h1 class="mb-4 text-4xl font-semibold text-cfab7a">Theaters List</h1>
       <form id="filterForm" action="/schedules-theater/<%= theater.theater_id %>" method="GET">
@@ -88,9 +88,9 @@
   <div class="container grid grid-cols-1 gap-4 p-4 mx-auto text-cfab7a sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
     <% theaters.forEach(function(theater) { %>
       <a href="/schedules-theater/<%= theater.theater_id %>?selectedCity=<%=cityFilter%>&selectedDate=<%=dateFilter%>"
-        class="max-w-sm overflow-hidden transition-all duration-200 transform bg-gray-800 rounded shadow-lg hover:scale-105">
+        class="flex flex-col max-w-sm overflow-hidden transition-all duration-200 transform bg-gray-800 rounded shadow-lg hover:scale-105">
         <img class="object-cover w-full h-64" src='/images/<%= theater.theater_images %> ' alt="<%= theater.city %>">
-        <div class="px-6 py-4">
+        <div class="flex-grow px-6 py-4">
           <div class="mb-2 text-xl font-bold">
             <%= theater.name %>
           </div>
@@ -102,14 +102,14 @@
         <!-- Theater City -->
         <div class="px-6 py-4">
           <span class="inline-block px-3 py-1 mr-2 text-sm font-semibold bg-gray-200 rounded-full">
-            #<%= theater.city %>
+            <%= theater.city %>
           </span>
         </div>
       </a>
       <% }) %>
   </div>
 
-  <section id="movieDetail" class="bg-black py-10 text-[#cfab7a] ">
+  <section id="movieDetail" class="bg-black py-6 text-[#cfab7a] ">
     <div class="container mx-auto space-y-4">
       <h1 class="text-4xl font-semibold text-left">
         <%= theater.name %>

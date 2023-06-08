@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Admin | Studios</title>
+  <title><title>Admin | Schedules</title></title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles/fe_style.css">
   <link rel="stylesheet" href="/styles/style.css">
@@ -17,33 +17,41 @@
   <div class="flex justify-center">
     <div class="relative w-full max-w-screen-xl overflow-x-auto overflow-y-auto rounded-lg shadow md:max-w-screen-2xl">
       <div class="flex justify-end">
-        <a href="/admin/studios/add" class="px-4 py-2 mb-4 text-black rounded-md custom-btn">Add Studio</a>
+        <a href="/admin/Schedules/add" class="px-4 py-2 mb-4 text-black rounded-md custom-btn">Add Schedule</a>
       </div>
-      <table class="relative w-full whitespace-no-wrap border-2 border-gold table-auto table-striped">
+      <table class="relative w-full whitespace-no-wrap border-2 border-white table-auto table-striped">
         <thead>
           <tr class="text-left">
-            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Studio Name</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Column Name</th>
             <th class="sticky top-0 px-3 py-2 border-2 border-gold">Type</th>
             <th class="sticky top-0 px-3 py-2 border-2 border-gold">Theater Name</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Date</th>
+            <th class="sticky top-0 px-3 py-2 border-2 border-gold">Hours</th>
             <th class="sticky top-0 px-3 py-2 border-2 border-gold">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <% studios.forEach((studio)=> { %>
+          <% schedules.forEach((schedule)=> { %>
             <tr class="border-2 border-gold">
               <td class="px-3 py-2 border-2 border-gold ">
-                <%= studio.name %>
+                <%= schedule.title %>
               </td>
               <td class="px-3 py-2 border-2 border-gold ">
-                <%= studio.type %>
+                <%= schedule.studio_name %>
               </td>
               <td class="px-3 py-2 border-2 border-gold ">
-                <%= studio.theater_name %>
+                <%= schedule.name %>
+              </td>
+              <td class="px-3 py-2 border-2 border-gold ">
+                <%= schedule.date %>
+              </td>
+              <td class="px-3 py-2 border-2 border-gold ">
+                <%= schedule.hours %>
               </td>
               <td class="flex items-center px-3 py-2 space-x-2 border-t border-gold ">
-                <a href="/admin/studios/edit/<%= studio.studio_id %>"
+                <a href="/admin/schedules/edit/<%= schedule.schedule_id %>"
                   class="text-blue-500 underline hover:text-blue-700">Edit</a>
-                <form action="/delete-studio/<%=studio.studio_id%>" method="POST" class="inline">
+                <form action="/delete-schedule/<%=schedule.schedule_id%>" method="POST" class="inline">
                   <input type="submit" value="Delete" class="text-red-500 underline cursor-pointer hover:text-red-700">
                 </form>
               </td>

@@ -531,7 +531,375 @@ router.get("/schedules-movie/:movieId", async(req, res) => {
     }
 });
 
+//ADMIN Schedule ROUTER & PAGES
+//Page for schedules list
+router.get('/admin/schedules', async (req, res) => {
+    try{
+        //Get schedules list join with movie, studio, and theater
+        const query ='SELECT Schedule.*, Movies.title, Studios.name AS studio_name, Studios.type, Theaters.* FROM Schedule JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id ORDER BY schedule_id ASC;';
 
+        await db.query(query, (err, results) => {
+            if(err){
+                console.log(err);
+            }else{
+                res.render('admin-schedules.ejs', {schedules : results.rows});
+            }
+        });
+    }catch(error){
+    }
+});
+
+//Page for add schedules
+router.get('/admin/schedules/add', async(req,res)=> {
+    try{
+        //Get list of movies
+        const queryMovie = 'SELECT * FROM Movies;';
+        await db.query(queryMovie, async (err, movies) => {
+            if(err){
+                console.log(err);
+            }else{
+              //Get list of cities  
+                const queryCity = 'SELECT DISTINCT city FROM Theaters;';
+                await db.query(queryCity, async (err, cities) => {
+                    if(err){
+
+                    }else{
+                          //Get list of theaters
+                const queryTheater = 'SELECT * FROM Theaters;';
+                await db.query(queryTheater, async (err, theaters) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        //Get list of studios
+                        const queryStudio = 'SELECT * FROM Studios;';
+                        await db.query(queryStudio, async (err, studios) => {
+                            if(err){
+                                console.log(err);
+                            }else{
+                                const tomorrow = new Date();
+                                tomorrow.setDate(tomorrow.getDate() + 3);
+                              
+                                const minDate = tomorrow.toISOString().split('T')[0];
+
+                                res.render('admin-schedules-add.ejs', {
+                                    movies : movies.rows, 
+                                    theaters : theaters.rows, 
+                                    studios : studios.rows, 
+                                    cities:cities.rows,
+                                    minDate
+                                });
+                            }
+                        });
+                    }
+                });
+                    }
+                });
+            }
+        });
+    }catch(error){
+
+    }
+});
+//API to create schedule
+router.post('/create-schedule', async (req,res)=>{
+    const {movie, studio, date, hours, prices} = req.body;
+    console.log(req.body);
+    console.log(date);
+    try {
+        const query = 'INSERT INTO Schedule (movie_id, studio_id, date, hours, prices) VALUES ($1, $2, $3, $4, $5);';
+        const values = [movie, studio, date, hours, prices];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log("Making schedule error.")
+                console.log(err);
+            }else{
+                console.log("Schedule created");
+                res.redirect('/admin/schedules');
+            }
+        });
+    } catch (error) {
+    }
+});
+//Page to edit schedules
+router.get('/admin/schedules/edit/:scheduleId', async(req, res)=> {
+    const {scheduleId} = req.params;
+    try{
+        const query = 'SELECT * FROM Schedule WHERE schedule_id = $1;';
+        await db.query(query, [scheduleId], async (err, results) => {
+            if(err){
+                console.log(err);
+            }else{
+                //Get list of movies
+                const queryMovie = 'SELECT * FROM Movies;';
+                await db.query(queryMovie, async (err, movies) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        //Get list of cities
+                        const queryCity = 'SELECT DISTINCT city FROM Theaters;';
+                        await db.query(queryCity, async (err, cities) => {
+                            if(err){
+                                console.log(err);
+                            }else{
+                                //Get list of theaters
+                                const queryTheater = 'SELECT * FROM Theaters;';
+                                await db.query(queryTheater, async (err, theaters) => {
+                                    if(err){
+                                        console.log(err);
+                                    }else{
+                                        //Get list of studios
+                                        const queryStudio = 'SELECT * FROM Studios;';
+                                        await db.query(queryStudio, async (err, studios) => {
+                                            if(err){
+                                                console.log(err);
+                                            }else{
+                                                const tomorrow = new Date();
+                                                tomorrow.setDate(tomorrow.getDate() + 3);
+                                              
+                                                const minDate = tomorrow.toISOString().split('T')[0];
+
+                                                res.render('admin-schedules-edit.ejs', {
+                                                    schedule : results.rows[0],
+                                                    movies : movies.rows,
+                                                    theaters : theaters.rows,
+                                                    studios : studios.rows,
+                                                    cities:cities.rows,
+                                                    minDate
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }catch(error){
+    }
+});
+//API to edit schedules
+router.post('/edit-schedule/:id', async (req,res)=>{
+    const schedule_id = req.params.id;
+    const {movie, studio, date, hours, prices} = req.body;
+    try{
+        let query = 'UPDATE schedule SET';
+        const updateFields = [];
+        if(movie){
+            updateFields.push(`movie_id = '${movie}'`);
+     
+        }
+        if(studio){
+            updateFields.push(`studio_id = '${studio}'`);
+   
+        }
+        if(date){
+            updateFields.push(`date = '${date}'`);
+        }
+        if(hours){
+            updateFields.push(`hours = '${hours}'`);
+        }
+        if(prices){
+            updateFields.push(`prices = '${prices}'`);
+        }
+        query += ` ${updateFields.join(', ')} WHERE schedule_id = ${schedule_id};`;
+
+        await db.query(query, (err, results) => {
+            if(err){
+                console.log("Edit data schedule failed : ", err);
+            }else{
+                console.log("Data schedule edited.");
+                res.redirect('/admin/schedules');
+            }
+        });
+    }catch(error){
+        console.log(error);
+    }
+});
+//API to delete schedule
+router.post('/delete-schedule/:id', async (req,res)=>{
+    const schedule_id = req.params.id;
+
+    try{
+        const query = 'DELETE FROM schedule WHERE schedule_id = $1;';
+        const values = [schedule_id];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log("Delete schedule failed : " + err);
+            }else{
+                console.log("Schedule deleted.");
+                res.redirect('/admin/schedules');
+            }
+        });
+    }catch(error){
+        console.log(error);
+    }
+});
+
+//ADMIN Seats ROUTER & PAGES
+//Page for seats list
+router.get('/admin/seats', async (req, res) => {
+    try{
+        //Get seats list join with studio and theater
+        const query ='SELECT seats.*, studios.name AS studio_name, studios.type, theaters.* FROM Seats JOIN Studios ON Seats.studio_id = Studios.studio_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id ORDER BY seat_id ASC;';
+
+        await db.query(query, (err, results) => {
+            if(err){
+            }else{
+                res.render('admin-seats.ejs', {seats : results.rows});
+            }
+        });
+    }catch(error){
+    }
+});
+
+//Page for add seats
+router.get('/admin/seats/add', async(req,res)=> {
+    try{
+        //Get list of cities from theaters
+        const queryCity = 'SELECT DISTINCT city FROM Theaters;';
+        await db.query(queryCity, async (err, cities) => {
+            if(err){
+                console.log(err);
+            }else{
+                //get list of theaters 
+                const queryTheaters = 'SELECT * FROM Theaters;';
+                await db.query(queryTheaters, async (err, theaters) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        //get list of studios
+                        const queryStudios = 'SELECT * FROM Studios;';
+                        await db.query(queryStudios, async (err, studios) => {
+                            if(err){
+                                console.log(err);
+                            }else{
+                                res.render('admin-seats-add.ejs', {cities : cities.rows, theaters : theaters.rows, studios : studios.rows});
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }catch(error){
+    }
+});
+
+//API to create seat
+router.post('/create-seat', async (req,res)=>{
+    const{studio, seatNumber} = req.body;
+    try {
+        const query = 'INSERT INTO Seats (studio_id, seat_number) VALUES ($1, $2);';
+        const values = [studio, seatNumber];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log("Making seat error.")
+                console.log(err);
+            }else{
+                console.log("Seat created");
+                res.redirect('/admin/seats');
+            }
+        });
+    } catch (error) {
+    }
+});
+
+//Page for edit seats
+router.get('/admin/seats/edit/:seatId', async(req, res)=> {
+    const {seatId} = req.params;
+    try{
+        const query = 'SELECT * FROM Seats WHERE seat_id = $1;';
+
+        await db.query(query, [seatId], async (err, results) => {
+            if(err){
+                console.log(err);
+            }else{
+                 //Get list of cities from theaters
+        const queryCity = 'SELECT DISTINCT city FROM Theaters;';
+        await db.query(queryCity, async (err, cities) => {
+            if(err){
+                console.log(err);
+            }else{
+                //get list of theaters 
+                const queryTheaters = 'SELECT * FROM Theaters;';
+                await db.query(queryTheaters, async (err, theaters) => {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        //get list of studios
+                        const queryStudios = 'SELECT * FROM Studios;';
+                        await db.query(queryStudios, async (err, studios) => {
+                            if(err){
+                                console.log(err);
+                            }else{
+                                res.render('admin-seats-edit.ejs', {seat : results.rows[0], cities : cities.rows, theaters : theaters.rows, studios : studios.rows});
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+            }
+        });
+    }catch(error){
+    }
+});
+
+//API to edit seats
+router.post('/edit-seat/:id', async (req,res)=>{
+    const seat_id = req.params.id;
+    const {studio, seatNumber} = req.body;
+    console.log("edit data");
+    try{
+        let query = 'UPDATE seats SET';
+        const updateFields = [];
+        if(studio){
+            updateFields.push(`studio_id = '${studio}'`);
+     
+        }
+        if(seatNumber){
+            updateFields.push(`seat_number = '${seatNumber}'`);
+   
+        }
+        query += ` ${updateFields.join(', ')} WHERE seat_id = ${seat_id};`;
+
+        await db.query(query, (err, results) => {
+            if(err){
+                console.log("Edit data seat failed : ", err);
+            }else{
+                console.log("Data seat edited.");
+                res.redirect('/admin/seats');
+            }
+        });
+    }catch(error){
+        console.log(error);
+    }
+});
+
+//API to delete seat
+router.post('/delete-seat/:id', async (req,res)=>{
+    const seat_id = req.params.id;
+
+    try{
+        const query = 'DELETE FROM seats WHERE seat_id = $1;';
+        const values = [seat_id];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log("Delete seat failed : ", err);
+            }else{
+                console.log("Seat deleted.");
+                res.redirect('/admin/seats');
+            }
+        });
+    }catch(error){
+    }
+});
 //ADMIN Theaters ROUTER & PAGES
 //Page for theaters list
 router.get('/admin/theaters', async (req, res) => {
@@ -540,6 +908,7 @@ router.get('/admin/theaters', async (req, res) => {
 
         await db.query(query, (err, results) => {
             if(err){
+                console.log(err);
             }else{
                 res.render('admin-theaters.ejs', {theaters : results.rows});
             }
@@ -723,7 +1092,6 @@ router.get('/admin/studios', async (req, res) => {
             if(err){
                 console.log(err);
             }else{
-                console.log(results.rows);
                 res.render('admin-studios.ejs', {studios : results.rows});
             }
         });
@@ -753,27 +1121,53 @@ router.get('/admin/studios/add', async(req,res)=> {
 });
 
 //API for add studios
-router.post('/create-studio', async (req,res)=>{});
+router.post('/create-studio', async (req,res)=>{
+    const { name, type, theater} = req.body;
+    console.log(req.body);
+    try{
+         //Insert data to Studios table
+         const query = 'INSERT INTO Studios (name, type, theater_id) VALUES ($1, $2, $3);';
+         const values = [name, type, theater];
+         await db.query(query, values, (err, results) => {
+             if(err){
+                 console.log("Making studio error :" + err);
+                 console.log(err);
+             }else{
+                 console.log("Studio created");
+                 res.redirect('/admin/studios');
+             }   
+         });
+    }catch(err){
+        console.log(err);
+    }
+});
 
 //Page for edit studios
 router.get('/admin/studios/edit/:studioId', async(req, res)=> {
     const {studioId} = req.params;
     try{
-        //Get city list from theaters
+        //Get list of cities from theaters
         const queryCity = 'SELECT DISTINCT city FROM Theaters;';
         await db.query(queryCity, async (err, cities) => {
-            //Get theaters list
+            //Get theaters list based on city
             const queryTheaters = 'SELECT * FROM Theaters';
-            //Values from req.body
             await db.query(queryTheaters, async (err, theaters) => {
                 if(err){
                     console.log(err);
                 }else{
-
+                  //Get studio data based on studioId
+                    const query = 'SELECT * FROM Studios WHERE studio_id = $1;';
+                    const values = [studioId];
+                    await db.query(query, values, async (err, studio) => {
+                        if(err){
+                            console.log(err);
+                        }else{
+                            res.render('admin-studios-edit.ejs', {cities : cities.rows, theaters : theaters.rows, studio : studio.rows[0]});
+                        }
+                    });
                 }
             });
         });
-
     }catch(error){
     }
 });
@@ -781,7 +1175,58 @@ router.get('/admin/studios/edit/:studioId', async(req, res)=> {
 //API for edit studios
 router.post('/edit-studio/:id', async (req,res)=>{
     const studio_id = req.params.id;
-    const { name, type, theater_id} = req.body;
+    const { name, type, theater} = req.body;
+    try{
+       let query = 'UPDATE Studios SET';
+       
+       const updateFields = [];
+       
+       if (name) {
+            updateFields.push(`name = '${name}'`);
+        }
+
+        if (type) {
+            updateFields.push(`type = '${type}'`);
+        }
+
+        if (theater) {
+            updateFields.push(`theater_id = '${theater}'`);
+        }
+
+        query += ` ${updateFields.join(', ')} WHERE studio_id = ${studio_id};`;
+        await db.query(query, (err, results) => {
+            if(err){
+                console.log("Edit data failed : ", err);
+            }else{
+                console.log(query);
+                console.log("Data edited.");
+                res.redirect('/admin/studios');
+            }
+        });
+    }catch(err){
+        console.log(err);
+    }
+});
+
+//API for delete studios
+router.post('/delete-studio/:id', async (req,res)=>{
+    const studio_id = req.params.id;
+
+    try{
+        const query = 'DELETE FROM Studios WHERE studio_id = $1;';
+        const values = [studio_id];
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log(err);
+                res.redirect('/admin/studios');
+            }else{
+                console.log("deleted.")
+                res.redirect('/admin/studios');
+            }
+        });
+    }catch(err){
+        console.log(err);
+    }
 });
 //ADMIN MOVIES ROUTERS & PAGES
 //Page for add movies
@@ -1154,9 +1599,19 @@ router.get('/seat/:scheduleId', async (req, res) => {
                             console.log(err);
                             return res.json({ message: 'Retrive data failed.' });
                         }else{
+                            //Get schedule information join with studio, theater, and movie
+                            const querySchedule = 'SELECT Schedule.*, Movies.title, Movies.images, Studios.name AS studio_name, Studios.type, Theaters.name AS theater_name, Theaters.city FROM Schedule JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id WHERE Schedule.schedule_id = $1;';
+                            db.query(querySchedule, values, (err, schedule) => {
+                                if(err){
+                                    console.log(err);
+                                    return res.json({ message: 'Retrive data failed.' });
+                                }else{
+
                             console.log(store_session);
                             store_session.ticketPrices = results.rows[0].prices;
-                            res.render('seats.ejs', {seats : results.rows, scheduleId:scheduleId, soldSeats:soldSeats.rows,originalMaxAge: store_session.cookie.originalMaxAge});
+                            res.render('seats.ejs', {seats : results.rows, scheduleId:scheduleId, soldSeats:soldSeats.rows,schedule:schedule.rows[0]});
+                                }
+                            });
                         }
                     });
                 }

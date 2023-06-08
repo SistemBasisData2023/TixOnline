@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie Ticket Booking</title>
+</head>
+<body>
+    <h1>Edit studio</h1>
+    <form action="/edit-studio/<%= studio.studio_id %>" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name">
+
+        <label for="type">Ticket Type:</label>
+        <select id="type" name="type">
+            <option value="" disabled selected>Select type</option>
+            <option value="Deluxe">Deluxe</option>
+            <option value="Reguler">Reguler</option>
+        </select>
+
+        <label for="city">City:</label>
+        <select id="city" name="city">
+            <option value="" disabled selected>Select city</option>
+            <% cities.forEach((city) => { %>
+                <option value="<%=city.city%>"><%=city.city%></option>
+              <% })%>
+        </select>
+
+        <label for="theater">Theater:</label>
+        <select id="theater" name="theater">
+        </select>
+
+        <input type="submit" value="Book Now">
+    </form>
+
+    <script>
+          console.log("tes");
+    
+        function updateTheaterOptions() {
+          var citySelect = document.getElementById('city');
+          var theaterSelect = document.getElementById('theater');
+          var selectedCity = citySelect.value;
+        
+          var theaterOptions = <%- JSON.stringify(theaters) %>;
+          console.log("city " + selectedCity);
+        
+          if (!selectedCity) {
+          
+            var newOption = document.createElement('option');
+            newOption.value = "None";
+            newOption.innerHTML = "Select city first";
+            newOption.disabled = true;
+            newOption.selected = true;
+            theaterSelect.appendChild(newOption);
+          }else{
+            theaterOptions.forEach(function(theater) {
+              if (theater.city === selectedCity) {
+                var newOption = document.createElement('option');
+                newOption.value = theater.theater_id;
+                newOption.innerHTML = theater.name;
+                theaterSelect.appendChild(newOption);
+              }
+            });
+          }
+      }
+         // Attach the event listener after defining the function
+         document.getElementById('city').addEventListener('change', updateTheaterOptions);
+  </script>
+</body>
+</html>
