@@ -1546,19 +1546,26 @@ router.post("/delete-movie/:id", async (req, res) => {
 });
 
 router.post("/pay", (req, res) => {
-    const ticketQuantity = store_session.ticketQuantity;
-    const ticketPricesString = JSON.stringify(store_session.ticketPrices);
-    const totalString = JSON.stringify(
-        store_session.ticketQuantity * store_session.ticketPrices
-    );
-    console.log(
-        "Ticket Quantity " +
-        ticketQuantity +
-        " price " +
-        ticketPricesString +
-        " total " +
-        totalString
-    );
+    console.log("This is /pay" + store_session);
+    const { pay_button_clicked, quantity, total_prices } = req.body;
+    let ticketQuantity;
+    let ticketPricesString;
+    let totalString;
+    if(pay_button_clicked){
+        ticketQuantity = quantity;
+        ticketPricesString = total_prices;
+        totalString = JSON.stringify(quantity * total_prices);
+        
+        console.log("Pay button clicked");
+    }else{
+        ticketQuantity = store_session.ticketQuantity;
+        ticketPricesString = JSON.stringify(store_session.ticketPrices);
+        totalString = JSON.stringify(
+            store_session.ticketQuantity * store_session.ticketPrices
+        );
+    }
+   
+    console.log("Ticket Quantity " + ticketQuantity + " price " + ticketPricesString + " total " + totalString);
 
     const create_payment_json = {
         intent: "sale",
@@ -1609,6 +1616,7 @@ router.get("/success", (req, res) => {
     if (!store_session) {
         res.redirect("/");
     } else {
+        console.log("This is /succes" + store_session);
             const payerId = req.query.PayerID;
             const paymentId = req.query.paymentId;
             const totalString = JSON.stringify(
@@ -1684,6 +1692,7 @@ router.get("/cancel", async (req, res) => {
     if (!store_session) {
         res.redirect("/");
     } else {
+        console.log("This is /cancel" + store_session);
         const transaction_id = store_session.transaction_id;
         const transaction_status = "CANCELED";
 
@@ -1715,13 +1724,14 @@ router.get("/seat/:scheduleId", async (req, res) => {
     if (!store_session) {
         res.redirect("/");
     } else {
+        console.log("Session /seat" + store_session);
         const { scheduleId } = req.params;
         store_session.schedule_id = scheduleId;
 
         try {
             //Get sold seats first
             const querySoldSeat =
-                "SELECT seat_id FROM ScheduleSeats WHERE schedule_id = $1;";
+                "SELECT DISTINCT seat_id FROM ScheduleSeats WHERE schedule_id = $1;";
             const values = [scheduleId];
             const soldSeats = null;
 
@@ -1748,20 +1758,13 @@ router.get("/seat/:scheduleId", async (req, res) => {
                                     return res.json({ message: "Retrive data failed." });
                                 } else {
                                     console.log(store_session);
-                                    console.log(schedule.rows[0].movie_id);
-                                    const movieId = schedule.rows[0].movie_id;
-                                    const queryMovie = "SELECT title FROM movies WHERE movie_id = $1;";
-                                    const movieValues = [movieId];
-                                    const movieResult = await db.query(queryMovie, movieValues);
-                                    const movieTitle = movieResult.rows[0].title;
+                                    console.log(soldSeats.rows);
                                     store_session.ticketPrices = results.rows[0].prices;
                                     res.render("seats.ejs", {
                                         seats: results.rows,
                                         scheduleId: scheduleId,
                                         soldSeats: soldSeats.rows,
                                         schedule: schedule.rows[0],
-                                        movie_id: schedule.rows[0].movie_id,
-                                        movieTitle: movieTitle
                                     });
                                 }
                             });
@@ -1813,6 +1816,7 @@ router.post("/transaction-waiting", async (req, res) => {
     date_10min.setMinutes(date_10min.getMinutes() + 10);
     const max_payment_date = date_10min;
     console.log(max_payment_date);
+    console.log("/transaction-waiting" + store_session);
     try {
         const query =
         "INSERT INTO Transactions (user_id, quantity, transaction_status, transaction_date, payment_max_date) VALUES ($1, $2, $3, $4, $5) RETURNING transaction_id;";

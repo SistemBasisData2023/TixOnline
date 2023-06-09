@@ -54,9 +54,20 @@
   </style>
   <script>
     var selectedSeats = []; // Array to store selected seat numbers
+    var selectedSeatNumbers = []; // Array to store selected seat numbers
     var scheduleId = <%= scheduleId %>;
     var currentDate = new Date();
-
+    var seats = <%- JSON.stringify(seats)%>
+    var soldSeats = <%- JSON.stringify(soldSeats)%> 
+    var prices = <%= schedule.prices%>;
+    var totalPrices = 0;
+    var selectedSeatNumber = 0;
+    // Extract seat_id property and convert to numbers
+    var seatIds = soldSeats.map(function(seat) {
+      return parseInt(seat.seat_id);
+    });
+  
+    console.log(totalPrices);
     window.ticketQuantity = selectedSeats.length;
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -66,27 +77,48 @@
 
       showPopupButton.addEventListener('click', () => {
         popup.style.display = 'block';
+        document.getElementById("selectedSeat").textContent = selectedSeatNumbers;
+        document.getElementById("totalPrices").textContent = "$ " + totalPrices;
       });
 
       cancelButton.addEventListener('click', () => {
         popup.style.display = 'none';
       });
+
+      seats.forEach(function (seat) {
+   
+        if (seatIds.includes(seat.seat_id)) {
+       
+          document.getElementById(seat.seat_id).classList.add("booked-button");
+        }else{
+          document.getElementById(seat.seat_id).classList.add("avail-button");
+        }
+      });
     });
-    function storeSeatNumber(seatNumber, buttonElement) {
+    function storeSeatNumber(seatId, seatNumber, buttonElement) {
       // Check if the seat is already selected
-      var index = selectedSeats.indexOf(seatNumber);
+      var index = selectedSeats.indexOf(seatId);
+      var index2 = selectedSeatNumbers.indexOf(seatNumber);
       if (index !== -1) {
         // Remove the seat from the array if it's already selected
         selectedSeats.splice(index, 1);
+        selectedSeatNumbers.splice(index2, 1);
+        totalPrices -= prices;
+        selectedSeatNumber -= 1;
+        console.log(totalPrices);
         buttonElement.classList.remove("selected");
       } else {
         // Add the seat to the array if it's not already selected
-        selectedSeats.push(seatNumber);
+        selectedSeats.push(seatId);
+        selectedSeatNumbers.push(seatNumber);
+        totalPrices += prices;
+        selectedSeatNumber += 1;
+        console.log(totalPrices);
         buttonElement.classList.add("selected");
       }
 
       // Log the selected seats array (for demonstration purposes)
-      console.log("Selected seats: " + selectedSeats);
+      console.log("Selected seats: " + selectedSeats + selectedSeatNumber);
     }
 
     function bookSeats() {
@@ -166,7 +198,7 @@
 <body class="bg-black font-raleway text-cfab7a">
   <section id="movieSeat" class="py-16">
     <div class="container w-1/2 mx-auto">
-      <h1 class="mb-2 text-4xl font-bold ml-3"><%= movieTitle %></h1>
+      <h1 class="mb-2 text-4xl font-bold ml-3"><%= schedule.title %></h1>
       <div class="grid gap-4 p-4 lg:gap-8 lg:p-8">
         <div class="space-y-4">
           <h1 class="text-2xl font-semibold">Select Seat <%=scheduleId%>
@@ -200,11 +232,8 @@
                     <ul>
                       <% seats.forEach(function(seat) { %>
                         <% if (seat.seat_number.charAt(0)===letter) { %>
-                          <button class="px-2 py-1 text-white rounded avail-button disabled:opacity-50"
-                            onclick="storeSeatNumber('<%= seat.seat_id %>', this)" <%
-                            soldSeats.forEach(function(soldSeat){ if(soldSeat.seat_id==seat.seat_id) { %>
-                            class="sold"
-                            <% } })%>
+                          <button class="px-2 py-1 text-white rounded disabled:opacity-50"
+                            onclick="storeSeatNumber('<%= seat.seat_id %>', '<%= seat.seat_number %>',this)" id="<%= seat.seat_id %>"
                               >
                               <%= seat.seat_number %>
                           </button>
@@ -218,7 +247,7 @@
           <div class="text-center">
           <h2 class="text-[#cfab7a] text-lg">Screen</h2>
           <hr class="w-1/4 mx-auto mb-4 border-cfab7a">
-          <button id="showPopup" onclick="bookSeats()" class="inline-block px-4 py-2 mb-2 font-semibold text-black rounded cursor-pointer custom-btn hover:custom-btn">Confirm</button>
+          <button id="showPopup" class="inline-block px-4 py-2 mb-2 font-semibold text-black rounded cursor-pointer custom-btn hover:custom-btn">Confirm</button>
           </div>
 
             <!-- Pop-up ticket -->
@@ -249,7 +278,7 @@
                         <div class="border-b border-dashed border-b-2  border-black"></div>
                         <div class="flex items-center">
                           <div class="flex flex-col">
-                            <div class="mt-2 p-2 w-full flex-none text-2xl font-extrabold leading-none">Ringkasan Order</div>
+                            <div class="mt-2 p-2 w-full flex-none text-2xl font-extrabold leading-none">Summary</div>
                           </div>
                           <div class="flex flex-col mx-auto">
 
@@ -259,44 +288,44 @@
                           </div>
                           <div class="flex items-center mb-2 p-2">
                             <div class="flex flex-col">
-                              <span class="font-bold text-lg">Detail Transaksi</span>
+                              <span class="font-bold text-lg">Transaction Detail</span>
                             </div>
                           </div>
                           <div class="flex items-center p-2 text-m">
                             <div class="flex flex-col">
-                              <div>Regular Seat</div>
+                              <div><%=schedule.type%> Seat</div>
                             </div>
                             <div class="flex flex-col ml-auto">
-                              <div>Rp. 70.000</div>
+                              <div>$ <%=schedule.prices%></div>
                             </div>
                           </div>
                             <div class="flex items-center p-2 text-m">
                             <div class="flex flex-col">
-                              <div>Kursi</div>
+                              <div>Seat</div>
                             </div>
                             <div class="flex flex-col ml-auto">
-                              <div>A1, A2, A3</div>
+                              <div id="selectedSeat"></div>
                             </div>
                           </div>
                           <div class="border-b border-dashed border-b-2 mb-2 pt-5 border-black">
                           </div>
                           <div class="flex items-center mb-2 p-2 text-lg">
                             <div class="flex flex-col">
-                              <div class="font-bold">Total bayar</div>
+                              <div class="font-bold">Total</div>
                             </div>
                             <div class="flex flex-col ml-auto">
-                              <div class="font-bold">Rp. 70.000</div>
+                              <div class="font-bold" id="totalPrices"></div>
                             </div>
                           </div>
                           <div class="flex items-center mb-2 p-2 text-lg">
                             <div class="flex flex-col">
-                              <button id="cancelButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mr-2" onclick="cancelSeats()">
+                              <button id="cancelButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mr-2">
                                Cancel
                               </button>
                             </div>
                             <div class="flex flex-col ml-auto">
                               <form action="/pay" method="post">
-                            <input type="submit" value="Buy" onclick="confirmSeats()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-2">
+                            <input type="submit" value="Buy" onclick="confirmSeats(), bookSeats()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-2">
                           </form>
                             </div>
                           </div>
