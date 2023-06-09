@@ -70,7 +70,11 @@ body{
     color: black;
 }
 
-.custom-btn:hoverblack {
+.custom-btn2 {
+    background-color: black;
+    color: #cfab7a;
+}
+.custom-btn2:hover {
     background-color: black;
     color: #cfab7a;
 }
