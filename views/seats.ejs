@@ -167,7 +167,7 @@
   <section id="movieSeat" class="py-16">
     <div class="container w-1/2 mx-auto">
       <h1 class="mb-2 text-4xl font-bold">Movie Name</h1>
-      <div class="grid grid-cols-2 gap-4 p-4 lg:gap-8 lg:p-8">
+      <div class="grid gap-4 p-4 lg:gap-8 lg:p-8">
         <div class="space-y-4">
           <h1 class="text-2xl font-semibold">Select Seat <%=scheduleId%>
           </h1>
@@ -193,8 +193,6 @@
                 <span class="font-semibold">Available</span>
               </div>
             </div>
-
-
             <ul>
               <% var alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ' ; %>
                 <% alphabet.split('').forEach(function(letter) { %>
@@ -217,13 +215,11 @@
                   <% }) %>
             </ul>
           </div>
-
           <div class="text-center">
-            <h2 class="text-[#cfab7a] text-lg">Screen</h2>
-            <hr class="w-1/2 mx-auto mb-4 border-cfab7a">
-          </div>
-
+          <h2 class="text-[#cfab7a] text-lg">Screen</h2>
+          <hr class="w-1/4 mx-auto mb-4 border-cfab7a">
           <button id="showPopup" onclick="bookSeats()" class="inline-block px-4 py-2 mb-2 font-semibold text-black rounded cursor-pointer custom-btn hover:custom-btn">Confirm</button>
+          </div>
 
             <!-- Pop-up ticket -->
           <div id="popup" class="fixed inset-0 flex justify-center items-center hidden">
