@@ -60,7 +60,7 @@
             const today = new Date();
             const isOngoingTransaction =
             purchase.transaction_status !== 'CANCELED' &&
-            today.toLocaleDateString('en-GB') === purchase.date.toLocaleDateString('en-GB');
+            today.toLocaleDateString('en-GB') === purchase.date;
             if (isOngoingTransaction) { %>
             <tr>
               <td>
@@ -89,10 +89,9 @@
                   <td>
                     <%= today - purchase.date %>
                   </td>
-                  <%if(purchase.transaction-status==='WAITING' ){%>
+                  <%if(purchase.transaction_status ==='WAITING'){%>
                     <td>
-                      <%var purchaseDate=new Date(purchase.date); purchaseDate.setMinutes(purchaseDate.getMinutes() +
-                        10);%>
+                      <%var purchaseDate=new Date(purchase.payment_max_date); console.log(purchaseDate); %>
                         <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
                     </td>
                     <td>
@@ -118,6 +117,16 @@
                 </td>
                 <td>
                   <%= purchase.date.toLocaleDateString() %>
+                </td>
+                <td>
+                  <%var purchaseDate=new Date(purchase.date); purchaseDate.setDate(purchaseDate.getDate() +
+                    10); %>
+    
+                    <div class="timer" data-timestamp="<%=purchase.payment_max_date%>"></div>
+                </td>
+                <td>
+                  <%= purchaseDate %>
+                </td>
                 <td>
                   <%= purchase.hours %>
                 </td>
@@ -135,9 +144,6 @@
                     <%= seat %>
                   </td>
                   <% }); %>
-                    <td>
-                      <%= new Date() - purchase.date %>
-                    </td>
               </tr>
               <% } }); %>
           </table>
@@ -168,7 +174,7 @@
         var minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
         // Display the countdown
-        element.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+        element.innerHTML = minutes + "m " + seconds + "s ";
         // If the countdown is finished, clear the interval
         if (timeRemaining <= 0) {
           clearInterval(countdownInterval);

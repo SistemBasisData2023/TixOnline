@@ -125,51 +125,51 @@ app.use(async (req, res, next) => {
 // '* * * * *' run every 1 minute
 // '*/5 * * * *' run every 5 minute
 //Update transaction status to CANCELED if transaction status is WAITING and transaction date is more than 10 minute
-cron.schedule("* * * * *", async () => {
-  try {
-    //Get transaction that are waiting and transaction date is more than 10 minute
-    db.query(
-      `
-      UPDATE transactions
-      SET transaction_status = 'CANCELED'
-      WHERE transaction_status = 'WAITING' AND transaction_date >= NOW() - INTERVAL '10 minutes' RETURNING transaction_id;`,
-      (err, transactions) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Transaction statuses updated successfully.");
-          //Get transaction details seats for each transaction
-          transactions.rows.forEach(async (transaction) => {
-            const query = "SELECT schedule_id, seats_ids FROM transactions_details_seats WHERE transaction_id = $1;";
-            const values = [transaction.transaction_id];
+// cron.schedule("*/5 * * * *", async () => {
+//   try {
+//     //Get transaction that are waiting and transaction date is more than 10 minute
+//     db.query(
+//       `
+//       UPDATE transactions
+//       SET transaction_status = 'CANCELED'
+//       WHERE transaction_status = 'WAITING' AND transaction_date >= NOW() - INTERVAL '10 minutes' RETURNING transaction_id;`,
+//       (err, transactions) => {
+//         if (err) {
+//           console.log(err);
+//         } else {
+//           console.log("Transaction statuses updated successfully.");
+//           //Get transaction details seats for each transaction
+//           transactions.rows.forEach(async (transaction) => {
+//             const query = "SELECT schedule_id, seats_ids FROM transactions_details_seats WHERE transaction_id = $1;";
+//             const values = [transaction.transaction_id];
 
-            await db.query(query, values, async (err, results) => {
-              if (err) {
-                console.log("Getting schedule_id and seats_ids failed : " + err);
-              } else {
-                //Update seats status to AVAILABLE for each seats
-                results.rows[0].seats_ids.forEach(async (seatId) => {
-                  const queryDelete = "DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;";
-                  const values = [results.rows.schedule_id, seatId];
+//             await db.query(query, values, async (err, results) => {
+//               if (err) {
+//                 console.log("Getting schedule_id and seats_ids failed : " + err);
+//               } else {
+//                 //Update seats status to AVAILABLE for each seats
+//                 results.rows[0].seats_ids.forEach(async (seatId) => {
+//                   const queryDelete = "DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;";
+//                   const values = [results.rows.schedule_id, seatId];
 
-                  await db.query(queryDelete, values, (err, results) => {
-                    if (err) {
-                      console.log("Delete schedule and seats failed : " + err);
-                    } else {
-                      console.log("Seat deleted.");
-                    }
-                  });
-                });
-              }
-            });
-          });
-        }
-      }
-    );
-  } catch (error) {
-    console.error("An error occurred:", error);
-  }
-});
+//                   await db.query(queryDelete, values, (err, results) => {
+//                     if (err) {
+//                       console.log("Delete schedule and seats failed : " + err);
+//                     } else {
+//                       console.log("Seat deleted.");
+//                     }
+//                   });
+//                 });
+//               }
+//             });
+//           });
+//         }
+//       }
+//     );
+//   } catch (error) {
+//     console.error("An error occurred:", error);
+//   }
+// });
 
 app.use(express.urlencoded({ extended: false }));
 
@@ -1798,12 +1798,16 @@ router.post("/transaction-waiting", async (req, res) => {
     const { quantity } = req.body;
     const user_id = store_session.user_id;
     const transaction_status = "WAITING";
-    const transaction_date = new Date();
-
+    let date = new Date();
+    let date_10min = new Date();
+    const transaction_date = date;
+    date_10min.setMinutes(date_10min.getMinutes() + 10);
+    const max_payment_date = date_10min;
+    console.log(max_payment_date);
     try {
         const query =
-        "INSERT INTO Transactions (user_id, quantity, transaction_status, transaction_date) VALUES ($1, $2, $3, $4) RETURNING transaction_id;";
-        const values = [user_id, quantity, transaction_status, transaction_date];
+        "INSERT INTO Transactions (user_id, quantity, transaction_status, transaction_date, payment_max_date) VALUES ($1, $2, $3, $4, $5) RETURNING transaction_id;";
+        const values = [user_id, quantity, transaction_status, transaction_date, max_payment_date];
 
         await db.query(query, values, (err, results) => {
             if (err) {
@@ -2267,19 +2271,31 @@ router.post("/register-admin", async (req, res) => {
           const values = [username, email, hash];
   
           try {
-            await db.query(query, values);
-            console.log("Register Successful!");
-  
-            // Set session data for the registered user
-            req.session.username = username;
-            res.redirect('/admin/movies');
+            await db.query(query, values, (err, results ) => {
+                if (err) {
+                    console.log(err);
+                    return res.json({ message: 'Insert account data failed' });
+                }else{
+                    console.log("Register Successfull!");
+
+                    store_session = req.session;
+                    store_session.user_id = req.body.user_id;
+                    store_session.role = "admin";
+                    store_session.schedule = null;
+                    store_session.seats_id = null;
+                    store_session.username = username;
+
+                    res.status(200).redirect('/admin/movies');
+                }
+            });
+         
           } catch (error) {
             console.log(error);
             return res.json({ message: 'Insert account data failed' });
           }
         });
       } else {
-        res.status(500);
+        res.status(200);
         res.render('registerAdmin.ejs', {
           UsernameAvailability: await checkUsernameAvailability(username),
           emailAdminRegex: emailAdminRegex.test(email),
@@ -2360,9 +2376,8 @@ router.post('/login-admin', async (req, res) => {
 //function to get all purchases
 async function getAllPurchases() {
   try {
-    const query = "SELECT * FROM transactions_details_seats;";
+    const query = "SELECT * FROM transactions_details_seats ORDER BY transaction_id DESC;";
     const result = await db.query(query);
-    console.log(result.rows);
     return result.rows;
   } catch (error) {
     console.error("Error retrieving purchase information:", error);

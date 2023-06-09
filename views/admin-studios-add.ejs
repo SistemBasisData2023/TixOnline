@@ -79,12 +79,13 @@
       </form>
     </div>
   </div>
+  <%console.log(theaters);%>
   <script>
     function updateTheaterOptions() {
       var citySelect = document.getElementById('city');
       var theaterSelect = document.getElementById('theater');
       var selectedCity = citySelect.value;
-      var theaterOptions = <% - JSON.stringify(theaters) %>;
+      var theaterOptions = <%- JSON.stringify(theaters) %>;
 
       while (theaterSelect.options.length > 0) {
         theaterSelect.options[0].remove();

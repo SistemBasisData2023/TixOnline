@@ -88,6 +88,65 @@
       </form>
     </div>
   </div>
+  <script>
+    function updateStudioOptions() {
+      var theaterSelect = document.getElementById('theater');
+      var studioSelect = document.getElementById('studio');
+      var selectedTheater = parseInt(theaterSelect.value);
+      console.log(selectedTheater);
+      var studioOptions = <%- JSON.stringify(studios) %>;
+
+      while (studioSelect.options.length > 0) {
+        studioSelect.options[0].remove();
+      }
+      var newOption = document.createElement('option');
+      newOption.value = "None";
+      newOption.innerHTML = "None";
+      newOption.disabled = true;
+      newOption.selected = true;
+      studioSelect.appendChild(newOption);
+
+      studioOptions.forEach(function (studio) {
+        if (studio.theater_id === selectedTheater) {
+          console.log("tes");
+          var newOption = document.createElement('option');
+          newOption.value = studio.studio_id;
+          newOption.innerHTML = studio.name;
+          studioSelect.appendChild(newOption);
+        }
+      });
+    }
+
+    function updateTheaterOptions() {
+      var citySelect = document.getElementById('city');
+      var theaterSelect = document.getElementById('theater');
+      var selectedCity = citySelect.value;
+      console.log(selectedCity);
+      var theaterOptions = <%- JSON.stringify(theaters) %>;
+
+      while (theaterSelect.options.length > 0) {
+        theaterSelect.options[0].remove();
+      }
+      var newOption = document.createElement('option');
+      newOption.value = "None";
+      newOption.innerHTML = "None";
+      newOption.disabled = true;
+      newOption.selected = true;
+      theaterSelect.appendChild(newOption);
+
+      theaterOptions.forEach(function (theater) {
+        if (theater.city === selectedCity) {
+          var newOption = document.createElement('option');
+          newOption.value = theater.theater_id;
+          newOption.innerHTML = theater.name;
+          theaterSelect.appendChild(newOption);
+        }
+      });
+    }
+
+    // Attach the event listener after defining the function
+    document.getElementById('city').addEventListener('change', updateTheaterOptions);
+  </script>
 </body>
 
 
