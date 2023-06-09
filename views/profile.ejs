@@ -51,18 +51,31 @@
       </p>
     </div>
 
+      
+  <%  const today = new Date(); 
+  today.setHours(today.getHours() + 0); 
+  today.setDate(today.getDate()+0);
+  const now = new Date();
+  now.setUTCHours(now.getUTCHours() + 7);
+  
+  const hours = String(now.getUTCHours()).padStart(2, '0');
+  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+  
+  const timeString = hours + ':' + minutes;
+  %>
+  
+  
+
     <!-- Display for Ongoing Transactions Today -->
     <div>
       <div class="px-8 py-4 mb-6 border-2 rounded-md shadow-md border-cfab7a">
         <h2 class="mb-2 text-2xl font-bold text-cfab7a">Ongoing Transaction</h2>
         <table>
+          <%console.log("time now " + timeString + "waktu sekarang " + today.toLocaleDateString('en-GB'));%>
           <% purchases.forEach((purchase)=> {
-            const today = new Date();
-            const isOngoingTransaction =
-            purchase.transaction_status !== 'CANCELED' &&
-            today.toLocaleDateString('en-GB') === purchase.date;
-            if (isOngoingTransaction) { %>
-            <tr>
+            if((purchase.transaction_status !== 'CANCELED') && ((timeString < purchase.hours) || (today.toLocaleDateString('en-GB') <= purchase.date.toLocaleDateString('en-GB'))) ){%>
+            
+              <tr>
               <td>
                 <%= purchase.title %>
               </td>
@@ -109,24 +122,14 @@
           <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
           <table>
             <% purchases.forEach((purchase)=> {
-              const isTransactionHistory = purchase.transaction_status !== 'CANCELED';
-              if (isTransactionHistory) { %>
+              if((purchase.transaction_status === 'CANCELED') || ((timeString > purchase.hours) && (today.toLocaleDateString('en-GB') >= purchase.date.toLocaleDateString('en-GB'))) ){%>
               <tr>
                 <td>
                   <%= purchase.title %>
                 </td>
                 <td>
                   <%= purchase.date.toLocaleDateString() %>
-                </td>
-                <td>
-                  <%var purchaseDate=new Date(purchase.date); purchaseDate.setDate(purchaseDate.getDate() +
-                    10); %>
-    
-                    <div class="timer" data-timestamp="<%=purchase.payment_max_date%>"></div>
-                </td>
-                <td>
-                  <%= purchaseDate %>
-                </td>
+                </td>         
                 <td>
                   <%= purchase.hours %>
                 </td>
