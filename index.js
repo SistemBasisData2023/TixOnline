@@ -15,6 +15,7 @@ const router = express.Router();
 const { Client } = require("pg");
 const { render } = require("ejs");
 const e = require("express");
+const { Console } = require("console");
 app.use(cookieParser());
 const port = 3000;
 
@@ -1741,18 +1742,26 @@ router.get("/seat/:scheduleId", async (req, res) => {
                             //Get schedule information join with studio, theater, and movie
                             const querySchedule =
                                 "SELECT Schedule.*, Movies.title, Movies.images, Studios.name AS studio_name, Studios.type, Theaters.name AS theater_name, Theaters.city FROM Schedule JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id WHERE Schedule.schedule_id = $1;";
-                            db.query(querySchedule, values, (err, schedule) => {
+                            db.query(querySchedule, values, async(err, schedule) => {
                                 if (err) {
                                     console.log(err);
                                     return res.json({ message: "Retrive data failed." });
                                 } else {
                                     console.log(store_session);
+                                    console.log(schedule.rows[0].movie_id);
+                                    const movieId = schedule.rows[0].movie_id;
+                                    const queryMovie = "SELECT title FROM movies WHERE movie_id = $1;";
+                                    const movieValues = [movieId];
+                                    const movieResult = await db.query(queryMovie, movieValues);
+                                    const movieTitle = movieResult.rows[0].title;
                                     store_session.ticketPrices = results.rows[0].prices;
                                     res.render("seats.ejs", {
                                         seats: results.rows,
                                         scheduleId: scheduleId,
                                         soldSeats: soldSeats.rows,
                                         schedule: schedule.rows[0],
+                                        movie_id: schedule.rows[0].movie_id,
+                                        movieTitle: movieTitle
                                     });
                                 }
                             });
