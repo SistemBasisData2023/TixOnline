@@ -70,6 +70,10 @@ body{
     color: black;
 }
 
+.custom-btn:hoverblack {
+    background-color: black;
+    color: #cfab7a;
+}
 .chosen.btn {
     background-color: #A68961;
     color: black;
