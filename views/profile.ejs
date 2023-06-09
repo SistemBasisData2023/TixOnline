@@ -57,7 +57,7 @@
   today.setDate(today.getDate()+0);
   const now = new Date();
   now.setUTCHours(now.getUTCHours() + 7);
-  
+  console.log(now);
   const hours = String(now.getUTCHours()).padStart(2, '0');
   const minutes = String(now.getUTCMinutes()).padStart(2, '0');
   
@@ -71,16 +71,26 @@
       <div class="px-8 py-4 mb-6 border-2 rounded-md shadow-md border-cfab7a">
         <h2 class="mb-2 text-2xl font-bold text-cfab7a">Ongoing Transaction</h2>
         <table>
-          <%console.log("time now " + timeString + "waktu sekarang " + today.toLocaleDateString('en-GB'));%>
           <% purchases.forEach((purchase)=> {
-            if((purchase.transaction_status !== 'CANCELED') && ((timeString < purchase.hours) || (today.toLocaleDateString('en-GB') <= purchase.date.toLocaleDateString('en-GB'))) ){%>
-            
+
+            var time = purchase.hours;
+            var timeComponents = time.split(':');
+            var hours = parseInt(timeComponents[0]);
+            var minutes = parseInt(timeComponents[1]);
+
+            purchase.date.setHours(hours);
+            purchase.date.setMinutes(minutes);
+
+            if((purchase.transaction_status !== 'CANCELED') && (now < purchase.date)){
+              console.log(purchase.title + purchase.date );
+              %>
+              
               <tr>
               <td>
                 <%= purchase.title %>
               </td>
               <td>
-                <%= purchase.date.toLocaleDateString() %>
+                <%= purchase.date %>
               </td>
               <td>
                 <%= purchase.hours %>
@@ -104,13 +114,14 @@
                   </td>
                   <%if(purchase.transaction_status ==='WAITING'){%>
                     <td>
-                      <%var purchaseDate=new Date(purchase.payment_max_date); console.log(purchaseDate); %>
+                      <%var purchaseDate=new Date(purchase.payment_max_date); %>
                         <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
                     </td>
                     <td>
                       <!--Button untuk bayar-->
                       <button>Pay</button>
                     </td>
+
                     <%}%>
             </tr>
             <% } }); %>
@@ -122,7 +133,16 @@
           <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
           <table>
             <% purchases.forEach((purchase)=> {
-              if((purchase.transaction_status === 'CANCELED') || ((timeString > purchase.hours) && (today.toLocaleDateString('en-GB') >= purchase.date.toLocaleDateString('en-GB'))) ){%>
+              
+              var time = purchase.hours;
+              var timeComponents = time.split(':');
+              var hours = parseInt(timeComponents[0]);
+              var minutes = parseInt(timeComponents[1]);
+
+              purchase.date.setHours(hours);
+              purchase.date.setMinutes(minutes);
+
+              if((purchase.transaction_status === 'CANCELED') || (now < purchase.date)){%>
               <tr>
                 <td>
                   <%= purchase.title %>
