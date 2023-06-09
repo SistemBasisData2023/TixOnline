@@ -11,7 +11,7 @@
 </head>
 
 <body class="flex flex-col h-screen bg-black text-cfab7a font-raleway">
-    <a href="/" class="font-semibold absolute top-0 right-0 m-4 text-4xl hover:text-white">TixOnline</a>
+    <a href="/" class="absolute top-0 right-0 m-4 text-4xl font-semibold hover:text-white">TixOnline</a>
     <div class="flex flex-1">
         <div class="flex items-center justify-center w-1/2">
             <img src="/images/cinemabg.png" alt="Image" class="object-cover w-full h-auto">
@@ -42,7 +42,7 @@
                                                             special characters (non-whitespace) with a
                                                             minimum length of 8.</p>
                                                         <% } %>
-                                                            <div class="px-3 py-8 font-semibold rounded custom-btn">
+                                                            <div class="px-3 py-8 font-semibold rounded gold-btn">
                                                                 <div class="mb-4">
                                                                     <label for="username"
                                                                         class="block mb-2 font-semibold text-black">Username</label>
@@ -88,6 +88,12 @@
             </div>
         </div>
     </div>
+    <!-- Footer -->
+    <footer class="bg-black text-cfab7a py-6 text-[#cfab7a]">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2023 TixOnline. All rights reserved.</p>
+        </div>
+    </footer>
     <script>
         function comparePasswords() {
             var password = document.getElementById("password").value;
@@ -101,6 +107,7 @@
             return true; // Allow form submission
         }
     </script>
+
 </body>
 
 </html>

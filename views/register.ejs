@@ -20,161 +20,179 @@
             <div class="w-full max-w-xl p-8">
                 <h2 class="mb-6 text-3xl font-bold font-raleway">Register</h2>
                 <form method="POST" action="/register">
-                     <div
-                        class="px-3 py-8 font-semibold rounded custom-btn">
-                            <div class="mb-4">
-                                <label for="username"
-                                class="block mb-2 font-semibold text-black">Username</label>
-                                <input type="text" id="username"
-                                name="username"
-                                class="w-full px-4 py-2 border border-gray-300 rounded mb-2"
-                                placeholder="Insert username"
-                                required>
-                                 <% if (UsernameAvailability==false) { %>
-                                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <div class="px-3 py-8 font-semibold rounded gold-btn">
+                        <div class="mb-4">
+                            <label for="username" class="block mb-2 font-semibold text-black">Username</label>
+                            <input type="text" id="username" name="username"
+                                class="w-full px-4 py-2 mb-2 border border-gray-300 rounded"
+                                placeholder="Insert username" required>
+                            <% if (UsernameAvailability==false) { %>
+                                <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
+                                    role="alert">
                                     <strong class="font-bold">Username already taken</strong>
                                     <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                      <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+                                        <svg class="w-6 h-6 text-red-500 fill-current" role="button"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <title>Close</title>
+                                            <path
+                                                d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                        </svg>
                                     </span>
-                                  </div>
-                                <% } %>
-                                <% if (usernameRegexAllowed==false) { %>
-                                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                                        <strong class="font-bold">consist of 8 to 30 characters, including uppercase and lowercase
-                                            letters, numbers, underscores, and hyphens..</strong>                                    
-                                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                          <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
-                                        </span>
-                                      </div>
-                                <% } %>
                                 </div>
-                                                                                <div class="mb-4">
-                                                                                    <label for="email"
-                                                                                        class="block mb-2 font-semibold text-black">Email</label>
-                                                                                    <input type="email" id="email"
-                                                                                        name="email"
-                                                                                        class=" mb-2 w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                        placeholder="example@email.com"
-                                                                                        required>
-                                                                                        <% if (emailRegexAllowed==false) { %>
-                                                                                        <div class="mb-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                                                                                            <strong class="font-bold">Ensures that the email address contains a username part,
-                                                                                                followed by the "@" symbol, a domain part, and a valid
-                                                                                                top-level domain.</strong>
-                                                                                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                                                                              <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
-                                                                                            </span>
-                                                                                        </div>
-                                                                                        <% } %>
-                                                                                        <% if ( EmailAvailability==false) { %>
-                                                                                          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                                                                                            <strong class="font-bold">Email is already taken</strong>
-                                                                                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                                                                              <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
-                                                                                            </span>
-                                                                                          </div>
-                                                                                        <% } %>
-                                                                                </div>
-                                                                                <div class="grid grid-cols-2 gap-4">
-                                                                                    <div class="mb-4">
-                                                                                        <label for="password"
-                                                                                            class="block mb-2 font-semibold text-black">Password</label>
-                                                                                        <input type="password"
-                                                                                            id="password"
-                                                                                            name="password"
-                                                                                            class=" mb-2 w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                            placeholder="Insert password"
-                                                                                            required>
-                                                                                            <% if (passwordRegexAllowed==false) { %>
-                                                                                                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                                                                                                    <strong class="font-bold">At least one lowercase letter, at least one
-                                                                                                        uppercase letter, at least one digit, matches
-                                                                                                        any combination of alphanumeric characters and
-                                                                                                        special characters (non-whitespace) with a
-                                                                                                        minimum length of 8.</strong>
-                                                                                                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                                                                                      <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
-                                                                                                    </span>
-                                                                                                  </div>
-                                                                                                <% } %>
-                                                                                    </div>
-                                                                                    <div class="mb-4">
-                                                                                        <label for="confirmPassword"
-                                                                                            class="block mb-2 font-semibold text-black">Confirm
-                                                                                            Password</label>
-                                                                                        <input type="password"
-                                                                                            id="confirmPassword"
-                                                                                            name="confirmPassword"
-                                                                                            class="w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                            placeholder="Re-enter password"
-                                                                                            required>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="grid grid-cols-2 gap-4">
-                                                                                    <div class="mb-4">
-                                                                                        <label for="firstName"
-                                                                                            class="block mb-2 font-semibold text-black">First
-                                                                                            Name</label>
-                                                                                        <input type="text"
-                                                                                            id="first_name"
-                                                                                            name="first_name"
-                                                                                            class="w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                            placeholder="Insert first name"
-                                                                                            required>
-                                                                                    </div>
-                                                                                    <div class="mb-4">
-                                                                                        <label for="lastName"
-                                                                                            class="block mb-2 font-semibold text-black">Last
-                                                                                            Name</label>
-                                                                                        <input type="text" id="last_name"
-                                                                                            name="last_name"
-                                                                                            class="w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                            placeholder="Insert last name"
-                                                                                            required>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="mb-6">
-                                                                                    <label for="phoneNumber"
-                                                                                        class="block mb-2 font-semibold text-black">Phone
-                                                                                        Number</label>
-                                                                                    <input type="tel" id="phone_number"
-                                                                                        name="phone_number"
-                                                                                        class="w-full px-4 py-2 border border-gray-300 rounded"
-                                                                                        placeholder="08xxxxxxxxxx"
-                                                                                        required>
-                                                                                        <% if (PhoneNumberAvailability==false) { %>
-                                                                                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                                                                                                <strong class="font-bold">Phone number is already taken.</strong>
-                                                                                                <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                                                                                  <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
-                                                                                                </span>
-                                                                                              </div>
-                                                                                        <% } %>
-                                                                                </div>
-                                                                                <div class="text-right">
-                                                                                    <button type="submit"
-                                                                                        class="px-3 py-2 font-semibold text-white bg-red-600 rounded font-raleway hover:bg-red-800 focus:outline-none focus:shadow-outline"
-                                                                                        onclick="return comparePasswords()">Sign
-                                                                                        Up</button>
-                                                                                </div>
-                                                                            </div>
+                                <% } %>
+                                    <% if (usernameRegexAllowed==false) { %>
+                                        <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
+                                            role="alert">
+                                            <strong class="font-bold">consist of 8 to 30 characters, including uppercase
+                                                and lowercase
+                                                letters, numbers, underscores, and hyphens..</strong>
+                                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                                <svg class="w-6 h-6 text-red-500 fill-current" role="button"
+                                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                                    <title>Close</title>
+                                                    <path
+                                                        d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <% } %>
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="block mb-2 font-semibold text-black">Email</label>
+                            <input type="email" id="email" name="email"
+                                class="w-full px-4 py-2 mb-2 border border-gray-300 rounded "
+                                placeholder="example@email.com" required>
+                            <% if (emailRegexAllowed==false) { %>
+                                <div class="relative px-4 py-3 mb-2 text-red-700 bg-red-100 border border-red-400 rounded"
+                                    role="alert">
+                                    <strong class="font-bold">Ensures that the email address contains a username part,
+                                        followed by the "@" symbol, a domain part, and a valid
+                                        top-level domain.</strong>
+                                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                        <svg class="w-6 h-6 text-red-500 fill-current" role="button"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <title>Close</title>
+                                            <path
+                                                d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                        </svg>
+                                    </span>
+                                </div>
+                                <% } %>
+                                    <% if ( EmailAvailability==false) { %>
+                                        <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
+                                            role="alert">
+                                            <strong class="font-bold">Email is already taken</strong>
+                                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                                <svg class="w-6 h-6 text-red-500 fill-current" role="button"
+                                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                                    <title>Close</title>
+                                                    <path
+                                                        d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <% } %>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="mb-4">
+                                <label for="password" class="block mb-2 font-semibold text-black">Password</label>
+                                <input type="password" id="password" name="password"
+                                    class="w-full px-4 py-2 mb-2 border border-gray-300 rounded "
+                                    placeholder="Insert password" required>
+                                <% if (passwordRegexAllowed==false) { %>
+                                    <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
+                                        role="alert">
+                                        <strong class="font-bold">At least one lowercase letter, at least one
+                                            uppercase letter, at least one digit, matches
+                                            any combination of alphanumeric characters and
+                                            special characters (non-whitespace) with a
+                                            minimum length of 8.</strong>
+                                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                            <svg class="w-6 h-6 text-red-500 fill-current" role="button"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                                <title>Close</title>
+                                                <path
+                                                    d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <% } %>
+                            </div>
+                            <div class="mb-4">
+                                <label for="confirmPassword" class="block mb-2 font-semibold text-black">Confirm
+                                    Password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded"
+                                    placeholder="Re-enter password" required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="mb-4">
+                                <label for="firstName" class="block mb-2 font-semibold text-black">First
+                                    Name</label>
+                                <input type="text" id="first_name" name="first_name"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded"
+                                    placeholder="Insert first name" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="lastName" class="block mb-2 font-semibold text-black">Last
+                                    Name</label>
+                                <input type="text" id="last_name" name="last_name"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded"
+                                    placeholder="Insert last name" required>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <label for="phoneNumber" class="block mb-2 font-semibold text-black">Phone
+                                Number</label>
+                            <input type="tel" id="phone_number" name="phone_number"
+                                class="w-full px-4 py-2 border border-gray-300 rounded" placeholder="08xxxxxxxxxx"
+                                required>
+                            <% if (PhoneNumberAvailability==false) { %>
+                                <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
+                                    role="alert">
+                                    <strong class="font-bold">Phone number is already taken.</strong>
+                                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                        <svg class="w-6 h-6 text-red-500 fill-current" role="button"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <title>Close</title>
+                                            <path
+                                                d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                        </svg>
+                                    </span>
+                                </div>
+                                <% } %>
+                        </div>
+                        <div class="text-right">
+                            <button type="submit"
+                                class="px-3 py-2 font-semibold text-white bg-red-600 rounded font-raleway hover:bg-red-800 focus:outline-none focus:shadow-outline"
+                                onclick="return comparePasswords()">Sign
+                                Up</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-</body>
-</html>
-
-<script>
-    function comparePasswords() {
-        var password = document.getElementById("password").value;
-        var confirmPassword = document.getElementById("confirmPassword").value;
-
-        if (password !== confirmPassword) {
-            alert("Passwords do not match.");
-            return false; // Prevent form submission
+    <!-- Footer -->
+    <footer class="bg-black text-cfab7a py-6 text-[#cfab7a]">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2023 TixOnline. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        function comparePasswords() {
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+    
+            if (password !== confirmPassword) {
+                alert("Passwords do not match.");
+                return false; // Prevent form submission
+            }
+    
+            return true; // Allow form submission
         }
-        
-        return true; // Allow form submission
-    }
-</script>
+    </script>
+</body>
+
+</html>
