@@ -48,17 +48,41 @@
           </div>
           <div class="w-full px-3 mb-3">
             <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="theater">Theater</label>
-            <select
-              class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
-              id="theater" name="theater" onchange="updateStudioOptions()" required>
-            </select>
+            <div class="relative">
+              <select id="theater" name="theater" onchange="updateStudioOptions()"
+                class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white">
+                <option value="" disabled selected>Select theater</option>
+                <% theaters.forEach((theater)=> { %>
+                  <option value="<%= theater.theater %>">
+                    <%= theater.theater %>
+                  </option>
+                  <% }) %>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M10 12l-6-6 1.414-1.414L10 9.172l4.586-4.586L16 6z" />
+                </svg>
+              </div>
+            </div>
           </div>
           <div class="w-full px-3 mb-3">
             <label class="block mb-2 text-xs font-bold tracking-wide text-black uppercase" for="studio">Studio</label>
-            <select
-              class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
-              id="studio" name="studio" required>
-            </select>
+            <div class="relative">
+              <select id="studio" name="studio"
+                class="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white">
+                <option value="" disabled selected>Select studio</option>
+                <% studios.forEach((studio)=> { %>
+                  <option value="<%= studio.studio %>">
+                    <%= studio.studio %>
+                  </option>
+                  <% }) %>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M10 12l-6-6 1.414-1.414L10 9.172l4.586-4.586L16 6z" />
+                </svg>
+              </div>
+            </div>
           </div>
           <div class="w-full px-3 py-4 text-right">
             <input
@@ -69,6 +93,12 @@
       </form>
     </div>
   </div>
+  <!-- Footer -->
+  <footer class="bg-black text-cfab7a py-6 text-[#cfab7a]">
+    <div class="container mx-auto text-center">
+      <p>&copy; 2023 TixOnline. All rights reserved.</p>
+    </div>
+  </footer>
   <script>
     function updateStudioOptions() {
       var theaterSelect = document.getElementById('theater');
