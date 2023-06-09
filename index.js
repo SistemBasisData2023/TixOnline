@@ -1545,17 +1545,105 @@ router.post("/delete-movie/:id", async (req, res) => {
   }
 });
 
+//Make transaction API
+router.post("/transaction-waiting", async (req, res) => {
+    const { quantity } = req.body;
+    const user_id = store_session.user_id;
+    const transaction_status = "WAITING";
+    let date = new Date();
+    let date_10min = new Date();
+    const transaction_date = date;
+    date_10min.setMinutes(date_10min.getMinutes() + 10);
+    const max_payment_date = date_10min;
+    console.log(max_payment_date);
+    console.log("/transaction-waiting" + store_session);
+    try {
+        const query =
+        "INSERT INTO Transactions (user_id, quantity, transaction_status, transaction_date, payment_max_date) VALUES ($1, $2, $3, $4, $5) RETURNING transaction_id;";
+        const values = [user_id, quantity, transaction_status, transaction_date, max_payment_date];
+
+        await db.query(query, values, (err, results) => {
+            if (err) {
+                console.log(err);
+            } else {
+                store_session.transaction_id = results.rows[0].transaction_id;
+                console.log("Transaction is made");
+            }
+        });
+    } catch (error) {
+        console.error("Error make transaction:", error);
+        return res.status(500).json({ message: "An error occurred during making transaction." });
+    }
+});
+
+//Make tickets API
+//Bikin error
+router.post("/ticket-waiting", async (req, res) => {
+    console.log("tiket waiting");
+
+    const { seatsId, scheduleId } = req.body;
+
+    const transaction_id = store_session.transaction_id;
+
+    try {
+        const query =
+        "INSERT INTO Tickets (transaction_id, schedule_id, seat_id) VALUES ($1, $2, $3);";
+
+        seatsId.forEach(async (seatId) => {
+            const values = [transaction_id, scheduleId, seatId];
+            console.log("ticket transaction id" + transaction_id);
+            req.session.transaction_id = transaction_id;
+            await db.query(query, values, (err, results) => {
+                if (err) {
+                    console.log(err);
+                    return res.json({ message: "Making ticket failed." });
+                } else {
+                    console.log("Ticket success.");
+                }
+            });
+        });
+    } catch (error) {
+        console.error("Error make ticket(s):", error);
+        return res.status(500).json({ message: "An error occurred during making ticket(s)." });
+    }
+});
+
+router.post("/pay-later", async (req, res) => {
+    const {transaction_id} = req.body;
+    try{
+        const query = "SELECT payout_link FROM payout WHERE transaction_id = $1;";
+        const values = [transaction_id];
+
+        await db.query(query, values, (err, results) => {
+            if(err){
+                console.log(err);
+                return res.status(500).redirect("/");
+            }else{
+                const payout_link = results.rows[0].payout_link;
+                console.log(payout_link);
+                return res.status(200).redirect(payout_link);
+            }
+        });
+    }catch(error){
+        console.log("Pay later failed : " + error);
+        return res.status(500).redirect("/");
+    }
+});
+
 router.post("/pay", (req, res) => {
-    console.log("This is /pay" + store_session);
-    const { pay_button_clicked, quantity, total_prices } = req.body;
+    console.log("This is /pay" );
+    console.log(store_session);
+    const { pay_button_clicked, quantity, total_prices, transaction_id } = req.body;
     let ticketQuantity;
     let ticketPricesString;
     let totalString;
+    let transactionId  = store_session.transaction_id;
+    console.log("ini di /pay" + store_session.transaction_id);
     if(pay_button_clicked){
         ticketQuantity = quantity;
         ticketPricesString = total_prices;
         totalString = JSON.stringify(quantity * total_prices);
-        
+        transactionId = transaction_id;
         console.log("Pay button clicked");
     }else{
         ticketQuantity = store_session.ticketQuantity;
@@ -1563,6 +1651,7 @@ router.post("/pay", (req, res) => {
         totalString = JSON.stringify(
             store_session.ticketQuantity * store_session.ticketPrices
         );
+        transactionId = store_session.transaction_id;
     }
    
     console.log("Ticket Quantity " + ticketQuantity + " price " + ticketPricesString + " total " + totalString);
@@ -1598,14 +1687,24 @@ router.post("/pay", (req, res) => {
         ],
     };
 
-    paypal.payment.create(create_payment_json, (error, payment) => {
+    paypal.payment.create(create_payment_json, async (error, payment) => {
         if (error) {
             console.error(error.response);
         } else {
             console.log(payment.transactions);
         for (let i = 0; i < payment.links.length; i++) {
             if (payment.links[i].rel === "approval_url") {
-                res.redirect(payment.links[i].href);
+                const query = "INSERT INTO payout (transaction_id, payout_link) VALUES ($1, $2);";
+                values = [transactionId, payment.links[i].href];
+                await db.query(query, values, (err, results) => {
+                    if (err) {
+                        console.log("Insert payout link failed : " + err);
+                        return res.status(500).redirect("/");
+                    } else {
+                        console.log("Payout link inserted.");
+                        res.redirect(payment.links[i].href);
+                    }
+                });
             }
         }
         }
@@ -1802,69 +1901,6 @@ router.post("/select-seat", async (req, res) => {
     } catch {
         console.error("Error select seat:", error);
         return res.status(500).json({ message: "An error occurred during select seat." });
-    }
-});
-
-//Make transaction API
-router.post("/transaction-waiting", async (req, res) => {
-    const { quantity } = req.body;
-    const user_id = store_session.user_id;
-    const transaction_status = "WAITING";
-    let date = new Date();
-    let date_10min = new Date();
-    const transaction_date = date;
-    date_10min.setMinutes(date_10min.getMinutes() + 10);
-    const max_payment_date = date_10min;
-    console.log(max_payment_date);
-    console.log("/transaction-waiting" + store_session);
-    try {
-        const query =
-        "INSERT INTO Transactions (user_id, quantity, transaction_status, transaction_date, payment_max_date) VALUES ($1, $2, $3, $4, $5) RETURNING transaction_id;";
-        const values = [user_id, quantity, transaction_status, transaction_date, max_payment_date];
-
-        await db.query(query, values, (err, results) => {
-            if (err) {
-                console.log(err);
-            } else {
-                store_session.transaction_id = results.rows[0].transaction_id;
-                console.log("Transaction is made");
-            }
-        });
-    } catch (error) {
-        console.error("Error make transaction:", error);
-        return res.status(500).json({ message: "An error occurred during making transaction." });
-    }
-});
-
-//Make tickets API
-//Bikin error
-router.post("/ticket-waiting", async (req, res) => {
-    console.log("tiket waiting");
-
-    const { seatsId, scheduleId } = req.body;
-
-    const transaction_id = store_session.transaction_id;
-
-    try {
-        const query =
-        "INSERT INTO Tickets (transaction_id, schedule_id, seat_id) VALUES ($1, $2, $3);";
-
-        seatsId.forEach(async (seatId) => {
-            const values = [transaction_id, scheduleId, seatId];
-            console.log("ticket transaction id" + transaction_id);
-            req.session.transaction_id = transaction_id;
-            await db.query(query, values, (err, results) => {
-                if (err) {
-                    console.log(err);
-                    return res.json({ message: "Making ticket failed." });
-                } else {
-                    console.log("Ticket success.");
-                }
-            });
-        });
-    } catch (error) {
-        console.error("Error make ticket(s):", error);
-        return res.status(500).json({ message: "An error occurred during making ticket(s)." });
     }
 });
 
