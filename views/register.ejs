@@ -8,6 +8,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles/fe_style.css">
     <script src="/script/script.js" defer></script>
+    <style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 300px;
+        text-align: center;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
 </head>
 
 <body class="flex flex-col h-screen bg-black text-cfab7a font-raleway">
@@ -41,51 +78,33 @@
                                 </div>
                                 <% } %>
                                     <% if (usernameRegexAllowed==false) { %>
-                                        <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
-                                            role="alert">
-                                            <strong class="font-bold">Usernames must be 8-30 characters long, including uppercase/lowercase letters, numbers, underscores, and hyphens.</strong>
-                                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                                <svg class="w-6 h-6 text-red-500 fill-current" role="button"
-                                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                                    <title>Close</title>
-                                                    <path
-                                                        d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                                                </svg>
-                                            </span>
+                                        <div class="modal" id="myModal">
+                                            <div class="modal-content">
+                                                <span class="close" onclick="closeModal()">×</span>
+                                                <p>Usernames must be 8-30 characters long, including uppercase/lowercase letters, numbers, underscores, and hyphens.</p>
+                                            </div>
                                         </div>
                                         <% } %>
-                        </div>
+                                    </div>
                         <div class="mb-4">
                             <label for="email" class="block mb-2 font-semibold text-black">Email</label>
                             <input type="email" id="email" name="email"
                                 class="w-full px-4 py-2 mb-2 border border-gray-300 rounded "
                                 placeholder="example@email.com" required>
                             <% if (emailRegexAllowed==false) { %>
-                                <div class="relative px-4 py-3 mb-2 text-red-700 bg-red-100 border border-red-400 rounded"
-                                    role="alert">
-                                    <strong class="font-bold">Email address must have a valid format.</strong>
-                                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                        <svg class="w-6 h-6 text-red-500 fill-current" role="button"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                            <title>Close</title>
-                                            <path
-                                                d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                                        </svg>
-                                    </span>
-                                </div>
+                                    <div class="modal" id="myModal">
+                                        <div class="modal-content">
+                                            <span class="close" onclick="closeModal()">×</span>
+                                            <p>Email address must have a valid format</p>
+                                        </div>
+                                    </div>
                                 <% } %>
                                     <% if ( EmailAvailability==false) { %>
-                                        <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
-                                            role="alert">
-                                            <strong class="font-bold">Email is already taken</strong>
-                                            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                                <svg class="w-6 h-6 text-red-500 fill-current" role="button"
-                                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                                    <title>Close</title>
-                                                    <path
-                                                        d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                                                </svg>
-                                            </span>
+                                        <div class="modal" id="myModal">
+                                            <div class="modal-content">
+                                                <span class="close" onclick="closeModal()">×</span>
+                                                <p>Email is already taken</p>
+                                            </div>
                                         </div>
                                         <% } %>
                         </div>
@@ -96,17 +115,11 @@
                                     class="w-full px-4 py-2 mb-2 border border-gray-300 rounded "
                                     placeholder="Insert password" required>
                                 <% if (passwordRegexAllowed==false) { %>
-                                    <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
-                                        role="alert">
-                                        <strong class="font-bold">Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, and one digit.</strong>
-                                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                            <svg class="w-6 h-6 text-red-500 fill-current" role="button"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                                <title>Close</title>
-                                                <path
-                                                    d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                                            </svg>
-                                        </span>
+                                    <div class="modal" id="myModal">
+                                        <div class="modal-content">
+                                            <span class="close" onclick="closeModal()">×</span>
+                                            <p>Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, and one digit</p>
+                                        </div>
                                     </div>
                                     <% } %>
                             </div>
@@ -141,18 +154,20 @@
                                 class="w-full px-4 py-2 border border-gray-300 rounded" placeholder="08xxxxxxxxxx"
                                 required>
                             <% if (PhoneNumberAvailability==false) { %>
-                                <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
-                                    role="alert">
-                                    <strong class="font-bold">Phone number is already taken.</strong>
-                                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                                        <svg class="w-6 h-6 text-red-500 fill-current" role="button"
-                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                            <title>Close</title>
-                                            <path
-                                                d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                                        </svg>
-                                    </span>
+                                <div class="modal" id="myModal">
+                                    <div class="modal-content">
+                                        <span class="close" onclick="closeModal()">×</span>
+                                        <p>Phone number is already takent</p>
+                                    </div>
                                 </div>
+                                <% } %>
+                                <% if (phoneNumberRegexAllowed==false) { %>
+                                    <div class="modal" id="myModal">
+                                        <div class="modal-content">
+                                            <span class="close" onclick="closeModal()">×</span>
+                                            <p>Phone number must have a valid format</p>
+                                        </div>
+                                    </div>
                                 <% } %>
                         </div>
                         <div class="text-right">
@@ -183,6 +198,18 @@
             }
     
             return true; // Allow form submission
+        }
+
+        var passwordRegexAllowed = false; // Replace with your condition
+
+        if (!passwordRegexAllowed) {
+            openModal();
+        }
+        function openModal() {
+            document.getElementById("myModal").style.display = "block";
+        }
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
         }
     </script>
 </body>
