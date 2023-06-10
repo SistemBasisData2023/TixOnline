@@ -2016,7 +2016,8 @@ router.post("/login", async (req, res) => {
                         }
                     );
                 } else {
-                    console.log("Password wrong");
+                    console.log('Password wrong');
+                    res.render("login.ejs", { passwordWrong: true });
                 }
             }
             });
