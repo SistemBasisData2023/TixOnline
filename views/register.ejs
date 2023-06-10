@@ -43,9 +43,7 @@
                                     <% if (usernameRegexAllowed==false) { %>
                                         <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
                                             role="alert">
-                                            <strong class="font-bold">consist of 8 to 30 characters, including uppercase
-                                                and lowercase
-                                                letters, numbers, underscores, and hyphens..</strong>
+                                            <strong class="font-bold">Usernames must be 8-30 characters long, including uppercase/lowercase letters, numbers, underscores, and hyphens.</strong>
                                             <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
                                                 <svg class="w-6 h-6 text-red-500 fill-current" role="button"
                                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -65,9 +63,7 @@
                             <% if (emailRegexAllowed==false) { %>
                                 <div class="relative px-4 py-3 mb-2 text-red-700 bg-red-100 border border-red-400 rounded"
                                     role="alert">
-                                    <strong class="font-bold">Ensures that the email address contains a username part,
-                                        followed by the "@" symbol, a domain part, and a valid
-                                        top-level domain.</strong>
+                                    <strong class="font-bold">Email address must have a valid format.</strong>
                                     <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
                                         <svg class="w-6 h-6 text-red-500 fill-current" role="button"
                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -102,11 +98,7 @@
                                 <% if (passwordRegexAllowed==false) { %>
                                     <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
                                         role="alert">
-                                        <strong class="font-bold">At least one lowercase letter, at least one
-                                            uppercase letter, at least one digit, matches
-                                            any combination of alphanumeric characters and
-                                            special characters (non-whitespace) with a
-                                            minimum length of 8.</strong>
+                                        <strong class="font-bold">Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, and one digit.</strong>
                                         <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
                                             <svg class="w-6 h-6 text-red-500 fill-current" role="button"
                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
