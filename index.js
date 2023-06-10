@@ -1783,10 +1783,18 @@ router.get("/success", (req, res) => {
                         } else {
                             //Get transaction data
                             const queryTicket =
-                            "SELECT * FROM transactions_details_seats WHERE transaction_id = $1;";
+                            `SELECT Movies.Title, Tickets.*, Seats.seat_number, Studios.name AS studio_name, Studios.type, Theaters.name AS theater_name, Schedule.date, Schedule.hours, Schedule.prices 
+                            FROM Tickets 
+                            JOIN Transactions ON Tickets.transaction_id = Transactions.transaction_id 
+                            JOIN Schedule ON Tickets.schedule_id = Schedule.schedule_id 
+                            JOIN Studios ON Studios.studio_id = Schedule.studio_id 
+                            JOIN Movies ON Movies.movie_id =Schedule.movie_id 
+                            JOIN Seats ON Tickets.seat_id = Seats.seat_id
+                            JOIN Theaters ON Theaters.theater_id = Studios.theater_id WHERE Tickets.transaction_id = $1;`;
+
                             const valuesTicket = [transaction_id];
 
-                            await db.query(queryTicket, valuesTicket, (err, results) => {
+                            await db.query(queryTicket, valuesTicket, (err, tickets) => {
                                 if (err) {
                                     console.log("Retrive data failed : " + err);
                                     return res.status(500).redirect("/");
@@ -1794,10 +1802,10 @@ router.get("/success", (req, res) => {
                                     store_session.ticketQuantity = null;
                                     store_session.ticketPrices = null;
                                     store_session.transaction_id = null;
-                                    console.log(results.rows);
+                                    console.log(tickets.rows);
                                     return res.status(200).render("success.ejs", {
                                         payment,
-                                        tickets: results.rows,
+                                        tickets: tickets.rows,
                                     });
                                 }
                             });
