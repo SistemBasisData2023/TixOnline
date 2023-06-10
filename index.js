@@ -1969,8 +1969,7 @@ router.post("/logout", async (req, res) => {
 //Login page
 router.get("/login-account", async (req, res) => {
   try {
-        res.render("login.ejs");
-        console.log("Open /login");
+        res.render("login.ejs", {passwordWrong: false});
   } catch (error) {
     console.error("Page is not availible", error);
     return res.status(500).json({ message: "An error occurred during showing page." });
@@ -1991,65 +1990,70 @@ router.post("/login", async (req, res) => {
             console.log(err);
             return res.json({ message: "Error find password" });
         } else {
-            const hash = results.rows[0].password;
-            //Compare password with hash password in database
-            bcrypt.compare(password, hash, async (err, results) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send("Error compare the string");
-            } else {
-                //If password is correct
-                if (results) {
-                    console.log("Login Successfull!");
-                    //Get user data from database and store it in session
-                    const queryUsernameId =
-                        "SELECT * FROM users WHERE username = $1;";
-
-                    await db.query(queryUsernameId,[username],async (err, results) => {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            store_session = req.session;
-                            store_session.username = results.rows[0].username;
-                            store_session.user_id = results.rows[0].user_id;
-                            store_session.role = "user";
-                            store_session.schedule = null;
-                            store_session.seats_id = null;
-
-                            let rememberToken = null;
-                            // If the user has selected the "remember me" option, generate a token and store it in the database
-                            if (remember) {
-                                // Generate a unique token
-                                rememberToken = generateToken();
-
-                                // Calculate the expiration date (e.g., 30 days from now)
-                                const expiresAt = new Date();
-                                expiresAt.setDate(expiresAt.getDate() + 30);
-
-                                // Store the token in the remember_me_tokens table
-                                await db.query(
-                                    "INSERT INTO remember_me_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
-                                    [store_session.user_id, rememberToken, expiresAt]
-                                );
-
-                                // Set a cookie with the token
-                                res.cookie("remember_me_token", rememberToken, {
-                                    expires: expiresAt,
-                                    httpOnly: true,
-                                    secure: true,
-                                });
-                            }
-
-                            // Redirect the user to the home page
-                            return res.status(200).redirect("/");
-                        }
-                        }
-                    );
+            if(results.rows.length == 0){
+                return res.render("login.ejs", {passwordWrong: true});
+            }else{
+                const hash = results.rows[0].password;
+                //Compare password with hash password in database
+                bcrypt.compare(password, hash, async (err, results) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send("Error compare the string");
                 } else {
-                    console.log("Password wrong");
+                    //If password is correct
+                    if (results) {
+                        console.log("Login Successfull!");
+                        //Get user data from database and store it in session
+                        const queryUsernameId =
+                            "SELECT * FROM users WHERE username = $1;";
+    
+                        await db.query(queryUsernameId,[username],async (err, results) => {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                store_session = req.session;
+                                store_session.username = results.rows[0].username;
+                                store_session.user_id = results.rows[0].user_id;
+                                store_session.role = "user";
+                                store_session.schedule = null;
+                                store_session.seats_id = null;
+    
+                                let rememberToken = null;
+                                // If the user has selected the "remember me" option, generate a token and store it in the database
+                                if (remember) {
+                                    // Generate a unique token
+                                    rememberToken = generateToken();
+    
+                                    // Calculate the expiration date (e.g., 30 days from now)
+                                    const expiresAt = new Date();
+                                    expiresAt.setDate(expiresAt.getDate() + 30);
+    
+                                    // Store the token in the remember_me_tokens table
+                                    await db.query(
+                                        "INSERT INTO remember_me_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
+                                        [store_session.user_id, rememberToken, expiresAt]
+                                    );
+    
+                                    // Set a cookie with the token
+                                    res.cookie("remember_me_token", rememberToken, {
+                                        expires: expiresAt,
+                                        httpOnly: true,
+                                        secure: true,
+                                    });
+                                }
+    
+                                // Redirect the user to the home page
+                                return res.status(200).redirect("/");
+                            }
+                            }
+                        );
+                    } else {
+                        console.log("Password wrong");
+                        return res.status(200).render("login.ejs", {passwordWrong: true});
+                    }
                 }
+                });
             }
-            });
         }
         });
 
@@ -2355,11 +2359,10 @@ router.post("/register-admin", async (req, res) => {
 
                     store_session = req.session;
                     store_session.user_id = req.body.user_id;
-                    store_session.role = "admin";
+                    store_session.role = 'admin';
                     store_session.schedule = null;
                     store_session.seats_id = null;
                     store_session.username = username;
-
                     res.status(200).redirect('/admin/movies');
                 }
             });
@@ -2373,7 +2376,9 @@ router.post("/register-admin", async (req, res) => {
         res.status(200);
         res.render('registerAdmin.ejs', {
           UsernameAvailability: await checkUsernameAvailability(username),
-          emailAdminRegex: emailAdminRegex.test(email),
+            EmailAvailability: await checkEmailAvailability(email),
+            usernameRegexAllowed: usernameRegex.test(username),
+          emailRegexAllowed: emailAdminRegex.test(email),
           passwordRegexAllowed: passwordRegex.test(password),
         });
       }
@@ -2386,9 +2391,8 @@ router.post("/register-admin", async (req, res) => {
 //Log in Admin 
 router.get('/admin/login', async (req, res) =>{
     try{
-        res.render('loginAdmin.ejs');
-
         console.log("Open /loginAdmin");
+        return res.status(200).render('loginAdmin.ejs',{passwordWrong: false});
     }catch(error){
         console.error('Page is not availible', error);
         return res.status(500).json({ message: 'An error occurred during showing page.' });
@@ -2406,34 +2410,42 @@ router.post('/login-admin', async (req, res) => {
     await db.query(query, values, (err, results) => {
       if (err) {
         console.log(err);
-
         return res.json({ message: "Error find password" });
       } else {
-        const hash = results.rows[0].password;
+        if(results.rows.length == 0){
+            return res.render("loginAdmin.ejs", {passwordWrong: true});
+        }else{
+            const hash = results.rows[0].password;
 
-                bcrypt.compare(password, hash, async (err, results) => {
-                    if (err) {
-                        console.error(err);
-                        res.status(500).send('Error compare the string');
-                    } else {
-                        if(results){
-                            console.log("Login Successfull!");
-                            const queryUsernameId = 'SELECT admin_id FROM Admins WHERE username = $1;';
-                            await db.query(queryUsernameId, [username], async(err, results) => {
-                                if(err){
-                                console.log(err);
-                                }else{
-                                    console.log(results.rows[0].user_id);
-                                    store_session = req.session;
-                                    store_session.user_id = results.rows[0].admin_id;
-                                    res.redirect(`/admin/movies?username=${encodeURIComponent(username)}`);
-                                }
-                            });
-                        }else{
-                            console.log("Password wrong")
-                        }
+            bcrypt.compare(password, hash, async (err, results) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send('Error compare the string');
+                } else {
+                    if(results){
+                        console.log("Login Successfull!");
+                        const queryUsernameId = 'SELECT admin_id FROM Admins WHERE username = $1;';
+                        await db.query(queryUsernameId, [username], async(err, results) => {
+                            if(err){
+                            console.log(err);
+                            }else{
+                                console.log(results.rows[0].user_id);
+                                store_session = req.session;
+                                store_session.user_id = results.rows[0].admin_id;
+                                store_session.username = username;
+                                store_session.schedule = null;
+                                store_session.seats_id = null;
+                                store_session.role = 'admin';
+                                res.redirect(`/admin/dashboard`, {username : username});
+                            }
+                        });
+                    }else{
+                        console.log("Password wrong")
+                        return res.status(200).render('loginAdmin.ejs', {passwordWrong: true});
                     }
-                });
+                }
+            });
+        }
             }
         });
 
