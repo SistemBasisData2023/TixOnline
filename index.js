@@ -1783,7 +1783,7 @@ router.get("/success", (req, res) => {
                         } else {
                             //Get transaction data
                             const queryTicket =
-                            "SELECT Tickets.*, Studios.*, Schedule.date, Schedule.hours, Schedule.prices FROM Tickets JOIN Transactions ON Tickets.transaction_id = Transactions.transaction_id JOIN Schedule ON Tickets.schedule_id = Schedule.schedule_id JOIN Studios ON Studios.studio_id = Schedule.studio_id WHERE Tickets.transaction_id = $1;";
+                            "SELECT Movies.Title, Tickets.*, Studios.*, Schedule.date, Schedule.hours, Schedule.prices FROM Tickets JOIN Transactions ON Tickets.transaction_id = Transactions.transaction_id JOIN Schedule ON Tickets.schedule_id = Schedule.schedule_id JOIN Studios ON Studios.studio_id = Schedule.studio_id JOIN Movies ON Movies.movie_id =Schedule.movie_id WHERE Tickets.transaction_id = $1;";
                             const valuesTicket = [transaction_id];
 
                             await db.query(queryTicket, valuesTicket, (err, results) => {
