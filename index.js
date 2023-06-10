@@ -2051,6 +2051,8 @@ router.post("/login", async (req, res) => {
                         console.log("Password wrong");
                         return res.status(200).render("login.ejs", {passwordWrong: true});
                     }
+                    console.log('Password wrong');
+                    res.render("login.ejs", { passwordWrong: true });
                 }
                 });
             }

@@ -63,5 +63,12 @@
             <p>&copy; 2023 TixOnline. All rights reserved.</p>
         </div>
     </footer>
-    <script src="/script/script.js" defer></script>
+    <script src="/script/script.js" defer>
+        
+    </script>
+    <% if (passwordWrong) { %>
+        <script>
+            alert("Invalid password. Please try again.");
+        </script>
+    <% } %>
 </body>
