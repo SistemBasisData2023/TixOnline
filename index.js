@@ -1716,6 +1716,7 @@ router.get("/success", (req, res) => {
         res.redirect("/");
     } else {
         console.log("This is /succes" + store_session);
+        console.log("This is /succes" + store_session.transaction_id);
             const payerId = req.query.PayerID;
             const paymentId = req.query.paymentId;
             const totalString = JSON.stringify(
@@ -1734,56 +1735,63 @@ router.get("/success", (req, res) => {
             ],
             };
 
-        paypal.payment.execute(
-            paymentId,
-            execute_payment_json,
-            async (error, payment) => {
+            paypal.payment.execute(paymentId, execute_payment_json, async (error, payment) => {
                 if (error) {
-                    console.error(error.response);
+                  console.error(error.response);
                 } else {
-                    console.log("This is /succes");
-                    const transaction_id = store_session.transaction_id;
-                    const transaction_status = "DONE";
-
-                    try {
-                        //Update transaction status
-                        const query =
-                        "UPDATE transactions SET transaction_status = $1 WHERE transaction_id = $2;";
-                        const values = [transaction_status, transaction_id];
-
-                        await db.query(query, values, async (err, results) => {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            //Get transaction data
-                            const queryTicket =
-                            "SELECT Tickets.*, Studios.*, Schedule.date, Schedule.hours, Schedule.prices FROM Tickets JOIN Transactions ON Tickets.transaction_id = Transactions.transaction_id JOIN Schedule ON Tickets.schedule_id = Schedule.schedule_id JOIN Studios ON Studios.studio_id = Schedule.studio_id WHERE Tickets.transaction_id = $1;";
-                            const valuesTicket = [transaction_id];
-
-                            await db.query(queryTicket, valuesTicket, (err, results) => {
-                                if (err) {
-                                    console.log("Retrive data failed : " + err);
-                                    return res.status(500).redirect("/");
-                                } else {
-                                    store_session.ticketQuantity = null;
-                                    store_session.ticketPrices = null;
-                                    store_session.transaction_id = null;
-                                    console.log(results.rows);
-                                    return res.status(200).render("success.ejs", {
-                                        payment,
-                                        tickets: results.rows,
-                                    });
-                                }
+                  console.log("This is /success");
+                  const transaction_id = store_session.transaction_id;
+                  const transaction_status = "DONE";
+              
+                  try {
+                    // Update transaction status
+                    const query =
+                      "UPDATE transactions SET transaction_status = $1 WHERE transaction_id = $2;";
+                    const values = [transaction_status, transaction_id];
+              
+                    await db.query(query, values, async (err, results) => {
+                      if (err) {
+                        console.log(err);
+                      } else {
+                        // Get ticket data
+                        const queryTicket =
+                          "SELECT Tickets.ticket_id, Movies.title, Schedule.date, Schedule.hours, Schedule.prices FROM Tickets JOIN Transactions ON Tickets.transaction_id = Transactions.transaction_id JOIN Schedule ON Tickets.schedule_id = Schedule.schedule_id JOIN Studios ON Studios.studio_id = Schedule.studio_id JOIN Movies ON Movies.movie_id = Schedule.movie_id WHERE Tickets.transaction_id = $1;";
+                        const valuesTicket = [transaction_id];
+              
+                        await db.query(queryTicket, valuesTicket, (err, results) => {
+                          if (err) {
+                            console.log("Retrieve data failed: " + err);
+                            return res.status(500).redirect("/");
+                          } else {
+                            const tickets = results.rows.map((row) => {
+                              return {
+                                ticketId: row.ticket_id,
+                                movieTitle: row.title,
+                                date: row.date,
+                                hours: row.hours,
+                                price: row.prices,
+                                seat: row.seat,
+                              };
                             });
-                        }
+              
+                            store_session.ticketQuantity = null;
+                            store_session.ticketPrices = null;
+                            store_session.transaction_id = null;
+              
+                            return res.status(200).render("success.ejs", {
+                              payment,
+                              tickets: tickets,
+                            });
+                          }
                         });
-                    } catch (err) {
-                        console.log("Transaction done failed : " + err);
-                        return res.status(500).redirect("/");
-                    }
+                      }
+                    });
+                  } catch (err) {
+                    console.log("Transaction done failed : " + err);
+                    return res.status(500).redirect("/");
+                  }
                 }
-            }
-        );
+              });              
     }
 });
 

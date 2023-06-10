@@ -28,37 +28,40 @@
   </script>
 </head>
 <body class="bg-black text-cfab7a font-raleway mx-20">
-    <div class="container mx-auto space-y-4">
-  <h1 class="text-4xl font-extrabold mt-10 mx-5 py-5">Payment Succesfull !</h1>
-  <div class="flex items-center mb-3 px-5 py-3 text-sm">
-    <div class="flex flex-col">
+  <div class="container mx-auto space-y-4">
+    <h1 class="text-4xl font-extrabold mt-10 mx-5 py-5">Payment Successful!</h1>
+    <div class="flex items-center mb-3 px-5 py-3 text-sm">
+      <div class="flex flex-col">
         <span class="text-lg mr-10">Theater</span>
         <div class="font-semibold">Grand Indonesia</div>
-    </div>
-    <div class="flex flex-col ml-10">
+      </div>
+      <div class="flex flex-col ml-10">
         <span class="text-lg">Date</span>
         <div class="font-semibold text-lg">29-05-2023</div>
+      </div>
     </div>
-</div>
-<div class="flex items-center mb-3 px-5 text-sm">
-    <div class="flex flex-col">
+    <div class="flex items-center mb-3 px-5 text-sm">
+      <div class="flex flex-col">
         <span class="text-lg mr-10">Seats</span>
         <div class="font-semibold">C4</div>
-    </div>
-    <div class="flex flex-col ml-10">
+      </div>
+      <div class="flex flex-col ml-10">
         <span class="text-lg">Time</span>
         <div class="font-semibold text-lg">15:35</div>
+      </div>
     </div>
-</div>
     <ul>
       <% tickets.forEach(function(ticket) { %>
         <li>
-            <p><%= ticket.ticket_id  %></p>
+          <p>Ticket ID: <%= ticket.ticketId %></p>
+          <p>Movie Title: <%= ticket.movieTitle %></p>
+          <p>Date: <%= ticket.date %></p>
+          <p>Time: <%= ticket.hours %></p>
+          <p>Price: <%= ticket.price %></p>
         </li>
       <% }) %>
     </ul>
     <li><a href="/">Ok</a></li>
   </div>
 </body>
-
 </html>
