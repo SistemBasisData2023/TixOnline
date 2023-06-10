@@ -3,9 +3,14 @@
 
 <head>
   <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/fe_style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
   <title>Cancel</title>
   <script>
     function cancelSeats() {
+      if (!confirm("Are you sure you want to cancel?")) return;
       //Delete selected-seats
       fetch('http://localhost:3000/delete-select-seat', {
         method: 'DELETE',
@@ -24,9 +29,15 @@
   </script>
 </head>
 
-<body>
-  <h1>cancel</h1>
-  <button id="cancelButton" onclick="cancelSeats()">Cancel</button>
+<body class="mx-20 bg-black text-cfab7a font-raleway">
+  <div class="container mx-auto space-y-4">
+    <h1 class="py-5 mx-5 mt-10 text-4xl font-extrabold">Cancel Ticket</h1>
+    <p class="py-5 mx-5 text-xl">You are about to cancel your ticket. Please confirm your action.</p>
+    <div class="py-5 text-center">
+      <button id="cancelButton" onclick="cancelSeats()"
+        class="px-4 py-2 bg-black border-2 rounded border-cfab7a text-cfab7a">Confirm Cancel</button>
+    </div>
+  </div>
 </body>
 
 </html>

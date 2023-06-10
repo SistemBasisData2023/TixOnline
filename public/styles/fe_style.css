@@ -157,6 +157,7 @@ body{
     padding: 2rem;
     border-radius: 0.5rem;
     z-index: 9999;
+    background-color: #cfab7a;
 }
 
 .columns {
@@ -175,15 +176,6 @@ body{
     /* Disable click events */
   }
 
-  .popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
 
   .popup-content {
     background-color: #fff;

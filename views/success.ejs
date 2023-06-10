@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/styles/fe_style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
-  <title>Theaters List</title>
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/fe_style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <title>Payment Complete</title>
   <script>
     window.addEventListener('DOMContentLoaded', function () {
       fetch('http://localhost:3000/transaction-done', {
@@ -27,41 +28,50 @@
     });
   </script>
 </head>
-<body class="bg-black text-cfab7a font-raleway mx-20">
+
+<body class="mx-20 bg-black text-cfab7a font-raleway">
   <div class="container mx-auto space-y-4">
-    <h1 class="text-4xl font-extrabold mt-10 mx-5 py-5">Payment Successful!</h1>
-    <div class="flex items-center mb-3 px-5 py-3 text-sm">
+    <h1 class="py-5 mx-5 mt-10 text-4xl font-extrabold">Payment Successful!</h1>
+    <div class="flex items-center px-5 py-3 mb-3 space-x-10 text-sm">
       <div class="flex flex-col">
-        <span class="text-lg mr-10">Theater</span>
+        <span class="text-lg">Theater</span>
         <div class="font-semibold">Grand Indonesia</div>
       </div>
-      <div class="flex flex-col ml-10">
+      <div class="flex flex-col">
         <span class="text-lg">Date</span>
-        <div class="font-semibold text-lg">29-05-2023</div>
+        <div class="text-lg font-semibold">29-05-2023</div>
       </div>
     </div>
-    <div class="flex items-center mb-3 px-5 text-sm">
+    <div class="flex items-center px-5 mb-3 space-x-10 text-sm">
       <div class="flex flex-col">
-        <span class="text-lg mr-10">Seats</span>
+        <span class="text-lg">Seats</span>
         <div class="font-semibold">C4</div>
       </div>
-      <div class="flex flex-col ml-10">
+      <div class="flex flex-col">
         <span class="text-lg">Time</span>
-        <div class="font-semibold text-lg">15:35</div>
+        <div class="text-lg font-semibold">15:35</div>
       </div>
     </div>
     <ul>
       <% tickets.forEach(function(ticket) { %>
-        <li>
-          <p>Ticket ID: <%= ticket.ticketId %></p>
-          <p>Movie Title: <%= ticket.movieTitle %></p>
-          <p>Date: <%= ticket.date %></p>
-          <p>Time: <%= ticket.hours %></p>
-          <p>Price: <%= ticket.price %></p>
+        <li class="p-5 my-5 border-2 rounded border-cfab7a">
+          <p class="mb-2">Ticket ID: <%= ticket.ticketId %>
+          </p>
+          <p class="mb-2">Movie Title: <%= ticket.movieTitle %>
+          </p>
+          <p class="mb-2">Date: <%= ticket.date %>
+          </p>
+          <p class="mb-2">Time: <%= ticket.hours %>
+          </p>
+          <p class="mb-2">Price: <%= ticket.price %>
+          </p>
         </li>
-      <% }) %>
+        <% }) %>
     </ul>
-    <li><a href="/">Ok</a></li>
+    <div class="py-5 text-center">
+      <a href="/" class="px-4 py-2 bg-black border-2 rounded border-cfab7a text-cfab7a">Ok</a>
+    </div>
   </div>
 </body>
+
 </html>
