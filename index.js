@@ -574,96 +574,119 @@ router.get("/schedules-movie/:movieId", async (req, res) => {
 //ADMIN MAIN DASHBOARD PAGES
 //Page for admin dashboard
 router.get("/admin/dashboard", async (req, res) => {
-    try {
-        //Get total prices of all transactions that are completed and not canceled from transactions_details_seats
-        const queryTotal = "SELECT SUM(total_prices) FROM transactions_details_seats WHERE transaction_status = 'DONE';";
-        await db.query(queryTotal, async (err, totalPrices) => {
-            if(err){
-                console.log("(/admin/dashboard) Getting data total prices error : " + err);
-                return res.status(500).redirect("/");
-            }else{ 
-                //Order movies by total transaction from highest to lowest and limit to 5 movies only from transactions_details_seats
-                const queryMovie = "SELECT title, SUM(total_prices) AS earning, SUM(quantity) AS quantity FROM transactions_details_seats WHERE transaction_status = 'DONE' GROUP BY title ORDER BY SUM(quantity) DESC;";
-                await db.query(queryMovie, async (err, movies) => {
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                //Get total prices of all transactions that are completed and not canceled from transactions_details_seats
+                const queryTotal = "SELECT SUM(total_prices) FROM transactions_details_seats WHERE transaction_status = 'DONE';";
+                await db.query(queryTotal, async (err, totalPrices) => {
                     if(err){
-                        console.log("(/admin/dashboard) Getting data movies error : " + err);
+                        console.log("(/admin/dashboard) Getting data total prices error : " + err);
                         return res.status(500).redirect("/");
-                    }else{
-                        console.log(movies.rows);
-                        console.log(totalPrices.rows[0].sum);
-                        return res.status(200).render("admin-dashboard.ejs", { movies: movies.rows, totalPrices: totalPrices.rows[0].sum });
+                    }else{ 
+                        //Order movies by total transaction from highest to lowest and limit to 5 movies only from transactions_details_seats
+                        const queryMovie = "SELECT title, SUM(total_prices) AS earning, SUM(quantity) AS quantity FROM transactions_details_seats WHERE transaction_status = 'DONE' GROUP BY title ORDER BY SUM(quantity) DESC;";
+                        await db.query(queryMovie, async (err, movies) => {
+                            if(err){
+                                console.log("(/admin/dashboard) Getting data movies error : " + err);
+                                return res.status(500).redirect("/");
+                            }else{
+                                console.log(movies.rows);
+                                console.log(totalPrices.rows[0].sum);
+                                return res.status(200).render("admin-dashboard.ejs", { movies: movies.rows, totalPrices: totalPrices.rows[0].sum });
+                            }
+                        });
                     }
                 });
+            }catch(error){
+                console.log("page is not availible", error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    }catch(error){
-        console.log("page is not availible", error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //ADMIN Schedule ROUTER & PAGES
 //Page for schedules list
 router.get("/admin/schedules", async (req, res) => {
-    try {
-        //Get schedules list join with movie, studio, and theater
-        const query =
-        "SELECT Schedule.*, Movies.title, Studios.name AS studio_name, Studios.type, Theaters.* FROM Schedule JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id ORDER BY schedule_id ASC;";
-
-        await db.query(query, (err, results) => {
-            if (err) {
-                console.log("(/admin/schedules) Getting data schedule erro : " + err);  
-                //Belum ditambahin /admin
-            } else {
-                //Open admin-schedules.ejs
-                //Belum ditambahin role admin
-                res.render("admin-schedules.ejs", { schedules: results.rows });
+   if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                //Get schedules list join with movie, studio, and theater
+                const query =
+                "SELECT Schedule.*, Movies.title, Studios.name AS studio_name, Studios.type, Theaters.* FROM Schedule JOIN Movies ON Schedule.movie_id = Movies.movie_id JOIN Studios ON Schedule.studio_id = Studios.studio_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id ORDER BY schedule_id ASC;";
+        
+                await db.query(query, (err, results) => {
+                    if (err) {
+                        console.log("(/admin/schedules) Getting data schedule erro : " + err);  
+                        return res.status(500).redirect("/admin/dashboard");
+                    } else {
+                        //Open admin-schedules.ejs
+                        return res.status(200).render("admin-schedules.ejs", { schedules: results.rows });
+                    }
+                });
+            } catch (error) {
+                console.error("Page is not availible", error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.error("Page is not availible", error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
-    }
+        }else{
+            return res.status(403).redirect("/");
+        }
+   }else{
+         return res.status(403).redirect("/");
+   }
 });
 
 //Page for add schedules
 router.get("/admin/schedules/add", async (req, res) => {
-    try {
-        //Get list of movies for dropdown
-        const queryMovie = "SELECT * FROM Movies;";
-        await db.query(queryMovie, async (err, movies) => {
-            if (err) {
-                console.log("(/admin/schedules/add) Getting data movies error : " + err);
-            } else {
-                //Get list of cities for dropdown
-                const queryCity = "SELECT DISTINCT city FROM Theaters;";
-                await db.query(queryCity, async (err, cities) => {
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                //Get list of movies for dropdown
+                const queryMovie = "SELECT * FROM Movies;";
+                await db.query(queryMovie, async (err, movies) => {
                     if (err) {
-                        console.log("(/admin/schedules/add) Getting data cities error : " + err);
+                        console.log("(/admin/schedules/add) Getting data movies error : " + err);
+                        return res.status(500).redirect("/admin/schedules");
                     } else {
-                        //Get list of theaters for dropdown
-                        const queryTheater = "SELECT * FROM Theaters;";
-                        await db.query(queryTheater, async (err, theaters) => {
+                        //Get list of cities for dropdown
+                        const queryCity = "SELECT DISTINCT city FROM Theaters;";
+                        await db.query(queryCity, async (err, cities) => {
                             if (err) {
-                                console.log("(/admin/schedules/add) Getting data theaters error : " + err);
+                                console.log("(/admin/schedules/add) Getting data cities error : " + err);
+                                return res.status(500).redirect("/admin/schedules");
                             } else {
-                                //Get list of studios for dropdown
-                                const queryStudio = "SELECT * FROM Studios;";
-                                await db.query(queryStudio, async (err, studios) => {
+                                //Get list of theaters for dropdown
+                                const queryTheater = "SELECT * FROM Theaters;";
+                                await db.query(queryTheater, async (err, theaters) => {
                                     if (err) {
-                                        console.log("(/admin/schedules/add) Getting data studios error : " + err);
+                                        console.log("(/admin/schedules/add) Getting data theaters error : " + err);
+                                        return res.status(500).redirect("/admin/schedules");
                                     } else {
-                                        //Get current date + 3 days as minimum date to create schedule
-                                        const tomorrow = new Date();
-                                        tomorrow.setDate(tomorrow.getDate() + 3);
-                                        const minDate = tomorrow.toISOString().split("T")[0];
-
-                                        res.render("admin-schedules-add.ejs", {
-                                            movies: movies.rows,
-                                            theaters: theaters.rows,
-                                            studios: studios.rows,
-                                            cities: cities.rows,
-                                            minDate,
+                                        //Get list of studios for dropdown
+                                        const queryStudio = "SELECT * FROM Studios;";
+                                        await db.query(queryStudio, async (err, studios) => {
+                                            if (err) {
+                                                console.log("(/admin/schedules/add) Getting data studios error : " + err);
+                                                return res.status(500).redirect("/admin/schedules");
+                                            } else {
+                                                //Get current date + 3 days as minimum date to create schedule
+                                                const tomorrow = new Date();
+                                                tomorrow.setDate(tomorrow.getDate() + 3);
+                                                const minDate = tomorrow.toISOString().split("T")[0];
+        
+                                                return res.status(200).render("admin-schedules-add.ejs", {
+                                                    movies: movies.rows,
+                                                    theaters: theaters.rows,
+                                                    studios: studios.rows,
+                                                    cities: cities.rows,
+                                                    minDate,
+                                                });
+                                            }
                                         });
                                     }
                                 });
@@ -671,276 +694,268 @@ router.get("/admin/schedules/add", async (req, res) => {
                         });
                     }
                 });
+            } catch (error) {
+                console.error("Page is not availible", error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.error("Page is not availible", error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API to create schedule
 router.post("/create-schedule", async (req, res) => {
-    const { movie, studio, date, hours, prices } = req.body;
+    if(store_session){
+        if(store_session.role == "admin"){
+            const { movie, studio, date, hours, prices } = req.body;
 
-    try {
-        //Insert schedule data to database
-        const query =
-        "INSERT INTO Schedule (movie_id, studio_id, date, hours, prices) VALUES ($1, $2, $3, $4, $5);";
-        const values = [movie, studio, date, hours, prices];
-
-        await db.query(query, values, (err, results) => {
-            if (err) {
-                console.log("Create schedule failed : " + err)
-            } else {
-                console.log("Schedule created");
-                return res.status(200).redirect("/admin/schedules");
+            try {
+                //Insert schedule data to database
+                const query =
+                "INSERT INTO Schedule (movie_id, studio_id, date, hours, prices) VALUES ($1, $2, $3, $4, $5);";
+                const values = [movie, studio, date, hours, prices];
+        
+                await db.query(query, values, (err, results) => {
+                    if (err) {
+                        console.log("Create schedule failed : " + err)
+                        return res.status(500).redirect("/admin/schedules");
+                    } else {
+                        console.log("Schedule created");
+                        return res.status(200).redirect("/admin/schedules");
+                    }
+                });
+            } catch (error) {
+                console.error("Page is not availible", error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.error("Page is not availible", error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //Page to edit schedules
 router.get("/admin/schedules/edit/:scheduleId", async (req, res) => {
-  const { scheduleId } = req.params;
-  try {
-    const query = "SELECT * FROM Schedule WHERE schedule_id = $1;";
-    await db.query(query, [scheduleId], async (err, results) => {
-      if (err) {
-        console.log(err);
-      } else {
-        //Get list of movies for dropdown
-        const queryMovie = "SELECT * FROM Movies;";
-        await db.query(queryMovie, async (err, movies) => {
-          if (err) {
-            console.log(err);
-          } else {
-            //Get list of cities for dropdown
-            const queryCity = "SELECT DISTINCT city FROM Theaters;";
-            await db.query(queryCity, async (err, cities) => {
-              if (err) {
-                console.log(err);
-              } else {
-                //Get list of theaters  for dropdown
-                const queryTheater = "SELECT * FROM Theaters;";
-                await db.query(queryTheater, async (err, theaters) => {
-                  if (err) {
-                    console.log(err);
-                  } else {
-                    //Get list of studios for dropdown
-                    const queryStudio = "SELECT * FROM Studios;";
-                    await db.query(queryStudio, async (err, studios) => {
-                      if (err) {
-                        console.log(err);
-                      } else {
-                        const tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 3);
-                        const minDate = tomorrow.toISOString().split("T")[0];
-
-                        res.render("admin-schedules-edit.ejs", {
-                          schedule: results.rows[0],
-                          movies: movies.rows,
-                          theaters: theaters.rows,
-                          studios: studios.rows,
-                          cities: cities.rows,
-                          minDate,
-                        });
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-  } catch (error) {}
+    if(store_session){
+        //if else to check if user is admin or not
+        if(store_session.role == "admin"){
+            const { scheduleId } = req.params;
+            try {
+              const query = "SELECT * FROM Schedule WHERE schedule_id = $1;";
+              await db.query(query, [scheduleId], async (err, results) => {
+                if (err) {
+                    console.log("(/admin/schedules/edit) Getting data schedule error : " + err);
+                    return res.status(500).redirect("/admin/schedules");
+                } else {
+                  //Get list of movies for dropdown
+                  const queryMovie = "SELECT * FROM Movies;";
+                  await db.query(queryMovie, async (err, movies) => {
+                    if (err) {
+                        console.log("(/admin/schedules/edit) Getting data movies error : " + err);
+                        return res.status(500).redirect("/admin/schedules");
+                    } else {
+                      //Get list of cities for dropdown
+                      const queryCity = "SELECT DISTINCT city FROM Theaters;";
+                      await db.query(queryCity, async (err, cities) => {
+                        if (err) {
+                          console.log("(/admin/schedules/edit) Getting data cities error : " + err);
+                          return res.status(500).redirect("/admin/schedules");
+                        } else {
+                          //Get list of theaters  for dropdown
+                          const queryTheater = "SELECT * FROM Theaters;";
+                          await db.query(queryTheater, async (err, theaters) => {
+                            if (err) {
+                              console.log("(/admin/schedules/edit) Getting data theaters error : " + err);
+                                return res.status(500).redirect("/admin/schedules");
+                            } else {
+                              //Get list of studios for dropdown
+                              const queryStudio = "SELECT * FROM Studios;";
+                              await db.query(queryStudio, async (err, studios) => {
+                                if (err) {
+                                  console.log("(/admin/schedules/edit) Getting data studios error : " + err);
+                                  return res.status(500).redirect("/admin/schedules");
+                                } else {
+                                  const tomorrow = new Date();
+                                  tomorrow.setDate(tomorrow.getDate() + 3);
+                                  const minDate = tomorrow.toISOString().split("T")[0];
+          
+                                  return res.status(200).render("admin-schedules-edit.ejs", {
+                                    schedule: results.rows[0],
+                                    movies: movies.rows,
+                                    theaters: theaters.rows,
+                                    studios: studios.rows,
+                                    cities: cities.rows,
+                                    minDate,
+                                  });
+                                }
+                              });
+                            }
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            } catch (error) {
+              console.error("Page is not availible", error);
+              return res.status(500).json({ message: "An error occurred during showing page." });
+            }
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
+    }
 });
 
 //API to edit schedules
 router.post("/edit-schedule/:id", async (req, res) => {
-    const schedule_id = req.params.id;
-    const { movie, studio, date, hours, prices } = req.body;
-    try {
-        let query = "UPDATE schedule SET";
-        const updateFields = [];
-
-        //If user input data, add to updateFields array
-        if (movie) {
-            updateFields.push(`movie_id = '${movie}'`);
-        }
-        if (studio) {
-            updateFields.push(`studio_id = '${studio}'`);
-        }
-        if (date) {
-            updateFields.push(`date = '${date}'`);
-        }
-        if (hours) {
-            updateFields.push(`hours = '${hours}'`);
-        }
-        if (prices) {
-            updateFields.push(`prices = '${prices}'`);
-        }
-        query += ` ${updateFields.join(", ")} WHERE schedule_id = ${schedule_id};`;
-
-        await db.query(query, (err, results) => {
-            if (err) {
-                console.log("Edit data schedule failed : ", err);
-            } else {
-                console.log("Data schedule edited.");
-                return res.status(200).redirect("/admin/schedules");
+    if(store_session){
+        //if else to check if user is admin or not
+        if(store_session.role == "admin"){
+            const schedule_id = req.params.id;
+            const { movie, studio, date, hours, prices } = req.body;
+            try {
+                let query = "UPDATE schedule SET";
+                const updateFields = [];
+        
+                //If user input data, add to updateFields array
+                if (movie) {
+                    updateFields.push(`movie_id = '${movie}'`);
+                }
+                if (studio) {
+                    updateFields.push(`studio_id = '${studio}'`);
+                }
+                if (date) {
+                    updateFields.push(`date = '${date}'`);
+                }
+                if (hours) {
+                    updateFields.push(`hours = '${hours}'`);
+                }
+                if (prices) {
+                    updateFields.push(`prices = '${prices}'`);
+                }
+                query += ` ${updateFields.join(", ")} WHERE schedule_id = ${schedule_id};`;
+        
+                await db.query(query, (err, results) => {
+                    if (err) {
+                        console.log("Edit data schedule failed : ", err);
+                        return res.status(500).redirect("/admin/schedules");
+                    } else {
+                        console.log("Data schedule edited.");
+                        return res.status(200).redirect("/admin/schedules");
+                    }
+                });
+            } catch (error) {
+                console.log("Edit data schedule failed : " + error);
+                return res.status(500).redirect("/admin/schedules");
             }
-        });
-    } catch (error) {
-        console.log("Edit data schedule failed : " + error);
-        return res.status(500).redirect("/admin/schedules");
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API to delete schedule
 router.post("/delete-schedule/:id", async (req, res) => {
-    //Schedule id
-    const schedule_id = req.params.id;
+    //if else to check if user is admin or not
+    if(store_session){
+        if(store_session.role == "admin"){
+                //Schedule id
+                const schedule_id = req.params.id;
 
-    try {
-        //Delete schedule
-        const query = "DELETE FROM schedule WHERE schedule_id = $1;";
-        const values = [schedule_id];
+                try {
+                    //Delete schedule
+                    const query = "DELETE FROM schedule WHERE schedule_id = $1;";
+                    const values = [schedule_id];
 
-        await db.query(query, values, (err, results) => {
-            if (err) {
-                console.log("Delete schedule failed : " + err);
-                return res.status(500).redirect("/admin/schedules");
-            } else {
-                console.log("Schedule deleted.");
-                return res.status(200).redirect("/admin/schedules");
-            }
-        });
-    } catch (error) {
-        console.log("Delete schedule failed : " + error);
-        return res.status(500).redirect("/admin/schedules");
+                    await db.query(query, values, (err, results) => {
+                        if (err) {
+                            console.log("Delete schedule failed : " + err);
+                            return res.status(500).redirect("/admin/schedules");
+                        } else {
+                            console.log("Schedule deleted.");
+                            return res.status(200).redirect("/admin/schedules");
+                        }
+                    });
+                } catch (error) {
+                    console.log("Delete schedule failed : " + error);
+                    return res.status(500).redirect("/admin/schedules");
+                }
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //ADMIN Seats ROUTER & PAGES
 //Page for seats list
 router.get("/admin/seats", async (req, res) => {
-    try {
-        //Get seats list join with studio and theater
-        const query = "SELECT seats.*, studios.name AS studio_name, studios.type, theaters.* FROM Seats JOIN Studios ON Seats.studio_id = Studios.studio_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id ORDER BY seat_id ASC;";
-
-        await db.query(query, (err, results) => {
-            if (err) {
-                console.log("(/admin/seats) Getting data seats error : " + err);
-            } else {
-                res.render("admin-seats.ejs", { seats: results.rows });
+    //if else to check if user is admin or not
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                //Get seats list join with studio and theater
+                const query = "SELECT seats.*, studios.name AS studio_name, studios.type, theaters.* FROM Seats JOIN Studios ON Seats.studio_id = Studios.studio_id JOIN Theaters ON Studios.theater_id = Theaters.theater_id ORDER BY seat_id ASC;";
+        
+                await db.query(query, (err, results) => {
+                    if (err) {
+                        console.log("(/admin/seats) Getting data seats error : " + err);
+                        return res.status(500).redirect("/admin/dashboard");
+                    } else {
+                        return res.status(200).render("admin-seats.ejs", { seats: results.rows });
+                    }
+                });
+            } catch (error) {
+                console.error("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.error("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //Page for add seats
 router.get("/admin/seats/add", async (req, res) => {
-    try {
-        //Get list of cities from theaters
-        const queryCity = "SELECT DISTINCT city FROM Theaters;";
-        await db.query(queryCity, async (err, cities) => {
-            if (err) {
-                console.log("(/admin/seats/add) Getting data cities error : " + err);
-                return res.status(500).redirect("/admin/seats");
-            } else {
-                //get list of theaters
-                const queryTheaters = "SELECT * FROM Theaters;";
-                await db.query(queryTheaters, async (err, theaters) => {
-                    if (err) {
-                        console.log("(/admin/seats/add) Getting data theaters error : " + err);
-                        return res.status(500).redirect("/admin/seats");
-                    } else {
-                        //get list of studios
-                        const queryStudios = "SELECT * FROM Studios;";
-                        await db.query(queryStudios, async (err, studios) => {
-                            if (err) {
-                                console.log("(/admin/seats/add) Getting data studios error : " + err);
-                                return res.status(500).redirect("/admin/seats");
-                            } else {
-                                res.status(200).render("admin-seats-add.ejs", {
-                                    cities: cities.rows,
-                                    theaters: theaters.rows,
-                                    studios: studios.rows,
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    } catch (error) {
-        console.log("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
-    }
-});
-
-//API to create seat
-router.post("/create-seat", async (req, res) => {
-    const { studio, seatNumber } = req.body;
-    try {
-        //Insert seat data to database
-        const query = "INSERT INTO Seats (studio_id, seat_number) VALUES ($1, $2);";
-        const values = [studio, seatNumber];
-
-        await db.query(query, values, (err, results) => {
-            if (err) {
-                console.log("Making seat error : " + err);
-                return res.status(500).redirect("/admin/seats");
-            } else {
-                console.log("Seat created");
-                res.status(200).redirect("/admin/seats");
-            }
-        });
-    } catch (error) {
-        console.log("Create seat failed : " + error);
-        return res.status(500).redirect("/admin/seats");
-    }
-});
-
-//Page for edit seats
-router.get("/admin/seats/edit/:seatId", async (req, res) => {
-    const { seatId } = req.params;
-    try {
-        //Get seat data from database based on seat id from params 
-        const query = "SELECT * FROM Seats WHERE seat_id = $1;";
-
-        await db.query(query, [seatId], async (err, results) => {
-            if (err) {
-                console.log(err);
-            } else {
-                //Get list of cities from theaters for dropdown
+    //if else to check if user is admin or not
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                //Get list of cities from theaters
                 const queryCity = "SELECT DISTINCT city FROM Theaters;";
                 await db.query(queryCity, async (err, cities) => {
                     if (err) {
-                        console.log(err);
+                        console.log("(/admin/seats/add) Getting data cities error : " + err);
+                        return res.status(500).redirect("/admin/seats");
                     } else {
-                        //get list of theaters for dropdown
+                        //get list of theaters
                         const queryTheaters = "SELECT * FROM Theaters;";
                         await db.query(queryTheaters, async (err, theaters) => {
                             if (err) {
-                                console.log(err);
+                                console.log("(/admin/seats/add) Getting data theaters error : " + err);
+                                return res.status(500).redirect("/admin/seats");
                             } else {
-                                //get list of studios for dropdown
+                                //get list of studios
                                 const queryStudios = "SELECT * FROM Studios;";
                                 await db.query(queryStudios, async (err, studios) => {
                                     if (err) {
-                                        console.log(err);
+                                        console.log("(/admin/seats/add) Getting data studios error : " + err);
+                                        return res.status(500).redirect("/admin/seats");
                                     } else {
-                                        res.render("admin-seats-edit.ejs", {
-                                            seat: results.rows[0],
+                                        res.status(200).render("admin-seats-add.ejs", {
                                             cities: cities.rows,
                                             theaters: theaters.rows,
                                             studios: studios.rows,
@@ -951,628 +966,888 @@ router.get("/admin/seats/edit/:seatId", async (req, res) => {
                         });
                     }
                 });
+            } catch (error) {
+                console.log("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.log("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
+    }
+});
+
+//API to create seat
+router.post("/create-seat", async (req, res) => {
+    if(store_session){
+        if(store_session.role ==  "admin"){
+            const { studio, seatNumber } = req.body;
+            try {
+                //Insert seat data to database
+                const query = "INSERT INTO Seats (studio_id, seat_number) VALUES ($1, $2);";
+                const values = [studio, seatNumber];
+        
+                await db.query(query, values, (err, results) => {
+                    if (err) {
+                        console.log("Making seat error : " + err);
+                        return res.status(500).redirect("/admin/seats");
+                    } else {
+                        console.log("Seat created");
+                        res.status(200).redirect("/admin/seats");
+                    }
+                });
+            } catch (error) {
+                console.log("Create seat failed : " + error);
+                return res.status(500).redirect("/admin/seats");
+            }
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
+    }
+});
+
+//Page for edit seats
+router.get("/admin/seats/edit/:seatId", async (req, res) => {
+    if(store_session){
+        if(store_session.role == "admin"){
+            const { seatId } = req.params;
+            try {
+                //Get seat data from database based on seat id from params 
+                const query = "SELECT * FROM Seats WHERE seat_id = $1;";
+        
+                await db.query(query, [seatId], async (err, results) => {
+                    if (err) {
+                        console.log("(/admin/seats/edit) Getting data seats error : " + err);
+                        return res.status(500).redirect("/admin/seats");
+                    } else {
+                        //Get list of cities from theaters for dropdown
+                        const queryCity = "SELECT DISTINCT city FROM Theaters;";
+                        await db.query(queryCity, async (err, cities) => {
+                            if (err) {
+                                console.log("(/admin/seats/edit) Getting data cities error : " + err);
+                                return res.status(500).redirect("/admin/seats");
+                            } else {
+                                //get list of theaters for dropdown
+                                const queryTheaters = "SELECT * FROM Theaters;";
+                                await db.query(queryTheaters, async (err, theaters) => {
+                                    if (err) {
+                                        console.log("(/admin/seats/edit) Getting data theaters error : " + err);
+                                        return res.status(500).redirect("/admin/seats");
+                                    } else {
+                                        //get list of studios for dropdown
+                                        const queryStudios = "SELECT * FROM Studios;";
+                                        await db.query(queryStudios, async (err, studios) => {
+                                            if (err) {
+                                                console.log("(/admin/seats/edit) Getting data studios error : " + err);
+                                                return res.status(500).redirect("/admin/seats");
+                                            } else {
+                                                return res.status(200).render("admin-seats-edit.ejs", {
+                                                    seat: results.rows[0],
+                                                    cities: cities.rows,
+                                                    theaters: theaters.rows,
+                                                    studios: studios.rows,
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            } catch (error) {
+                console.log("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
+            }
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API to edit seats
 router.post("/edit-seat/:id", async (req, res) => {
-    const seat_id = req.params.id;
-    const { studio, seatNumber } = req.body;
-    console.log("edit data");
-
-    try {
-        let query = "UPDATE seats SET";
-        const updateFields = [];
-
-        //If user input data, add to updateFields array
-        if (studio) {
-            updateFields.push(`studio_id = '${studio}'`);
-        }
-        if (seatNumber) {
-            updateFields.push(`seat_number = '${seatNumber}'`);
-        }
-
-        query += ` ${updateFields.join(", ")} WHERE seat_id = ${seat_id};`;
-
-        await db.query(query, (err, results) => {
-            if (err) {
-                console.log("Edit data seat failed : ", err);
-                return res.status(500).redirect("/admin/seats");
-            } else {
-                console.log("Data seat edited.");
+    if(store_session){
+        if(store_session.role == "admin"){
+            const seat_id = req.params.id;
+            const { studio, seatNumber } = req.body;
+            console.log("edit data");
+        
+            try {
+                let query = "UPDATE seats SET";
+                const updateFields = [];
+        
+                //If user input data, add to updateFields array
+                if (studio) {
+                    updateFields.push(`studio_id = '${studio}'`);
+                }
+                if (seatNumber) {
+                    updateFields.push(`seat_number = '${seatNumber}'`);
+                }
+        
+                query += ` ${updateFields.join(", ")} WHERE seat_id = ${seat_id};`;
+        
+                await db.query(query, (err, results) => {
+                    if (err) {
+                        console.log("Edit data seat failed : ", err);
+                        return res.status(500).redirect("/admin/seats");
+                    } else {
+                        console.log("Data seat edited.");
+                        return res.status(500).redirect("/admin/seats");
+                    }
+                });
+            } catch (error) {
+                console.log("Edit data seat failed : " + error);
                 return res.status(500).redirect("/admin/seats");
             }
-        });
-    } catch (error) {
-        console.log("Edit data seat failed : " + error);
-        return res.status(500).redirect("/admin/seats");
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API to delete seat
 router.post("/delete-seat/:id", async (req, res) => {
-    //Seat id
-    const seat_id = req.params.id;
+    if(store_session){
+        if(store_session.role == "admin"){
+                //Seat id
+                const seat_id = req.params.id;
 
-    try {
-        //Delete seat
-        const query = "DELETE FROM seats WHERE seat_id = $1;";
-        const values = [seat_id];
+                try {
+                    //Delete seat
+                    const query = "DELETE FROM seats WHERE seat_id = $1;";
+                    const values = [seat_id];
 
-        await db.query(query, values, (err, results) => {
-            if (err) {
-                console.log("Delete seat failed : ", err);
-                return res.status(500).redirect("/admin/seats");
-            } else {
-                console.log("Seat deleted.");
-                return res.status(200).redirect("/admin/seats");
-            }
-        });
-    } catch (error) {
-        console.log("Delete seat failed : " + error);
-        return res.status(500).redirect("/admin/seats");
+                    await db.query(query, values, (err, results) => {
+                        if (err) {
+                            console.log("Delete seat failed : ", err);
+                            return res.status(500).redirect("/admin/seats");
+                        } else {
+                            console.log("Seat deleted.");
+                            return res.status(200).redirect("/admin/seats");
+                        }
+                    });
+                } catch (error) {
+                    console.log("Delete seat failed : " + error);
+                    return res.status(500).redirect("/admin/seats");
+                }
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //ADMIN Theaters ROUTER & PAGES
 //Page for theaters list
 router.get("/admin/theaters", async (req, res) => {
-    try {
-        const query = "SELECT * FROM Theaters ORDER BY theater_id ASC;";
-
-        await db.query(query, (err, results) => {
-            if (err) {
-                console.log("(/admin/theaters) Getting data theaters error : " + err);
-            } else {
-                res.render("admin-theaters.ejs", { theaters: results.rows });
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                const query = "SELECT * FROM Theaters ORDER BY theater_id ASC;";
+        
+                await db.query(query, (err, results) => {
+                    if (err) {
+                        console.log("(/admin/theaters) Getting data theaters error : " + err);
+                    } else {
+                        res.render("admin-theaters.ejs", { theaters: results.rows });
+                    }
+                });
+            } catch (error) {
+                console.error("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.error("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //Page for add theaters
 router.get("/admin/theaters/add", async (req, res) => {
-    try {
-        res.render("admin-theaters-add.ejs");
-    } catch (error) {
-        console.error("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                return res.status(200).render("admin-theaters-add.ejs");
+            } catch (error) {
+                console.error("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
+            }
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //Page for edit theaters
 router.get("/admin/theaters/edit/:theaterId", async (req, res) => {
-    const { theaterId } = req.params;
+    if(store_session){
+        if(store_session.role == "admin"){
+            const { theaterId } = req.params;
+            try {
+                //Get theater data from database based on theater id from params
+                const query = "SELECT * FROM theaters WHERE theater_id = $1;";
 
-    try {
-        //Get theater data from database based on theater id from params
-        const query = "SELECT * FROM theaters WHERE theater_id = $1;";
-
-        await db.query(query, [theaterId], (err, results) => {
-            if(err){
-                console.log(err);
-            }else{
-                res.render('admin-theaters-edit.ejs',{theater : results.rows[0]});
+                await db.query(query, [theaterId], (err, results) => {
+                    if(err){
+                        console.log("(/admin/theaters/edit) Getting data theaters error : " + err);
+                        return res.status(500).redirect("/admin/theaters");
+                    }else{
+                        return  res.status(200).render('admin-theaters-edit.ejs',{theater : results.rows[0]});
+                    }
+                });
+            } catch (error) {
+                console.log("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.log("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API to create theater
 router.post("/create-theater", async (req, res) => {
-    const { name, address, city } = req.body;
-    const image = req.file.filename;
-
-    try {
-        //Insert theater data to database
-        const query =
-        "INSERT INTO Theaters (name, address, city, theater_images) VALUES ($1, $2, $3, $4);";
-        const values = [name, address, city, image];
-
-        await db.query(query, values, (err, results) => {
-            if (err) {
+    if(store_session){
+        if(store_session.role == "admin"){
+            const { name, address, city } = req.body;
+            const image = req.file.filename;
+        
+            try {
+                //Insert theater data to database
+                const query =
+                "INSERT INTO Theaters (name, address, city, theater_images) VALUES ($1, $2, $3, $4);";
+                const values = [name, address, city, image];
+        
+                await db.query(query, values, (err, results) => {
+                    if (err) {
+                        console.log("Create theater failed : " + err);
+                        return res.status(500).redirect("/admin/theaters");
+                    } else {
+                        console.log("Theater created");
+                        res.status(200).redirect("/admin/theaters");
+                    }
+                });
+            } catch (err) {
                 console.log("Create theater failed : " + err);
                 return res.status(500).redirect("/admin/theaters");
-            } else {
-                console.log("Theater created");
-                res.status(200).redirect("/admin/theaters");
             }
-        });
-    } catch (err) {
-        console.log("Create theater failed : " + err);
-        return res.status(500).redirect("/admin/theaters");
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
-//API to delete movie
+//API to delete theater
 router.post("/delete-theater/:id", async (req, res) => {
-    const theater_id = req.params.id;
+    if(store_session){
+        if(store_session.role == "admin"){
+            const theater_id = req.params.id;
 
-    try {
-        //Get theater photo name
-        const query = "SELECT theater_images FROM Theaters WHERE theater_id = $1;";
-        const values = [theater_id];
-
-        await db.query(query, values, async (err, results) => {
-            if (err) {
-                console.log(err);
-                res.redirect("/admin/theaters");
-            } else {
+            try {
                 //Get theater photo name
-                const filename = results.rows[0].theater_images;
-                const filePath = `public/images/${filename}`;
-
-                //Delete theater photo
-                fs.unlink(filePath, async (err) => {
+                const query = "SELECT theater_images FROM Theaters WHERE theater_id = $1;";
+                const values = [theater_id];
+        
+                await db.query(query, values, async (err, results) => {
                     if (err) {
-                        console.log("Delete theater photo failed : " + err);
+                        console.log("Delete theater failed : " + err);
                         return res.status(500).redirect("/admin/theaters");
                     } else {
-                        //Delete theater data from database based on theater id from params
-                        const query = "DELETE FROM theaters WHERE theater_id = $1;";
-                        const values = [theater_id];
-
-                        await db.query(query, values, async (err, results) => {
+                        //Get theater photo name
+                        const filename = results.rows[0].theater_images;
+                        const filePath = `public/images/${filename}`;
+        
+                        //Delete theater photo
+                        fs.unlink(filePath, async (err) => {
                             if (err) {
-                                console.log("Delete theater failed : " + err);
+                                console.log("Delete theater photo failed : " + err);
                                 return res.status(500).redirect("/admin/theaters");
                             } else {
-                                console.log("deleted.");
-                                return res.status(200).redirect("/admin/theaters");
+                                //Delete theater data from database based on theater id from params
+                                const query = "DELETE FROM theaters WHERE theater_id = $1;";
+                                const values = [theater_id];
+        
+                                await db.query(query, values, async (err, results) => {
+                                    if (err) {
+                                        console.log("Delete theater failed : " + err);
+                                        return res.status(500).redirect("/admin/theaters");
+                                    } else {
+                                        console.log("deleted.");
+                                        return res.status(200).redirect("/admin/theaters");
+                                    }
+                                });
                             }
                         });
                     }
                 });
+            } catch (err) {
+                console.log("Delete theater failed : " + err);
+                return res.status(500).redirect("/admin/theaters");
             }
-        });
-    } catch (err) {
-        console.log("Delete theater failed : " + err);
-        return res.status(500).redirect("/admin/theaters");
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API to edit theaters
 router.post("/edit-theater/:id", async (req, res) => {
-    const theater_id = req.params.id;
-    const { name, address, city } = req.body;
-
-    try {
-        let query = "UPDATE theaters SET";
-
-        const updateFields = [];
-
-        //If user input data, add to updateFields array
-        if (name) {
-            const escapedName = name.replace(/'/g, "''"); // Escape single quotes
-            updateFields.push(`name = '${escapedName}'`);
-        }
-        if (address) {
-            updateFields.push(`address = '${address}'`);
-        }
-        if (city) {
-            updateFields.push(`city = '${city}'`);
-        }
-        if (req.file) {
-            const image = req.file.filename;
-            updateFields.push(`theater_images = '${image}'`);
-
-            //Delete previous photo
-            //Get theater photo name
-            const queryDeletePhoto =
-                "SELECT theater_images FROM theaters WHERE theater_id = $1;";
-            const values = [theater_id];
-
-            await db.query(queryDeletePhoto, values, async (err, results) => {
-                if (err) {
-                    console.log(err);
-                    res.redirect("/admin/theaters");
-                } else {
-                    const filename = results.rows[0].images;
-                    const filePath = `public/images/${filename}`;
-
-                    //Delete theater photo
-                    fs.unlink(filePath, async (err) => {
+    if(store_session){
+        if(store_session.role == "admin"){
+            const theater_id = req.params.id;
+            const { name, address, city } = req.body;
+        
+            try {
+                let query = "UPDATE theaters SET";
+        
+                const updateFields = [];
+        
+                //If user input data, add to updateFields array
+                if (name) {
+                    const escapedName = name.replace(/'/g, "''"); // Escape single quotes
+                    updateFields.push(`name = '${escapedName}'`);
+                }
+                if (address) {
+                    updateFields.push(`address = '${address}'`);
+                }
+                if (city) {
+                    updateFields.push(`city = '${city}'`);
+                }
+                if (req.file) {
+                    const image = req.file.filename;
+                    updateFields.push(`theater_images = '${image}'`);
+        
+                    //Delete previous photo
+                    //Get theater photo name
+                    const queryDeletePhoto =
+                        "SELECT theater_images FROM theaters WHERE theater_id = $1;";
+                    const values = [theater_id];
+        
+                    await db.query(queryDeletePhoto, values, async (err, results) => {
                         if (err) {
-                            console.log("Delete theater photo failed : " + err);
+                            console.log("Delete theater failed : " + err);
                             return res.status(500).redirect("/admin/theaters");
                         } else {
-                            console.log("Photo deleted.");
+                            const filename = results.rows[0].images;
+                            const filePath = `public/images/${filename}`;
+        
+                            //Delete theater photo
+                            fs.unlink(filePath, async (err) => {
+                                if (err) {
+                                    console.log("Delete theater photo failed : " + err);
+                                    return res.status(500).redirect("/admin/theaters");
+                                } else {
+                                    console.log("Photo deleted.");
+                                }
+                            });
                         }
                     });
                 }
-            });
-        }
-
-        query += ` ${updateFields.join(", ")} WHERE theater_id = ${theater_id};`;
-        console.log(query);
-
-        await db.query(query, (err, results) => {
-            if (err) {
+        
+                query += ` ${updateFields.join(", ")} WHERE theater_id = ${theater_id};`;
+                console.log(query);
+        
+                await db.query(query, (err, results) => {
+                    if (err) {
+                        console.log("Edit data failed : " + err);
+                        return res.status(500).redirect("/admin/theaters");
+                    } else {
+                        console.log(query);
+                        console.log("Data edited.");
+                        return res.status(200).redirect("/admin/theaters");
+                    }
+                });
+            } catch (err) {
                 console.log("Edit data failed : " + err);
                 return res.status(500).redirect("/admin/theaters");
-            } else {
-                console.log(query);
-                console.log("Data edited.");
-                res.status(200).redirect("/admin/theaters");
             }
-        });
-    } catch (err) {
-        console.log("Edit data failed : " + err);
-        return res.status(500).redirect("/admin/theaters");
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //ADMIN STUDIOS ROUTER & PAGES
 //Page for show studios list
 router.get("/admin/studios", async (req, res) => {
-    try {
-        const query =
-        "SELECT Studios.*, Theaters.name AS theater_name, theaters.city, theaters.address FROM Studios JOIN Theaters ON theaters.theater_id = studios.theater_id ORDER BY studio_id ASC;";
-        await db.query(query, (err, results) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.render("admin-studios.ejs", { studios: results.rows });
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                const query =
+                "SELECT Studios.*, Theaters.name AS theater_name, theaters.city, theaters.address FROM Studios JOIN Theaters ON theaters.theater_id = studios.theater_id ORDER BY studio_id ASC;";
+                await db.query(query, (err, results) => {
+                    if (err) {
+                        console.log("(/admin/studios) Getting data studios error : " + err);
+                        return res.status(500).redirect("/admin/dashboard");
+                    } else {
+                        res.render("admin-studios.ejs", { studios: results.rows });
+                    }
+                });
+            } catch (error) {
+                console.error("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.error("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //Page for add studios
 router.get("/admin/studios/add", async (req, res) => {
-    try {
-        //Get list of cities from theaters for dropdown
-        const queryCity = "SELECT DISTINCT city FROM Theaters;";
-        await db.query(queryCity, async (err, cities) => {
-            //Get theaters list for dropdown
-            const queryTheaters = "SELECT * FROM Theaters";
-            await db.query(queryTheaters, async (err, theaters) => {
-                if(err){
-                    console.log(err);
-                }else{
-                    res.render('admin-studios-add.ejs', {cities : cities.rows, theaters : theaters.rows});
-                }
-            });
-        });
-    } catch (error) {
-        console.log("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                //Get list of cities from theaters for dropdown
+                const queryCity = "SELECT DISTINCT city FROM Theaters;";
+                await db.query(queryCity, async (err, cities) => {
+                    //Get theaters list for dropdown
+                    const queryTheaters = "SELECT * FROM Theaters";
+                    await db.query(queryTheaters, async (err, theaters) => {
+                        if(err){
+                            console.log("(/admin/studios/add) Getting data theaters error : " + err);
+                            return res.status(500).redirect("/admin/studios");
+                        }else{
+                            return res.status(200).render('admin-studios-add.ejs', {cities : cities.rows, theaters : theaters.rows});
+                        }
+                    });
+                });
+            } catch (error) {
+                console.log("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
+            }
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API for add studios
 router.post("/create-studio", async (req, res) => {
-    const { name, type, theater } = req.body;
+    if(store_session){
+        if(store_session.role == "admin"){
+            const { name, type, theater } = req.body;
 
-    try {
-        //Insert data to Studios table
-        const query =
-        "INSERT INTO Studios (name, type, theater_id) VALUES ($1, $2, $3);";
-        const values = [name, type, theater];
-
-        await db.query(query, values, (err, results) => {
-            if (err) {
-                console.log("Making studio error :" + err);
+            try {
+                //Insert data to Studios table
+                const query =
+                "INSERT INTO Studios (name, type, theater_id) VALUES ($1, $2, $3);";
+                const values = [name, type, theater];
+        
+                await db.query(query, values, (err, results) => {
+                    if (err) {
+                        console.log("Making studio error :" + err);
+                        return res.status(500).redirect("/admin/studios");
+                    } else {
+                        console.log("Studio created");
+                        return res.status(200).redirect("/admin/studios");
+                    }
+                });
+            } catch (err) {
+                console.log("Create studio failed : " + err);
                 return res.status(500).redirect("/admin/studios");
-            } else {
-                console.log("Studio created");
-                res.status(200).redirect("/admin/studios");
             }
-        });
-    } catch (err) {
-        console.log("Create studio failed : " + err);
-        return res.status(500).redirect("/admin/studios");
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //Page for edit studios
 router.get("/admin/studios/edit/:studioId", async (req, res) => {
-    const { studioId } = req.params;
-    try {
-        //Get list of cities from theaters for dropdown
-        const queryCity = "SELECT DISTINCT city FROM Theaters;";
-        await db.query(queryCity, async (err, cities) => {
-            //Get theaters list for dropdown
-            const queryTheaters = "SELECT * FROM Theaters";
-            await db.query(queryTheaters, async (err, theaters) => {
-                if (err) {
-                    console.log("(/admin/studios/edit) Getting data theaters error : " + err);
-                    return res.status(500).redirect("/admin/studios");
-                } else {
-                    //Get studio data based on studioId
-                    const query = "SELECT * FROM Studios WHERE studio_id = $1;";
-                    const values = [studioId];
-                    await db.query(query, values, async (err, studio) => {
+    if(store_session){
+        if(store_session.role == "admin"){
+            const { studioId } = req.params;
+            try {
+                //Get list of cities from theaters for dropdown
+                const queryCity = "SELECT DISTINCT city FROM Theaters;";
+                await db.query(queryCity, async (err, cities) => {
+                    //Get theaters list for dropdown
+                    const queryTheaters = "SELECT * FROM Theaters";
+                    await db.query(queryTheaters, async (err, theaters) => {
                         if (err) {
-                            console.log("(/admin/studios/edit) Getting data studios error : " + err);
+                            console.log("(/admin/studios/edit) Getting data theaters error : " + err);
                             return res.status(500).redirect("/admin/studios");
                         } else {
-                            res.render("admin-studios-edit.ejs", {
-                                cities: cities.rows,
-                                theaters: theaters.rows,
-                                studio: studio.rows[0],
+                            //Get studio data based on studioId
+                            const query = "SELECT * FROM Studios WHERE studio_id = $1;";
+                            const values = [studioId];
+                            await db.query(query, values, async (err, studio) => {
+                                if (err) {
+                                    console.log("(/admin/studios/edit) Getting data studios error : " + err);
+                                    return res.status(500).redirect("/admin/studios");
+                                } else {
+                                    return res.status(200).render("admin-studios-edit.ejs", {
+                                        cities: cities.rows,
+                                        theaters: theaters.rows,
+                                        studio: studio.rows[0],
+                                    });
+                                }
                             });
                         }
                     });
-                }
-            });
-        });
-    } catch (error) {
-        console.log("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+                });
+            } catch (error) {
+                console.log("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
+            }
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API for edit studios
 router.post("/edit-studio/:id", async (req, res) => {
-    const studio_id = req.params.id;
-    const { name, type, theater } = req.body;
-
-    try {
-        let query = "UPDATE Studios SET";
-
-        const updateFields = [];
-        //If user input data, add to updateFields array
-        if (name) {
-            updateFields.push(`name = '${name}'`);
-        }
-        if (type) {
-            updateFields.push(`type = '${type}'`);
-        }
-        if (theater) {
-            updateFields.push(`theater_id = '${theater}'`);
-        }
-
-        query += ` ${updateFields.join(", ")} WHERE studio_id = ${studio_id};`;
-        await db.query(query, (err, results) => {
-            if (err) {
-                console.log("Edit data failed : ", err);
+    if(store_session){
+        if(store_session.role == "admin"){
+            const studio_id = req.params.id;
+            const { name, type, theater } = req.body;
+        
+            try {
+                let query = "UPDATE Studios SET";
+        
+                const updateFields = [];
+                //If user input data, add to updateFields array
+                if (name) {
+                    updateFields.push(`name = '${name}'`);
+                }
+                if (type) {
+                    updateFields.push(`type = '${type}'`);
+                }
+                if (theater) {
+                    updateFields.push(`theater_id = '${theater}'`);
+                }
+        
+                query += ` ${updateFields.join(", ")} WHERE studio_id = ${studio_id};`;
+                await db.query(query, (err, results) => {
+                    if (err) {
+                        console.log("Edit data failed : ", err);
+                        return res.status(500).redirect("/admin/studios");
+                    } else {
+                        console.log(query);
+                        console.log("Data edited.");
+                        return res.status(200).redirect("/admin/studios");
+                    }
+                });
+            } catch (err) {
+                console.log("Edit data failed : " + err);
                 return res.status(500).redirect("/admin/studios");
-            } else {
-                console.log(query);
-                console.log("Data edited.");
-                return res.status(200).redirect("/admin/studios");
             }
-        });
-    } catch (err) {
-        console.log("Edit data failed : " + err);
-        return res.status(500).redirect("/admin/studios");
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API for delete studios
 router.post("/delete-studio/:id", async (req, res) => {
-    const studio_id = req.params.id;
+    if(store_session){
+        if(store_session.role == "admin"){
+            const studio_id = req.params.id;
 
-    try {
-        const query = "DELETE FROM Studios WHERE studio_id = $1;";
-        const values = [studio_id];
-
-        await db.query(query, values, (err, results) => {
-        if (err) {
-            console.log("Delete studio failed : ", err);
-            return res.status(500).redirect("/admin/studios");
-        } else {
-            console.log("deleted.");
-            return res.status(200).redirect("/admin/studios");
+            try {
+                const query = "DELETE FROM Studios WHERE studio_id = $1;";
+                const values = [studio_id];
+        
+                await db.query(query, values, (err, results) => {
+                    if (err) {
+                        console.log("Delete studio failed : ", err);
+                        return res.status(500).redirect("/admin/studios");
+                    } else {
+                        console.log("deleted.");
+                        return res.status(200).redirect("/admin/studios");
+                    }
+                });
+            } catch (err) {
+                console.log("Delete studio failed : " + err);
+                return res.status(500).redirect("/admin/studios");
+            }
+        }else{
+            return res.status(403).redirect("/");
         }
-        });
-    } catch (err) {
-        console.log("Delete studio failed : " + err);
-        return res.status(500).redirect("/admin/studios");
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //ADMIN MOVIES ROUTERS & PAGES
 //Page for add movies
 router.get("/admin/movies/add", async (req, res) => {
-    try {
-        res.render("admin-movies-add.ejs");
-    } catch (error) {
-        console.error("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                return res.status(200).render("admin-movies-add.ejs");
+            } catch (error) {
+                console.error("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
+            }
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //Page for edit movies
 router.get("/admin/movies/edit/:movieId", async (req, res) => {
-    const { movieId } = req.params;
-    try {
-        const query = "SELECT * FROM Movies WHERE movie_id = $1;";
-
-        await db.query(query, [movieId], (err, results) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.render("admin-movies-edit.ejs", { movie: results.rows[0] });
+    if(store_session){
+        if(store_session.role == "admin"){
+            const { movieId } = req.params;
+            try {
+                const query = "SELECT * FROM Movies WHERE movie_id = $1;";
+        
+                await db.query(query, [movieId], (err, results) => {
+                    if (err) {
+                        console.log("(/admin/movies/edit) Getting data movies error : " + err);
+                        return res.status(500).redirect("/admin/movies");
+                    } else {
+                        return res.status(200).render("admin-movies-edit.ejs", { movie: results.rows[0] });
+                    }
+                });
+            } catch (error) {
+                console.error("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.error("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //Page for movies list
 router.get("/admin/movies", async (req, res) => {
-    try {
-        const query = "SELECT * FROM Movies ORDER BY movie_id ASC;";
-
-        await db.query(query, (err, results) => {
-            if(err){
-
-            }else{
-                const username = req.query.username;
-                res.render('admin-movies.ejs', {movies : results.rows, username : username});
+    if(store_session){
+        if(store_session.role == "admin"){
+            try {
+                const query = "SELECT * FROM Movies ORDER BY movie_id ASC;";
+        
+                await db.query(query, (err, results) => {
+                    if(err){
+                        console.log("(/admin/movies) Getting data movies error : " + err);
+                        return res.status(500).redirect("/admin/dashboard");
+                    }else{
+                        const username = req.query.username;
+                        return res.status(200).render('admin-movies.ejs', {movies : results.rows, username : username});
+                    }
+                });
+            } catch (error) {
+                console.error("Page is not availible" + error);
+                return res.status(500).json({ message: "An error occurred during showing page." });
             }
-        });
-    } catch (error) {
-        console.error("Page is not availible" + error);
-        return res.status(500).json({ message: "An error occurred during showing page." });
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API to create movies
 router.post("/create-movie", async (req, res) => {
-    const {name,genre,duration,release_date,synopsis,status,trailer_link,rating} = req.body;
-    console.log(req.body);
-    const image = req.file.filename;
-
-    try {
-        const query =
-        "INSERT INTO Movies (title, genre, duration, release_date, synopsis, status, trailer_link, images, rating) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);";
-        const values = [name,genre, duration, release_date, synopsis, status, trailer_link, image, rating, ];
-
-        await db.query(query, values, (err, results) => {
-            if (err) {
+    if(store_session){
+        if(store_session.role == "admin"){
+            const {name,genre,duration,release_date,synopsis,status,trailer_link,rating} = req.body;
+            const image = req.file.filename;
+        
+            try {
+                const query =
+                "INSERT INTO Movies (title, genre, duration, release_date, synopsis, status, trailer_link, images, rating) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);";
+                const values = [name,genre, duration, release_date, synopsis, status, trailer_link, image, rating, ];
+        
+                await db.query(query, values, (err, results) => {
+                    if (err) {
+                        console.log("Create movie failed : " + err);
+                        return res.status(500).redirect("/admin/movies");
+                    } else {
+                        console.log("Movie created");
+                        return res.status(200).redirect("/admin/movies");
+                    }
+                });
+            } catch (err) {
                 console.log("Create movie failed : " + err);
                 return res.status(500).redirect("/admin/movies");
-            } else {
-                console.log("Movie created");
-                return res.status(200).redirect("/admin/movies");
             }
-        });
-    } catch (err) {
-        console.log("Create movie failed : " + err);
-        return res.status(500).redirect("/admin/movies");
+        }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
     }
 });
 
 //API to edit movies
 router.post("/edit-movie/:id", async (req, res) => {
-    const movie_id = req.params.id;
-    const {name,genre,duration,release_date,synopsis,status,trailer_link,rating} = req.body;
-    try {
-        let query = "UPDATE Movies SET";
-
-        const updateFields = [];
-
-        if (name) {
-        const escapedTitle = name.replace(/'/g, "''"); // Escape single quotes
-        updateFields.push(`title = '${escapedTitle}'`);
-        }
-        if (genre && genre !== "None") {
-        updateFields.push(`genre = '${genre}'`);
-        }
-        if (duration) {
-        updateFields.push(`duration= '${duration}'`);
-        }
-        if (release_date) {
-        updateFields.push(`release_date = '${release_date}'`);
-        }
-        if (synopsis) {
-        updateFields.push(`synopsis = '${synopsis}'`);
-        }
-        if (status && status !== "None") {
-        updateFields.push(`status = '${status}'`);
-        }
-        if (trailer_link) {
-        updateFields.push(`trailer_link = '${trailer_link}'`);
-        }
-        if (rating) {
-        updateFields.push(`rating = '${rating}'`);
-        }
-        if (req.file) {
-            const image = req.file.filename;
-            updateFields.push(`images = '${image}'`);
-
-            //Delete previous photo
-
-            const queryDeletePhoto = "SELECT images FROM Movies WHERE movie_id = $1;";
-            const values = [movie_id];
-
-            await db.query(queryDeletePhoto, values, async (err, results) => {
-                if (err) {
-                    console.log("Delete movie photo failed : " + err);
-                    return res.status(500).redirect("/admin/movies");
-                } else {
-                    const filename = results.rows[0].images;
-                    const filePath = `public/images/${filename}`;
-
-                    fs.unlink(filePath, async (err) => {
-                        if (err) {
-                            console.error("Delete movie photo failed : " + err);
-                            return res.status(500).redirect("/admin/movies");
-                        } else {
-                            console.log("Photo deleted.");
-                        }
-                    });
-                }
-            });
-        }
-
-        query += ` ${updateFields.join(", ")} WHERE movie_id = ${movie_id};`;
-        console.log(query);
-        await db.query(query, (err, results) => {
-            if (err) {
-                console.log("Edit data failed : ", err);
-                return res.status(304).redirect("/admin/movies");
-            } else {
-                console.log(query);
-                console.log("Data edited.");
-                return res.status(200).redirect("/admin/movies");
+  if(store_session){
+    if(store_session.role == "admin"){
+        const movie_id = req.params.id;
+        const {name,genre,duration,release_date,synopsis,status,trailer_link,rating} = req.body;
+        try {
+            let query = "UPDATE Movies SET";
+    
+            const updateFields = [];
+    
+            if (name) {
+            const escapedTitle = name.replace(/'/g, "''"); // Escape single quotes
+            updateFields.push(`title = '${escapedTitle}'`);
             }
-        });
-    } catch (err) {
-        console.log(err);
-        return res.status(500).redirect("/admin/movies");
-    }
-});
-
-//API to delete movie
-router.post("/delete-movie/:id", async (req, res) => {
-  const movie_id = req.params.id;
-
-    try {
-        const query = "SELECT images FROM Movies WHERE movie_id = $1;";
-        const values = [movie_id];
-
-        await db.query(query, values, async (err, results) => {
-            if (err) {
-                console.log(err);
-                res.redirect("/admin/movies");
-            } else {
-                const filename = results.rows[0].images;
-                const filePath = `public/images/${filename}`;
-
-                fs.unlink(filePath, async (err) => {
+            if (genre && genre !== "None") {
+            updateFields.push(`genre = '${genre}'`);
+            }
+            if (duration) {
+            updateFields.push(`duration= '${duration}'`);
+            }
+            if (release_date) {
+            updateFields.push(`release_date = '${release_date}'`);
+            }
+            if (synopsis) {
+            updateFields.push(`synopsis = '${synopsis}'`);
+            }
+            if (status && status !== "None") {
+            updateFields.push(`status = '${status}'`);
+            }
+            if (trailer_link) {
+            updateFields.push(`trailer_link = '${trailer_link}'`);
+            }
+            if (rating) {
+            updateFields.push(`rating = '${rating}'`);
+            }
+            if (req.file) {
+                const image = req.file.filename;
+                updateFields.push(`images = '${image}'`);
+    
+                //Delete previous photo
+    
+                const queryDeletePhoto = "SELECT images FROM Movies WHERE movie_id = $1;";
+                const values = [movie_id];
+    
+                await db.query(queryDeletePhoto, values, async (err, results) => {
                     if (err) {
-                        console.log("Delete movie movie : " + err);
+                        console.log("Delete movie photo failed : " + err);
                         return res.status(500).redirect("/admin/movies");
                     } else {
-                        const query = "DELETE FROM Movies WHERE movie_id = $1;";
-                        const values = [movie_id];
-
-                        await db.query(query, values, async (err, results) => {
+                        const filename = results.rows[0].images;
+                        const filePath = `public/images/${filename}`;
+    
+                        fs.unlink(filePath, async (err) => {
                             if (err) {
-                                console.log("Delete movie failed : " + err);
+                                console.error("Delete movie photo failed : " + err);
                                 return res.status(500).redirect("/admin/movies");
                             } else {
-                                console.log("deleted.");
-                                return res.status(200).redirect("/admin/movies");
+                                console.log("Photo deleted.");
                             }
                         });
                     }
                 });
             }
-        });
-    } catch (err) {
-        console.log(err);
+    
+            query += ` ${updateFields.join(", ")} WHERE movie_id = ${movie_id};`;
+            console.log(query);
+            await db.query(query, (err, results) => {
+                if (err) {
+                    console.log("Edit data failed : ", err);
+                    return res.status(304).redirect("/admin/movies");
+                } else {
+                    console.log(query);
+                    console.log("Data edited.");
+                    return res.status(200).redirect("/admin/movies");
+                }
+            });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).redirect("/admin/movies");
+        }
+    }else{
+        return res.status(403).redirect("/");
+    }
+  }else{
+    return res.status(403).redirect("/");
   }
+});
+
+//API to delete movie
+router.post("/delete-movie/:id", async (req, res) => {
+    if(store_session){
+        if(store_session.role == "admin"){
+            const movie_id = req.params.id;
+
+            try {
+                const query = "SELECT images FROM Movies WHERE movie_id = $1;";
+                const values = [movie_id];
+        
+                await db.query(query, values, async (err, results) => {
+                    if (err) {
+                        console.log("Delete movie failed : " + err);
+                        return res.status(500).redirect("/admin/movies");
+                    } else {
+                        const filename = results.rows[0].images;
+                        const filePath = `public/images/${filename}`;
+        
+                        fs.unlink(filePath, async (err) => {
+                            if (err) {
+                                console.log("Delete movie movie : " + err);
+                                return res.status(500).redirect("/admin/movies");
+                            } else {
+                                const query = "DELETE FROM Movies WHERE movie_id = $1;";
+                                const values = [movie_id];
+        
+                                await db.query(query, values, async (err, results) => {
+                                    if (err) {
+                                        console.log("Delete movie failed : " + err);
+                                        return res.status(500).redirect("/admin/movies");
+                                    } else {
+                                        console.log("deleted.");
+                                        return res.status(200).redirect("/admin/movies");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            } catch (err) {
+                console.log("Delete movie failed : " + err);
+                return res.status(500).redirect("/admin/movies");
+            }
+          }else{
+            return res.status(403).redirect("/");
+        }
+    }else{
+        return res.status(403).redirect("/");
+    }
 });
 
 //Make transaction API
@@ -1625,7 +1900,7 @@ router.post("/ticket-waiting", async (req, res) => {
             req.session.transaction_id = transaction_id;
             await db.query(query, values, (err, results) => {
                 if (err) {
-                    console.log(err);
+                    console.log("Make ticket failed : " + err);
                     return res.json({ message: "Making ticket failed." });
                 } else {
                     console.log("Ticket success.");
@@ -1638,38 +1913,12 @@ router.post("/ticket-waiting", async (req, res) => {
     }
 });
 
-router.post("/pay-later", async (req, res) => {
-    const {transaction_id} = req.body;
-    try{
-        const query = "SELECT payout_link FROM payout WHERE transaction_id = $1;";
-        const values = [transaction_id];
-
-        await db.query(query, values, (err, results) => {
-            if(err){
-                console.log(err);
-                return res.status(500).redirect("/");
-            }else{
-                const payout_link = results.rows[0].payout_link;
-                console.log(payout_link);
-                return res.status(200).redirect(payout_link);
-            }
-        });
-    }catch(error){
-        console.log("Pay later failed : " + error);
-        return res.status(500).redirect("/");
-    }
-});
-
 router.post("/pay", (req, res) => {
-    console.log("This is /pay" + store_session);
-    console.log("This is /pay" );
-    console.log(store_session);
     const { pay_button_clicked, quantity, total_prices, transaction_id} = req.body;
     let ticketQuantity;
     let ticketPricesString;
     let totalString;
 
-    console.log("ini di /pay" + store_session.transaction_id);
     if(pay_button_clicked){
         ticketQuantity = quantity;
         ticketPricesString = total_prices;
@@ -1855,7 +2104,7 @@ router.get("/cancel", async (req, res) => {
 //Showing seat layout page
 router.get("/seat/:scheduleId", async (req, res) => {
     if (!store_session) {
-        res.redirect("/");
+        return res.status(403).redirect("/");
     } else {
         console.log("Session /seat" + store_session);
         const { scheduleId } = req.params;
@@ -1890,10 +2139,8 @@ router.get("/seat/:scheduleId", async (req, res) => {
                                     console.log(err);
                                     return res.json({ message: "Retrive data failed." });
                                 } else {
-                                    console.log(store_session);
-                                    console.log(soldSeats.rows);
                                     store_session.ticketPrices = results.rows[0].prices;
-                                    res.render("seats.ejs", {
+                                    return res.status(200).render("seats.ejs", {
                                         seats: results.rows,
                                         scheduleId: scheduleId,
                                         soldSeats: soldSeats.rows,
@@ -1976,12 +2223,12 @@ router.post("/logout", async (req, res) => {
 
 //Login page
 router.get("/login-account", async (req, res) => {
-  try {
-        res.render("login.ejs", {passwordWrong: false});
-  } catch (error) {
-    console.error("Page is not availible", error);
-    return res.status(500).json({ message: "An error occurred during showing page." });
-  }
+    try {
+        return res.status(200).render("login.ejs", {passwordWrong: false});
+    } catch (error) {
+        console.error("Page is not availible", error);
+        return res.status(500).json({ message: "An error occurred during showing page." });
+    }
 });
 
 //Login button API
@@ -2078,7 +2325,8 @@ router.post("/login", async (req, res) => {
 //Register account page
 router.get("/register-account", async (req, res) => {
     try {
-        res.render("register.ejs", {
+        console.log("Open /register");
+        return res.status(200).render("register.ejs", {
             UsernameAvailability: true,
             PhoneNumberAvailability: true,
             EmailAvailability: true,
@@ -2087,8 +2335,6 @@ router.get("/register-account", async (req, res) => {
             passwordRegexAllowed: true,
             phoneNumberRegexAllowed: true,
         });
-
-        console.log("Open /register");
     } catch (error) {
         console.error("Page is not availible", error);
         return res.status(500).json({ message: "An error occurred during showing page." });
@@ -2299,21 +2545,21 @@ function generateToken() {
 
 //Register Admin
 router.get("/admin/register", async (req, res) => {
-  try {
-    res.render("registerAdmin.ejs", {
-      UsernameAvailability: true,
-      EmailAvailability: true,
-      usernameRegexAllowed: true,
-      emailRegexAllowed: true,
-      passwordRegexAllowed: true,
-    });
-    console.log("Open /registerAdmin");
-  } catch (error) {
-    console.error("Page is not available", error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred while showing the page." });
-  }
+    try {
+        console.log("Open /registerAdmin");
+        return res.status(200).render("registerAdmin.ejs", {
+        UsernameAvailability: true,
+        EmailAvailability: true,
+        usernameRegexAllowed: true,
+        emailRegexAllowed: true,
+        passwordRegexAllowed: true,
+        });
+    } catch (error) {
+        console.error("Page is not available", error);
+        return res
+        .status(500)
+        .json({ message: "An error occurred while showing the page." });
+    }
 });
 
 router.post("/register-admin", async (req, res) => {
@@ -2446,7 +2692,7 @@ router.post('/login-admin', async (req, res) => {
                                 store_session.schedule = null;
                                 store_session.seats_id = null;
                                 store_session.role = 'admin';
-                                res.redirect(`/admin/dashboard`, {username : username});
+                                return res.status(200).render(`admin-dashboard.ejs`, {username : username});
                             }
                         });
                     }else{

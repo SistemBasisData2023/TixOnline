@@ -160,11 +160,10 @@
                     <td class="px-4 py-2 border border-cfab7a">
                       <%= purchase.transaction_status %>
                     </td>
-                    <% purchase.seat_numbers.forEach((seat)=> { %>
                       <td class="px-4 py-2 border border-cfab7a">
-                        <%= seat %>
+                        <%= purchase.seat_numbers%>
                       </td>
-                      <% }); %>
+                     
                   </tr>
                   <% } }); %>
             </table>
