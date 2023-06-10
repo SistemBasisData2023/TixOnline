@@ -52,144 +52,134 @@
       </p>
     </div>
 
-      
-  <%  const today = new Date(); 
-  today.setHours(today.getHours() + 0); 
-  today.setDate(today.getDate()+0);
-  const now = new Date();
-  now.setUTCHours(now.getUTCHours() + 7);
-  console.log(now);
-  const hours = String(now.getUTCHours()).padStart(2, '0');
-  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-  
-  const timeString = hours + ':' + minutes;
-  %>
-  
-  
 
-    <!-- Display for Ongoing Transactions Today -->
-    <div>
-      <div class="px-8 py-4 mb-6 border-2 rounded-md shadow-md border-cfab7a">
-        <h2 class="mb-2 text-2xl font-bold text-cfab7a">Ongoing Transaction</h2>
-        <div class="flex overflow-x-auto">
-          <div class="flex-shrink-0 "> <!-- This div holds the list -->
-        <ul class="flex space-x-4 p-4">
-          <% purchases.forEach((purchase)=> {
+    <% const today=new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0); const now=new
+      Date(); now.setUTCHours(now.getUTCHours() + 7); console.log(now); const
+      hours=String(now.getUTCHours()).padStart(2, '0' ); const minutes=String(now.getUTCMinutes()).padStart(2, '0' );
+      const timeString=hours + ':' + minutes; %>
 
-            var time = purchase.hours;
-            var timeComponents = time.split(':');
-            var hours = parseInt(timeComponents[0]);
-            var minutes = parseInt(timeComponents[1]);
 
-            purchase.date.setHours(hours);
-            purchase.date.setMinutes(minutes);
 
-            if((purchase.transaction_status !== 'CANCELED') && (now < purchase.date)){
-              console.log(purchase.title + purchase.date );
-              %>
-              <div class="rounded-lg p-4 bg-gray-200">
-                     
-              
-                <p>
-                  <%= purchase.title %>
-                </p>
-                <p>
-                  <%= purchase.date.toLocaleDateString('en-GB') %>
-                </p>
-                <p>
-                  <%= purchase.hours %>
-                </p>
-                <p>
-                  <%= purchase.studio_name %>
-                </p>
-                <p>
-                  <%= purchase.theater_name %>
-                </p>
-                <p>
-                  <%= purchase.transaction_status %>
-                </p>
-                <% purchase.seat_numbers.forEach((seat)=> { %>
-                  <p>
-                    <%= seat %>
-                  </p>
-                  <% }); %>
-                    <%if(purchase.transaction_status ==='WAITING'){%>
+      <!-- Display for Ongoing Transactions Today -->
+      <div>
+        <div class="px-8 py-4 mb-6 border-2 rounded-md shadow-md border-cfab7a">
+          <h2 class="mb-2 text-2xl font-bold text-cfab7a">Ongoing Transaction</h2>
+          <div class="flex overflow-x-auto">
+            <div class="flex-shrink-0 "> <!-- This div holds the list -->
+              <ul class="flex p-4 space-x-4">
+                <% purchases.forEach((purchase)=> {
+
+                  var time = purchase.hours;
+                  var timeComponents = time.split(':');
+                  var hours = parseInt(timeComponents[0]);
+                  var minutes = parseInt(timeComponents[1]);
+
+                  purchase.date.setHours(hours);
+                  purchase.date.setMinutes(minutes);
+
+                  if((purchase.transaction_status !== 'CANCELED') && (now < purchase.date)){ console.log(purchase.title
+                    + purchase.date ); %>
+                    <div class="p-4 bg-black border-2 rounded-lg border-cfab7a">
                       <p>
-                        <%var purchaseDate=new Date(purchase.payment_max_date); %>
-                          <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
+                        <%= purchase.title %>
                       </p>
-                    
-                        <form method="POST" action="/pay">
-                          <input type="hidden" name="transaction_id" value="<%= purchase.transaction_id %>">
-                          <input type="hidden" name="pay_button_clicked" value="TRUE">
-                          <input type="hidden" name="total_prices" value="<%= purchase.total_prices %>">
-                          <input type="hidden" name="quantity" value="<%= purchase.quantity %>">
-                          <input type="submit" value="Pay">
-                        </form>
-                   
-  
-                      <%}%>
-             
-              </div>
-         
-            <% } }); %>
-        </ul>
-      </div>
-    </div>
-        <!-- Display for Transaction History -->
-        <div>
-          <div class="my-5 border-t-2 border-cfab7a"></div>
-          <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
-          <table>
-            <% purchases.forEach((purchase)=> {
-              
-              var time = purchase.hours;
-              var timeComponents = time.split(':');
-              var hours = parseInt(timeComponents[0]);
-              var minutes = parseInt(timeComponents[1]);
+                      <p>
+                        <%= purchase.date.toLocaleDateString('en-GB') %>
+                      </p>
+                      <p>
+                        <%= purchase.hours %>
+                      </p>
+                      <p>
+                        <%= purchase.studio_name %>
+                      </p>
+                      <p>
+                        <%= purchase.theater_name %>
+                      </p>
+                      <p>
+                        <%= purchase.transaction_status %>
+                      </p>
+                      <% purchase.seat_numbers.forEach((seat)=> { %>
+                        <p>
+                          <%= seat %>
+                        </p>
+                        <% }); %>
+                          <%if(purchase.transaction_status==='WAITING' ){%>
+                            <p>
+                              <%var purchaseDate=new Date(purchase.payment_max_date); %>
+                                <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
+                            </p>
 
-              purchase.date.setHours(hours);
-              purchase.date.setMinutes(minutes);
+                            <form method="POST" action="/pay">
+                              <input type="hidden" name="transaction_id" value="<%= purchase.transaction_id %>">
+                              <input type="hidden" name="pay_button_clicked" value="TRUE">
+                              <input type="hidden" name="total_prices" value="<%= purchase.total_prices %>">
+                              <input type="hidden" name="quantity" value="<%= purchase.quantity %>">
+                              <input class="rounded cursor-pointer custom-btn" type="submit" value="Pay">
+                            </form>
 
-              if((purchase.transaction_status === 'CANCELED') || (now < purchase.date)){%>
-              <tr>
-                <td>
-                  <%= purchase.title %>
-                </td>
-                <td>
-                  <%= purchase.date.toLocaleDateString() %>
-                </td>         
-                <td>
-                  <%= purchase.hours %>
-                </td>
-                <td>
-                  <%= purchase.studio_name %>
-                </td>
-                <td>
-                  <%= purchase.theater_name %>
-                </td>
-                <td>
-                  <%= purchase.transaction_status %>
-                </td>
-                <% purchase.seat_numbers.forEach((seat)=> { %>
-                  <td>
-                    <%= seat %>
-                  </td>
-                  <% }); %>
-              </tr>
-              <% } }); %>
-          </table>
+
+                            <%}%>
+
+                    </div>
+
+                    <% } }); %>
+              </ul>
+            </div>
+          </div>
+          <!-- Display for Transaction History -->
+          <div>
+            <div class="my-5 border-t-2 border-cfab7a">
+            <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
+            <table class="w-full border-collapse table-auto">
+              <% purchases.forEach((purchase)=> {
+                var time = purchase.hours;
+                var timeComponents = time.split(':');
+                var hours = parseInt(timeComponents[0]);
+                var minutes = parseInt(timeComponents[1]);
+
+                purchase.date.setHours(hours);
+                purchase.date.setMinutes(minutes);
+
+                if ((purchase.transaction_status === 'CANCELED') || (now < purchase.date)) { %>
+                  <tr>
+                    <td class="px-4 py-2 border border-cfab7a">
+                      <%= purchase.title %>
+                    </td>
+                    <td class="px-4 py-2 border border-cfab7a">
+                      <%= purchase.date.toLocaleDateString() %>
+                    </td>
+                    <td class="px-4 py-2 border border-cfab7a">
+                      <%= purchase.hours %>
+                    </td>
+                    <td class="px-4 py-2 border border-cfab7a">
+                      <%= purchase.studio_name %>
+                    </td>
+                    <td class="px-4 py-2 border border-cfab7a">
+                      <%= purchase.theater_name %>
+                    </td>
+                    <td class="px-4 py-2 border border-cfab7a">
+                      <%= purchase.transaction_status %>
+                    </td>
+                    <% purchase.seat_numbers.forEach((seat)=> { %>
+                      <td class="px-4 py-2 border border-cfab7a">
+                        <%= seat %>
+                      </td>
+                      <% }); %>
+                  </tr>
+                  <% } }); %>
+            </table>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Logout Button -->
-    <div class="flex justify-center mt-5">
-      <form action="/logout" method="post">
-        <button class="px-6 py-2 text-black rounded custom-btn" type="submit">Logout</button>
-      </form>
-    </div>
-    </head>
+      <!-- Logout Button -->
+      <div class="flex justify-center mt-5">
+        <form action="/logout" method="post">
+          <button class="px-6 py-2 text-black rounded custom-btn" type="submit">Logout</button>
+        </form>
+      </div>
+      </head>
   </div>
   <!-- Footer -->
   <footer class="bg-black text-cfab7a py-6 text-[#cfab7a]">
@@ -208,7 +198,7 @@
         headers: {
           'Content-Type': 'application/json',
         },//quantity, transaction_date
-        body: JSON.stringify({transaction_id: transaction_id}),
+        body: JSON.stringify({ transaction_id: transaction_id }),
       })
         .then(function (response) {
 

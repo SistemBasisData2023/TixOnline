@@ -35,41 +35,41 @@
     <div class="flex items-center px-5 py-3 mb-3 space-x-10 text-sm">
       <div class="flex flex-col">
         <span class="text-lg">Theater</span>
-        <div class="font-semibold">Grand Indonesia</div>
+        <div class="font-semibold"><%= tickets.theater_name %></div>
       </div>
       <div class="flex flex-col">
         <span class="text-lg">Date</span>
-        <div class="text-lg font-semibold">29-05-2023</div>
+        <div class="text-lg font-semibold"><%= tickets.date %></div>
       </div>
     </div>
     <div class="flex items-center px-5 mb-3 space-x-10 text-sm">
       <div class="flex flex-col">
         <span class="text-lg">Seats</span>
-        <div class="font-semibold">C4</div>
+        <div class="font-semibold"><%= tickets.seat_numbers %></div>
       </div>
       <div class="flex flex-col">
         <span class="text-lg">Time</span>
-        <div class="text-lg font-semibold">15:35</div>
+        <div class="text-lg font-semibold"><%= tickets.hours %></div>
       </div>
     </div>
     <ul>
-      <% tickets.forEach(function(ticket) { %>
+      <% tickets.forEach(function(tickets) { %>
         <li class="p-5 my-5 border-2 rounded border-cfab7a">
-          <p class="mb-2">Ticket ID: <%= ticket.ticketId %>
+          <p class="mb-2">Ticket ID: <%= tickets.tickets_id %>
           </p>
-          <p class="mb-2">Movie Title: <%= ticket.movieTitle %>
+          <p class="mb-2">Movie Title: <%= tickets.title %>
           </p>
-          <p class="mb-2">Date: <%= ticket.date %>
+          <p class="mb-2">Date: <%= tickets.date %>
           </p>
-          <p class="mb-2">Time: <%= ticket.hours %>
+          <p class="mb-2">Time: <%= tickets.hours %>
           </p>
-          <p class="mb-2">Price: <%= ticket.price %>
+          <p class="mb-2">Price: <%= tickets.prices %>
           </p>
         </li>
         <% }) %>
     </ul>
     <div class="py-5 text-center">
-      <a href="/" class="px-4 py-2 bg-black border-2 rounded border-cfab7a text-cfab7a">Ok</a>
+      <a href="/" class="px-4 py-2 text-black rounded custom-btn b">Ok</a>
     </div>
   </div>
 </body>
