@@ -2365,7 +2365,7 @@ router.post("/register-admin", async (req, res) => {
                     store_session.schedule = null;
                     store_session.seats_id = null;
                     store_session.username = username;
-                    res.status(200).redirect('/admin/movies');
+                    res.status(200).redirect('/admin/dashboard');
                 }
             });
          
@@ -2377,8 +2377,8 @@ router.post("/register-admin", async (req, res) => {
       } else {
         res.status(200);
         res.render('registerAdmin.ejs', {
-          UsernameAvailability: await checkUsernameAvailability(username),
-            EmailAvailability: await checkEmailAvailability(email),
+          UsernameAvailability: await checkUsernameAdminAvailability(username),
+            EmailAvailability: await checkEmailAdminAvailability(email),
             usernameRegexAllowed: usernameRegex.test(username),
           emailRegexAllowed: emailAdminRegex.test(email),
           passwordRegexAllowed: passwordRegex.test(password),
