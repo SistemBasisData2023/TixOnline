@@ -1631,19 +1631,22 @@ router.post("/pay-later", async (req, res) => {
 });
 
 router.post("/pay", (req, res) => {
+    console.log("This is /pay" + store_session);
     console.log("This is /pay" );
     console.log(store_session);
-    const { pay_button_clicked, quantity, total_prices, transaction_id } = req.body;
+    const { pay_button_clicked, quantity, total_prices, transaction_id} = req.body;
     let ticketQuantity;
     let ticketPricesString;
     let totalString;
-    let transactionId  = store_session.transaction_id;
+
     console.log("ini di /pay" + store_session.transaction_id);
     if(pay_button_clicked){
         ticketQuantity = quantity;
         ticketPricesString = total_prices;
         totalString = JSON.stringify(quantity * total_prices);
-        transactionId = transaction_id;
+        store_session.transaction_id = transaction_id;
+        store_session.ticketQuantity = quantity;
+        store_session.ticketPrices = total_prices;
         console.log("Pay button clicked");
     }else{
         ticketQuantity = store_session.ticketQuantity;
@@ -1687,6 +1690,7 @@ router.post("/pay", (req, res) => {
         ],
     };
 
+    paypal.payment.create(create_payment_json, (error, payment) => {
     paypal.payment.create(create_payment_json, async (error, payment) => {
         if (error) {
             console.error(error.response);
@@ -1694,35 +1698,26 @@ router.post("/pay", (req, res) => {
             console.log(payment.transactions);
         for (let i = 0; i < payment.links.length; i++) {
             if (payment.links[i].rel === "approval_url") {
-                const query = "INSERT INTO payout (transaction_id, payout_link) VALUES ($1, $2);";
-                values = [transactionId, payment.links[i].href];
-                await db.query(query, values, (err, results) => {
-                    if (err) {
-                        console.log("Insert payout link failed : " + err);
-                        return res.status(500).redirect("/");
-                    } else {
-                        console.log("Payout link inserted.");
-                        res.redirect(payment.links[i].href);
-                    }
-                });
+                res.redirect(payment.links[i].href);
             }
         }
         }
     });
+});
 });
 
 router.get("/success", (req, res) => {
     if (!store_session) {
         res.redirect("/");
     } else {
-        console.log("This is /succes" + store_session);
-        console.log("This is /succes" + store_session.transaction_id);
+        console.log("This is /succes");
+        console.log(store_session);
             const payerId = req.query.PayerID;
             const paymentId = req.query.paymentId;
             const totalString = JSON.stringify(
             store_session.ticketQuantity * store_session.ticketPrices
             );
-
+                console.log("total" + totalString);
             const execute_payment_json = {
             payer_id: payerId,
             transactions: [
@@ -1735,65 +1730,58 @@ router.get("/success", (req, res) => {
             ],
             };
 
-            paypal.payment.execute(paymentId, execute_payment_json, async (error, payment) => {
+        paypal.payment.execute(
+            paymentId,
+            execute_payment_json,
+            async (error, payment) => {
                 if (error) {
-                  console.error(error.response);
+                    console.error(error.response);
                 } else {
-                  console.log("This is /success");
-                  const transaction_id = store_session.transaction_id;
-                  const transaction_status = "DONE";
-              
-                  try {
-                    // Update transaction status
-                    const query =
-                      "UPDATE transactions SET transaction_status = $1 WHERE transaction_id = $2;";
-                    const values = [transaction_status, transaction_id];
-              
-                    await db.query(query, values, async (err, results) => {
-                      if (err) {
-                        console.log(err);
-                      } else {
-                        // Get ticket data
-                        const queryTicket =
-                          "SELECT Tickets.ticket_id, Movies.title, Schedule.date, Schedule.hours, Schedule.prices FROM Tickets JOIN Transactions ON Tickets.transaction_id = Transactions.transaction_id JOIN Schedule ON Tickets.schedule_id = Schedule.schedule_id JOIN Studios ON Studios.studio_id = Schedule.studio_id JOIN Movies ON Movies.movie_id = Schedule.movie_id WHERE Tickets.transaction_id = $1;";
-                        const valuesTicket = [transaction_id];
-              
-                        await db.query(queryTicket, valuesTicket, (err, results) => {
-                          if (err) {
-                            console.log("Retrieve data failed: " + err);
-                            return res.status(500).redirect("/");
-                          } else {
-                            const tickets = results.rows.map((row) => {
-                              return {
-                                ticketId: row.ticket_id,
-                                movieTitle: row.title,
-                                date: row.date,
-                                hours: row.hours,
-                                price: row.prices,
-                                seat: row.seat,
-                              };
+                    console.log("This is /succes");
+                    const transaction_id = store_session.transaction_id;
+                    const transaction_status = "DONE";
+
+                    try {
+                        //Update transaction status
+                        const query =
+                        "UPDATE transactions SET transaction_status = $1 WHERE transaction_id = $2;";
+                        const values = [transaction_status, transaction_id];
+
+                        await db.query(query, values, async (err, results) => {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            //Get transaction data
+                            const queryTicket =
+                            "SELECT Tickets.*, Studios.*, Schedule.date, Schedule.hours, Schedule.prices FROM Tickets JOIN Transactions ON Tickets.transaction_id = Transactions.transaction_id JOIN Schedule ON Tickets.schedule_id = Schedule.schedule_id JOIN Studios ON Studios.studio_id = Schedule.studio_id WHERE Tickets.transaction_id = $1;";
+                            const valuesTicket = [transaction_id];
+
+                            await db.query(queryTicket, valuesTicket, (err, results) => {
+                                if (err) {
+                                    console.log("Retrive data failed : " + err);
+                                    return res.status(500).redirect("/");
+                                } else {
+                                    store_session.ticketQuantity = null;
+                                    store_session.ticketPrices = null;
+                                    store_session.transaction_id = null;
+                                    console.log(results.rows);
+                                    return res.status(200).render("success.ejs", {
+                                        payment,
+                                        tickets: results.rows,
+                                    });
+                                }
                             });
-              
-                            store_session.ticketQuantity = null;
-                            store_session.ticketPrices = null;
-                            store_session.transaction_id = null;
-              
-                            return res.status(200).render("success.ejs", {
-                              payment,
-                              tickets: tickets,
-                            });
-                          }
+                        }
                         });
-                      }
-                    });
-                  } catch (err) {
-                    console.log("Transaction done failed : " + err);
-                    return res.status(500).redirect("/");
-                  }
+                    } catch (err) {
+                        console.log("Transaction done failed : " + err);
+                        return res.status(500).redirect("/");
+                    }
                 }
-              });              
+            }
+        );
     }
-});
+})
 
 router.get("/cancel", async (req, res) => {
     if (!store_session) {
