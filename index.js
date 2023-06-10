@@ -1996,64 +1996,64 @@ router.post("/login", async (req, res) => {
                 const hash = results.rows[0].password;
                 //Compare password with hash password in database
                 bcrypt.compare(password, hash, async (err, results) => {
-                if (err) {
-                    console.error(err);
-                    res.status(500).send("Error compare the string");
-                } else {
-                    //If password is correct
-                    if (results) {
-                        console.log("Login Successfull!");
-                        //Get user data from database and store it in session
-                        const queryUsernameId =
-                            "SELECT * FROM users WHERE username = $1;";
-    
-                        await db.query(queryUsernameId,[username],async (err, results) => {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                store_session = req.session;
-                                store_session.username = results.rows[0].username;
-                                store_session.user_id = results.rows[0].user_id;
-                                store_session.role = "user";
-                                store_session.schedule = null;
-                                store_session.seats_id = null;
-    
-                                let rememberToken = null;
-                                // If the user has selected the "remember me" option, generate a token and store it in the database
-                                if (remember) {
-                                    // Generate a unique token
-                                    rememberToken = generateToken();
-    
-                                    // Calculate the expiration date (e.g., 30 days from now)
-                                    const expiresAt = new Date();
-                                    expiresAt.setDate(expiresAt.getDate() + 30);
-    
-                                    // Store the token in the remember_me_tokens table
-                                    await db.query(
-                                        "INSERT INTO remember_me_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
-                                        [store_session.user_id, rememberToken, expiresAt]
-                                    );
-    
-                                    // Set a cookie with the token
-                                    res.cookie("remember_me_token", rememberToken, {
-                                        expires: expiresAt,
-                                        httpOnly: true,
-                                        secure: true,
-                                    });
-                                }
-    
-                                // Redirect the user to the home page
-                                return res.status(200).redirect("/");
-                            }
-                            }
-                        );
+                    if (err) {
+                        console.log(results);
+                        console.error(err);
+                        res.status(500).send("Error compare the string");
                     } else {
-                        console.log("Password wrong");
-                        return res.status(200).render("login.ejs", {passwordWrong: true});
+                        console.log(results);
+                        //If password is correct
+                        if (results) {
+                            console.log("Login Successfull!");
+                            //Get user data from database and store it in session
+                            const queryUsernameId =
+                                "SELECT * FROM users WHERE username = $1;";
+        
+                            await db.query(queryUsernameId,[username],async (err, results) => {
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        store_session = req.session;
+                                        store_session.username = results.rows[0].username;
+                                        store_session.user_id = results.rows[0].user_id;
+                                        store_session.role = "user";
+                                        store_session.schedule = null;
+                                        store_session.seats_id = null;
+            
+                                        let rememberToken = null;
+                                        // If the user has selected the "remember me" option, generate a token and store it in the database
+                                        if (remember) {
+                                            // Generate a unique token
+                                            rememberToken = generateToken();
+            
+                                            // Calculate the expiration date (e.g., 30 days from now)
+                                            const expiresAt = new Date();
+                                            expiresAt.setDate(expiresAt.getDate() + 30);
+            
+                                            // Store the token in the remember_me_tokens table
+                                            await db.query(
+                                                "INSERT INTO remember_me_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
+                                                [store_session.user_id, rememberToken, expiresAt]
+                                            );
+            
+                                            // Set a cookie with the token
+                                            res.cookie("remember_me_token", rememberToken, {
+                                                expires: expiresAt,
+                                                httpOnly: true,
+                                                secure: true,
+                                            });
+                                        }
+            
+                                        // Redirect the user to the home page
+                                        return res.status(200).redirect("/");
+                                    }
+                                }
+                            );
+                        } else {
+                            console.log("Password wrong");
+                            return res.status(200).render("login.ejs", {passwordWrong: true});
+                        }
                     }
-                    console.log('Password wrong');
-                    res.render("login.ejs", { passwordWrong: true });
-                }
                 });
             }
         }
