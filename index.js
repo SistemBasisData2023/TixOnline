@@ -571,6 +571,36 @@ router.get("/schedules-movie/:movieId", async (req, res) => {
         return res.status(500).json({ message: "An error occurred during showing page." });
     }
 });
+//ADMIN MAIN DASHBOARD PAGES
+//Page for admin dashboard
+router.get("/admin/dashboard", async (req, res) => {
+    try {
+        //Get total prices of all transactions that are completed and not canceled from transactions_details_seats
+        const queryTotal = "SELECT SUM(total_prices) FROM transactions_details_seats WHERE transaction_status = 'DONE';";
+        await db.query(queryTotal, async (err, totalPrices) => {
+            if(err){
+                console.log("(/admin/dashboard) Getting data total prices error : " + err);
+                return res.status(500).redirect("/");
+            }else{ 
+                //Order movies by total transaction from highest to lowest and limit to 5 movies only from transactions_details_seats
+                const queryMovie = "SELECT title, SUM(total_prices) AS earning, SUM(quantity) AS quantity FROM transactions_details_seats WHERE transaction_status = 'DONE' GROUP BY title ORDER BY SUM(quantity) DESC;";
+                await db.query(queryMovie, async (err, movies) => {
+                    if(err){
+                        console.log("(/admin/dashboard) Getting data movies error : " + err);
+                        return res.status(500).redirect("/");
+                    }else{
+                        console.log(movies.rows);
+                        console.log(totalPrices.rows[0].sum);
+                        return res.status(200).render("admin-dashboard.ejs", { movies: movies.rows, totalPrices: totalPrices.rows[0].sum });
+                    }
+                });
+            }
+        });
+    }catch(error){
+        console.log("page is not availible", error);
+        return res.status(500).json({ message: "An error occurred during showing page." });
+    }
+});
 
 //ADMIN Schedule ROUTER & PAGES
 //Page for schedules list
