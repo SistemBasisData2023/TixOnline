@@ -126,53 +126,53 @@ app.use(async (req, res, next) => {
 // '* * * * *' run every 1 minute
 // '*/5 * * * *' run every 5 minute
 //Update transaction status to CANCELED if transaction status is WAITING and transaction date is more than 10 minute
-// cron.schedule("* * * * *", async () => {
-//   try {
-//     const date = new Date();
-//     console.log("date sekarang" + date);
-//     //Get transaction that are waiting and transaction date is more than 10 minute
-//     db.query(
-//       `
-//       UPDATE transactions
-//       SET transaction_status = 'CANCELED'
-//       WHERE transaction_status = 'WAITING' AND payment_max_date >= $1 RETURNING transaction_id;`, [date],
-//       (err, transactions) => {
-//         if (err) {
-//           console.log(err);
-//         } else {
-//           console.log("Transaction statuses updated successfully.");
-//           //Get transaction details seats for each transaction
-//           transactions.rows.forEach(async (transaction) => {
-//             const query = "SELECT schedule_id, seats_ids FROM transactions_details_seats WHERE transaction_id = $1;";
-//             const values = [transaction.transaction_id];
+cron.schedule("* * * * *", async () => {
+  try {
+    const date = new Date();
+    console.log("date sekarang" + date);
+    //Get transaction that are waiting and transaction date is more than 10 minute
+    db.query(
+      `
+      UPDATE transactions
+      SET transaction_status = 'CANCELED'
+      WHERE transaction_status = 'WAITING' AND payment_max_date >= $1 RETURNING transaction_id;`, [date],
+      (err, transactions) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Transaction statuses updated successfully.");
+          //Get transaction details seats for each transaction
+          transactions.rows.forEach(async (transaction) => {
+            const query = "SELECT schedule_id, seats_ids FROM transactions_details_seats WHERE transaction_id = $1;";
+            const values = [transaction.transaction_id];
 
-//             await db.query(query, values, async (err, results) => {
-//               if (err) {
-//                 console.log("Getting schedule_id and seats_ids failed : " + err);
-//               } else {
-//                 //Update seats status to AVAILABLE for each seats
-//                 results.rows[0].seats_ids.forEach(async (seatId) => {
-//                   const queryDelete = "DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;";
-//                   const values = [results.rows.schedule_id, seatId];
+            await db.query(query, values, async (err, results) => {
+              if (err) {
+                console.log("Getting schedule_id and seats_ids failed : " + err);
+              } else {
+                //Update seats status to AVAILABLE for each seats
+                results.rows[0].seats_ids.forEach(async (seatId) => {
+                  const queryDelete = "DELETE FROM ScheduleSeats WHERE schedule_id = $1 AND seat_id = $2;";
+                  const values = [results.rows.schedule_id, seatId];
 
-//                   await db.query(queryDelete, values, (err, results) => {
-//                     if (err) {
-//                       console.log("Delete schedule and seats failed : " + err);
-//                     } else {
-//                       console.log("Seat deleted.");
-//                     }
-//                   });
-//                 });
-//               }
-//             });
-//           });
-//         }
-//       }
-//     );
-//   } catch (error) {
-//     console.error("An error occurred:", error);
-//   }
-// });
+                  await db.query(queryDelete, values, (err, results) => {
+                    if (err) {
+                      console.log("Delete schedule and seats failed : " + err);
+                    } else {
+                      console.log("Seat deleted.");
+                    }
+                  });
+                });
+              }
+            });
+          });
+        }
+      }
+    );
+  } catch (error) {
+    console.error("An error occurred:", error);
+  }
+});
 
 app.use(express.urlencoded({ extended: false }));
 

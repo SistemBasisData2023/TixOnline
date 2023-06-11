@@ -74,7 +74,7 @@
       var theaterSelect = document.getElementById('theater');
       var selectedCity = citySelect.value;
 
-      var theaterOptions = <% - JSON.stringify(theaters) %>;
+      var theaterOptions = <%- JSON.stringify(theaters) %>;
       console.log("city " + selectedCity);
 
       while (theaterSelect.options.length > 0) {

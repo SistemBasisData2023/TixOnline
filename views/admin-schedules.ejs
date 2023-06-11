@@ -64,6 +64,7 @@
             <th class="sticky top-0 px-3 py-2 text-center border-2 border-gold">Theater</th>
             <th class="sticky top-0 px-3 py-2 text-center border-2 border-gold">Date</th>
             <th class="sticky top-0 px-3 py-2 text-center border-2 border-gold">Time</th>
+            <th class="sticky top-0 px-3 py-2 text-center border-2 border-gold">Price</th>
             <th class="sticky top-0 px-3 py-2 text-center border-2 border-gold">Actions</th>
           </tr>
         </thead>
@@ -80,10 +81,13 @@
                 <%= schedule.name %>
               </td>
               <td class="px-3 py-2 text-center border-2 border-gold">
-                <%= schedule.date %>
+                <%= schedule.date.toLocaleDateString('en-GB') %>
               </td>
               <td class="px-3 py-2 text-center border-2 border-gold">
                 <%= schedule.hours %>
+              </td>
+              <td class="px-3 py-2 text-center border-2 border-gold">
+                <%= schedule.prices %>
               </td>
               <td class="px-3 py-2 border-t border-gold">
                 <div class="flex items-center justify-center">

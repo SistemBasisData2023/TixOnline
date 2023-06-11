@@ -42,7 +42,7 @@
       <div class="flex flex-col">
         <span class="text-lg">Date</span>
         <div class="text-lg font-semibold">
-          <%= tickets[0].date %>
+          <%= tickets[0].date.toLocaleDateString('en-GB') %>
         </div>
       </div>
     </div>
@@ -65,9 +65,11 @@
         <li class="p-5 my-5 border-2 rounded border-cfab7a">
           <p class="mb-2">Ticket ID: <%= tickets.ticket_id %>
           </p>
+          <p class="mb-2">Seat : <%= tickets.seat_number %>
+          </p>
           <p class="mb-2">Movie Title: <%= tickets.title %>
           </p>
-          <p class="mb-2">Date: <%= tickets.date %>
+          <p class="mb-2">Date: <%= tickets.date.toLocaleDateString('en-GB') %>
           </p>
           <p class="mb-2">Time: <%= tickets.hours %>
           </p>

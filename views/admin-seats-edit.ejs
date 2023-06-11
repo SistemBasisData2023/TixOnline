@@ -104,7 +104,7 @@
       var studioSelect = document.getElementById('studio');
       var selectedTheater = parseInt(theaterSelect.value);
       console.log(selectedTheater);
-      var studioOptions = <% - JSON.stringify(studios) %>;
+      var studioOptions = <%- JSON.stringify(studios) %>;
 
       while (studioSelect.options.length > 0) {
         studioSelect.options[0].remove();
@@ -132,7 +132,7 @@
       var theaterSelect = document.getElementById('theater');
       var selectedCity = citySelect.value;
       console.log(selectedCity);
-      var theaterOptions = <% - JSON.stringify(theaters) %>;
+      var theaterOptions = <%- JSON.stringify(theaters) %>;
 
       while (theaterSelect.options.length > 0) {
         theaterSelect.options[0].remove();

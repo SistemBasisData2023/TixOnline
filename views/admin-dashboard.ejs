@@ -71,8 +71,9 @@
                         <% }); %>
                 </div>
             </div>
-            <button
-                class="px-4 py-2 mt-8 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-800">Logout</button>
+            <form action="/logout" method="POST">
+                <input class="px-4 py-2 mt-8 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-800"  type="submit" value="Log Out">
+            </form>
         </div>
     </div>
     </div>
