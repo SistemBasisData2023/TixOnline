@@ -16,15 +16,18 @@
       class="fixed inset-y-0 w-64 text-white transition-transform duration-300 ease-in-out transform -translate-x-full gold-btn">
       <!-- Navigation Bar -->
       <header class="flex items-center justify-between px-6 py-4 text-xl font-semibold">
-        <div class="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <div>Welcome, <%= username %>
+        <a href="/admin/dashboard">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="ml-2">
+              <%= username %>
+            </span>
           </div>
-        </div>
+        </a>
         <svg id="close" class="hidden w-6 h-6 cursor-pointer" xmlns="http://www.w3.org/2000/svg" fill="none"
           viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -39,8 +42,7 @@
         <li><a href="/admin/schedules" class="block px-6 py-2 font-semibold custom-btn">Schedules</a></li>
       </ul>
     </div>
-    <div id="hamburger-container"
-      class="fixed inset-y-0 left-0 flex items-center pl-4 pr-8 bg-black cursor-pointer custom-btn ">
+    <div id="hamburger-container" class="fixed inset-y-0 left-0 flex items-center pl-4 pr-8 cursor-pointer custom-btn ">
       <svg id="hamburger" class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
         stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
