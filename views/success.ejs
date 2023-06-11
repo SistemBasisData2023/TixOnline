@@ -35,27 +35,27 @@
     <div class="flex items-center px-5 py-3 mb-3 space-x-10 text-sm">
       <div class="flex flex-col">
         <span class="text-lg">Theater</span>
-        <div class="font-semibold"><%= tickets.theater_name %></div>
+        <div class="text-lg font-semibold"><%= tickets[0].theater_name %></div>
       </div>
       <div class="flex flex-col">
         <span class="text-lg">Date</span>
-        <div class="text-lg font-semibold"><%= tickets.date %></div>
+        <div class="text-lg font-semibold"><%= tickets[0].date %></div>
       </div>
     </div>
     <div class="flex items-center px-5 mb-3 space-x-10 text-sm">
       <div class="flex flex-col">
         <span class="text-lg">Seats</span>
-        <div class="font-semibold"><%= tickets.seat_numbers %></div>
+        <div class="text-lg font-semibold"><%= tickets[0].seat_number %></div>
       </div>
       <div class="flex flex-col">
         <span class="text-lg">Time</span>
-        <div class="text-lg font-semibold"><%= tickets.hours %></div>
+        <div class="text-lg font-semibold"><%= tickets[0].hours %></div>
       </div>
     </div>
     <ul>
       <% tickets.forEach(function(tickets) { %>
         <li class="p-5 my-5 border-2 rounded border-cfab7a">
-          <p class="mb-2">Ticket ID: <%= tickets.tickets_id %>
+          <p class="mb-2">Ticket ID: <%= tickets.ticket_id %>
           </p>
           <p class="mb-2">Movie Title: <%= tickets.title %>
           </p>
@@ -69,7 +69,7 @@
         <% }) %>
     </ul>
     <div class="py-5 text-center">
-      <a href="/" class="px-4 py-2 text-black rounded custom-btn b">Ok</a>
+      <a href="/" class="px-4 py-2 text-black rounded custom-btn b">OK</a>
     </div>
   </div>
 </body>
