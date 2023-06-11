@@ -20,15 +20,22 @@ Enjoy personalized features by creating an account and logging in. TixOnline all
 
 #### `Movie Browsing`
 
-Discover an extensive collection of movies through TixOnline's intuitive interface. Explore detailed information about each movie, including synopsis, genres, and ratings. Get a comprehensive overview and make informed choices about your movie selections. Users can also view trailers of movies to get a sneak peek of the film and view upcoming movies to plan their cinema outings in advance.
+Discover an extensive collection of movies through TixOnline's intuitive interface. Explore detailed information about each movie, including plot summaries, genres, and ratings. Get a comprehensive overview and make informed choices about your movie selections.
+![messageImage_1686501293185](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/91da773f-604d-4d7f-9b1a-badf33e6200b)
+![messageImage_1686501320818](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/f4c93e34-cfe0-4b68-bf33-ba80f5b2b748)
 
 #### `Ticket Booking`
-
 TixOnline simplifies the ticket booking process, allowing users to effortlessly select their preferred movie, showtime, and seats. With a streamlined interface, you can confidently proceed to book tickets securely. The application ensures that seats are not double-booked, providing a hassle-free experience.
+![message![messageImage_1686501378842](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/c3ca7300-e24e-4a42-8961-701bf81e1766)
+Image_1686501334584](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/b6b4d07b-e0cd-40af-8464-bc00b1a00e77)
+![messageImage_1686501270419](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/ca7d3259-10c3-4bf5-9092-a064de551467)
+
 
 #### `Booking History`
 
 Easily access your past bookings with TixOnline's booking history feature. Stay organized by reviewing your previous movie choices, showtimes, and the seats you booked. Keep track of your cinema experiences and plan future outings with ease.
+![messageImage_1686501358107](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/988e7eca-efeb-430a-b1ba-83408e02a7a3)
+
 
 #### `Admin Management`
 
