@@ -2,6 +2,7 @@ const movieDetailsPopup = document.getElementById('movieDetailsPopup');
 const closeMovieDetailsBtn = document.getElementById('closeMovieDetailsBtn');
 const movieTitleElement = document.getElementById('movieTitle');
 const movieSynopsisElement = document.getElementById('movieSynopsis');
+const movieReleaseDateElement = document.getElementById('movieReleasedate');
 const registerBtn = document.getElementById('registerBtn');
 const registerModal = document.getElementById('registerModal');
 const closeModalBtn = document.getElementById('closeModalBtn');
@@ -11,15 +12,24 @@ const closeLoginModalBtn = document.getElementById('closeLoginModalBtn');
 const movieLinkElement = document.getElementById('movieLink');
         
 
-function showMovieDetails(movieTitle, movieSynopsis, movieId) {
+function showMovieDetails(movieTitle, movieSynopsis, movieId, movieReleaseDate, movieLink) {
     const today = new Date();
     today.setHours(today.getHours() + 7);
     const date = today.toISOString().split('T')[0];
     
     movieTitleElement.textContent = movieTitle;
     movieSynopsisElement.textContent = movieSynopsis;
+     movieReleaseDateElement.textContent = 'Release Date : ' + movieReleaseDate;
     movieLinkElement.setAttribute("href", "/schedules-movie/" + movieId + "?selectedCity=All&selectedDate=" + date);
     movieDetailsPopup.classList.remove('hidden');
+    if(movieLink == 'FALSE'){
+        movieLinkElement.style.display = 'none';
+        movieReleaseDateElement.style.display = 'block';
+    }else{
+        movieReleaseDateElement.style.display = 'none';
+        movieLinkElement.style.display = 'block';
+    }
+
     closeMovieDetailsBtn.addEventListener('click', () => {
     movieDetailsPopup.classList.add('hidden');
     });
