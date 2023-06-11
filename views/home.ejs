@@ -116,11 +116,11 @@
     </section>
 
     <!-- Movie Details Popup -->
-    <div id="movieDetailsPopup"
-        class="fixed inset-0 z-50 flex items-center justify-center hidden bg-opacity-75 bg-slate-900">
-        <div class="flex flex-col w-1/2 p-6 rounded-lg shadow-lg bg-gradient-to-bl from-gray-800 to-gray-900">
-            <div class="flex justify-end">
-                <button id="closeMovieDetailsBtn" class="text-gray-400 w-14 h-14 dark:text-gray-200">
+    <div id="movieDetailsPopup" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-opacity-75 bg-black">
+        <div class="flex flex-col w-1/2 p-6 rounded-lg shadow-lg bg-black">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="movieTitle" class="text-2xl font-semibold text-cfab7a"></h2>
+                <button id="closeMovieDetailsBtn" class="text-gray-400 w-6 h-6 dark:text-gray-200">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 close-icon">
                         <path fill="none" d="M0 0h24v24H0z" />
                         <path
@@ -128,13 +128,12 @@
                     </svg>
                 </button>
             </div>
-            <h2 id="movieTitle" class="mb-4 text-2xl font-semibold text-white lg"></h2>
             <p id="movieSynopsis" class="mb-4 text-cfab7a"></p>
             <p id="movieReleasedate" class="mb-4 text-cfab7a"></p>
-            <a id="movieLink" class="px-4 py-2 font-semibold text-white bg-red-600 rounded hover:bg-red-700">Book
-                Now</a>
+            <a id="movieLink" class="px-4 py-2 font-semibold text-white bg-red-600 rounded hover:bg-red-700">Book Now</a>
         </div>
     </div>
+    
 
     <!-- Features Section -->
     <section id="about" class="bg-black py-16 text-[#cfab7a]">

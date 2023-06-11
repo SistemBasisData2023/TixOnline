@@ -44,13 +44,15 @@
     </div>
   </nav>
 
+
   <section id="movieList" class="bg-black py-16 text-[#cfab7a]">
     <div class="container mx-auto">
       <h1 class="mb-4 text-4xl font-semibold">Now Playing</h1>
-      <a href="/theaters">Find by Location</a>
+      <div class="flex items-center mb-8">
+      <a href="/theaters" class="mr-8 mb-4 cursor-pointer">Find by Location</a>
       <form id="filterForm" action="/schedules-movie/<%= movie.movie_id %>" method="GET" class="mb-4">
         <select id="selectedCity" name="selectedCity"
-          class="px-4 py-2 mr-4 bg-black border-2 rounded cursor-pointer border-cfab7a" onchange="this.form.submit();">
+          class="px-4 py-2 mr-8 bg-black border-2 rounded cursor-pointer border-cfab7a" onchange="this.form.submit();">
           <% cities.forEach((city)=> { %>
             <option value="<%= city.city %>" <% if(city.city==cityFilter){ %> selected <%}%>><%= city.city %>
             </option>
@@ -64,6 +66,8 @@
             <% }) %>
         </select>
       </form>
+      </div>
+
       <div class="kodfun-galeri">
         <% movies.forEach(movie=> { %>
           <div style="background-image: url('/images/<%= movie.images %>');">
