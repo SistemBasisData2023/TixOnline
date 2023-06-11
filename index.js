@@ -594,7 +594,7 @@ router.get("/admin/dashboard", async (req, res) => {
                                 console.log("admin dashboard");
                                 console.log(movies.rows);
                                 console.log(totalPrices.rows[0].sum);
-                                return res.status(200).render("admin-dashboard.ejs", { movies: movies.rows, totalPrices: totalPrices.rows[0].sum });
+                                return res.status(200).render("admin-dashboard.ejs", {movies: movies.rows, totalPrices: totalPrices.rows[0].sum });
                             }
                         });
                     }
