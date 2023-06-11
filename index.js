@@ -1668,7 +1668,7 @@ router.get("/admin/movies", async (req, res) => {
                         return res.status(500).redirect("/admin/dashboard");
                     }else{
                         const username = req.query.username;
-                        return res.status(200).render('admin-movies.ejs', {movies : results.rows, username : username});
+                        return res.status(200).render('admin-movies.ejs', {movies : results.rows, username : store_session.username});
                     }
                 });
             } catch (error) {
