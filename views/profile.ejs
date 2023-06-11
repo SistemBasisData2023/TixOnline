@@ -63,12 +63,11 @@
           <div class="flex overflow-x-auto">
             <div class="flex-shrink-0 "> <!-- This div holds the list -->
               <ul class="flex space-x-4">
-                <%console.log(purchases);%>
                 <%if(purchases.length === 0){%>
                   <div class="flex items-center justify-center bg-black rounded-lg">No ongoing transaction</div>
-                <%}else{%>
+                <%}else{  var i = 0;%>
                   <% purchases.forEach((purchase)=> {
-                    var i = 0;
+                   
                     var time = purchase.hours;
                     var timeComponents = time.split(':');
                     var hours = parseInt(timeComponents[0]);
@@ -96,19 +95,22 @@
                           <%= purchase.theater_name %>
                         </p>
                         <p>
+                          Seat : <%= purchase.seat_numbers %>
+                         </p>
+                        <p>
                           <%= purchase.transaction_status %>
                         </p>
-                        <% purchase.seat_numbers.forEach((seat)=> { %>
-                          <p>
-                            <%= seat %>
-                          </p>
-                          <% }); %>
+                  
+                       
+                    
                             <%if(purchase.transaction_status==='WAITING' ){%>
+                           
                               <p>
-                                <%= seat %>
+                                <%var purchaseDate=new Date(purchase.payment_max_date); %>
+                                  <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
                               </p>
   
-                              <form method="POST" action="/pay">
+                              <form method="POST" action="/pay" class="inline-block px-4 py-2 mb-2 font-semibold text-black rounded cursor-pointer custom-btn hover:custom-btn">
                                 <input type="hidden" name="transaction_id" value="<%= purchase.transaction_id %>">
                                 <input type="hidden" name="pay_button_clicked" value="TRUE">
                                 <input type="hidden" name="total_prices" value="<%= purchase.total_prices %>">
@@ -121,7 +123,7 @@
   
                       </div>
   
-                      <% i++; } if(i == 0){%><p>No ongoing transaction</p><%}}); %>
+                      <% i++; }});  if(i == 0){%><p>No ongoing transaction</p><%} %>
                 <%}%>
               </ul>
             </div>
@@ -132,7 +134,7 @@
               <h2 class="my-4 mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
               <%if(purchases.length===0){%>
                 <p class="bg-black rounded-lg">No transaction history</p>
-                <%}else{%>
+                <%}else{ var j =0; %>
                   <table class="w-full border-collapse table-auto">
                     <% purchases.forEach((purchase)=> {
                       var time = purchase.hours;
@@ -141,7 +143,7 @@
                       var minutes = parseInt(timeComponents[1]);
                       purchase.date.setHours(hours);
                       purchase.date.setMinutes(minutes);
-                      if ((purchase.transaction_status === 'CANCELED') || (now < purchase.date)) { %>
+                      if ((purchase.transaction_status === 'CANCELED') || (now > purchase.date)) { j++%>
                         <tr>
                           <td class="px-4 py-2 border border-cfab7a">
                             <%= purchase.title %>
@@ -165,7 +167,7 @@
                             <%= purchase.seat_numbers%>
                           </td>
                         </tr>
-                        <% } }); %>
+                        <% } });if(j == 0){%><p>No ongoing transaction</p><%}  %>
                   </table>
                   <%}%>
             </div>

@@ -57,8 +57,8 @@
     var selectedSeatNumbers = []; // Array to store selected seat numbers
     var scheduleId = <%= scheduleId %>;
     var currentDate = new Date();
-    var seats = <% - JSON.stringify(seats) %>
-    var soldSeats = <% - JSON.stringify(soldSeats) %> 
+    var seats = <%- JSON.stringify(seats) %>
+    var soldSeats = <%- JSON.stringify(soldSeats) %> 
     var prices = <%= schedule.prices%>;
     var totalPrices = 0;
     var selectedSeatNumber = 0;
@@ -214,7 +214,7 @@
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
             </svg>
-            <%=schedule.theater_name%> | <%=schedule.hours%> | <%=schedule.date%>
+            <%=schedule.theater_name%> | <%=schedule.hours%> | <%=schedule.date.toLocaleDateString('en-GB') %>
           </p>
           <div class="space-y-4">
             <div class="flex justify-around">

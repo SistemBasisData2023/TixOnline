@@ -126,14 +126,16 @@ app.use(async (req, res, next) => {
 // '* * * * *' run every 1 minute
 // '*/5 * * * *' run every 5 minute
 //Update transaction status to CANCELED if transaction status is WAITING and transaction date is more than 10 minute
-// cron.schedule("*/5 * * * *", async () => {
+// cron.schedule("* * * * *", async () => {
 //   try {
+//     const date = new Date();
+//     console.log("date sekarang" + date);
 //     //Get transaction that are waiting and transaction date is more than 10 minute
 //     db.query(
 //       `
 //       UPDATE transactions
 //       SET transaction_status = 'CANCELED'
-//       WHERE transaction_status = 'WAITING' AND transaction_date >= NOW() - INTERVAL '10 minutes' RETURNING transaction_id;`,
+//       WHERE transaction_status = 'WAITING' AND payment_max_date >= $1 RETURNING transaction_id;`, [date],
 //       (err, transactions) => {
 //         if (err) {
 //           console.log(err);
@@ -2054,6 +2056,7 @@ router.get("/success", (req, res) => {
                                     console.log("Retrive data failed : " + err);
                                     return res.status(500).redirect("/");
                                 } else {
+                                    console.log(tickets.rows);
                                     store_session.ticketQuantity = null;
                                     store_session.ticketPrices = null;
                                     store_session.transaction_id = null;
@@ -2728,8 +2731,15 @@ async function getAllPurchases() {
   try {
     const query = "SELECT * FROM transactions_details_seats WHERE user_id = $1 ORDER BY transaction_id DESC;";
     const values = [store_session.user_id];
-    const result = await db.query(query, values);
-    return result.rows;
+    const purchases = await db.query(query, values, (err, results) => {
+        if (err) {
+            console.log("Retrive data failed : " + err);
+            return res.json({ message: "Retrive data failed" });
+        } else {
+            console.log("Retrive data success");
+        }
+    });
+    return purchases;
   } catch (error) {
     console.error("Error retrieving purchase information:", error);
     return [];
@@ -2768,6 +2778,7 @@ router.get("/transactionDetails", async (req, res) => {
 // Query the database to retrieve user information
 router.get("/profile", async (req, res) => {
   try {
+    console.log(store_session);
     // Check if the user is logged in
     if (!store_session) {
       // If not logged in, redirect to the login page or display an error message
@@ -2776,29 +2787,26 @@ router.get("/profile", async (req, res) => {
       // return res.render('error', { message: 'You need to log in to view your profile.' });
     }
 
-    const query = "SELECT * FROM users WHERE username = $1";
-    const values = [store_session.username];
-    const purchases = await getAllPurchases();
-    if (purchases.length === 0) {
-      console.log("No purchase information available.");
-    } else {
-      // console.log('Purchase Information:');
-      // purchases.forEach((purchase) => {
-      //   console.log('Transaction ID:', purchase.transaction_id);
-      //   console.log('User ID:', purchase.user_id);
-      //   console.log('Transaction Date:', purchase.transaction_date);
-      //   console.log('Transaction Status:', purchase.transaction_status);
-      //   console.log('------------------------');
-      // });
-    }
-    await db.query(query, values, (err, results) => {
-      if (err) {
-        console.log(err);
-        return res.json({ message: "Error retrieving user information." });
-      } else {
-        const user = results.rows[0];
-        res.render("profile.ejs", { user, purchases });
-      }
+    const queryUser = "SELECT * FROM users WHERE username = $1";
+
+    await db.query(queryUser, [store_session.username], async (err, results) => {
+        if (err) {
+            console.log(err);
+            return res.json({ message: "Error retrieving user information." });
+        } else {
+            const user = results.rows[0];
+            
+            const queryPurchases = `SELECT * FROM transactions_details_seats WHERE user_id = ${store_session.user_id} ORDER BY transaction_id DESC;`;
+            console.log(queryPurchases);
+            await db.query(queryPurchases, (err, purchases) => {
+                if (err) {
+                    console.log(err);
+                    return res.json({ message: "Error retrieving user information." });
+                } else {
+                    res.render("profile.ejs", { user, purchases: purchases.rows });
+                }
+            });
+        }
     });
   } catch (error) {
     console.error("Error occurred while retrieving user profile:", error);
