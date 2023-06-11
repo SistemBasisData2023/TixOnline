@@ -147,15 +147,17 @@ This table stores tokens for "Remember Me" functionality.
 
 ## Flowcharts
 1. User Flowchart
-![](https://hackmd.io/_uploads/SkBZEvmw2.png)
-3. Admin Flowchart
-![](https://hackmd.io/_uploads/Hy6M4vmvn.png)
+<img width="3650" alt="user flowchart" src="https://github.com/SistemBasisData2023/TixOnline/assets/88542494/38e492cc-85b0-4db5-889a-1b84d7707c92">
+2. Admin Flowchart
+<img width="2015" alt="admin flowchart" src="https://github.com/SistemBasisData2023/TixOnline/assets/88542494/38f1f40b-a444-4997-a9a6-27eae7de8f30">
+
 
 ## Entity Relationship Diagram
-![](https://hackmd.io/_uploads/HyjxHDXv3.png)
+<img width="6312" alt="ERD" src="https://github.com/SistemBasisData2023/TixOnline/assets/88542494/350fd5dc-2821-4954-9f75-b0a1fb109040">
+
 
 ## UML 
-![](https://hackmd.io/_uploads/r1O34Pmw3.png)
+![UML SBD ](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/d0154133-0ba2-47f0-a3ea-2d7470e175f8)
 
 ## Getting Started
 
@@ -178,31 +180,4 @@ To get started with TixOnline, follow these simple steps:
 - JavaScript
 - Libraries: Body-parser Paypal-rest-sdk bcrypt multer fs cookie-parser node-cron ejs pg
 
-<p align="left"><a href="https://nodejs.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/> <a href="https://expressjs.com" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg" alt="express" width="40" height="40"/> </a> <a href="https://www.postgresql.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg" alt="postgresql" width="40" height="40"/> </a> <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/> </a> <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/> </a> <a href="https://tailwindcss.com/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg" alt="tailwind" width="40" height="40"/> </a> </p>
-
-## Flowchart
-
-<details>
-  <summary>Click Here</summary>
-  
-![TixOnline Flowchart](https://github.com/SistemBasisData2023/TixOnline)
-
-</details>
-
-## UML Diagram
-
-<details>
-  <summary>Click Here</summary>
-
-![TixOnline UML Diagram](https://github.com/SistemBasisData2023/TixOnline)
-
-</details>
-
-## Entity Relationship Diagram
-
-<details>
-  <summary>Click Here</summary>
-
-![TixOnline ERD](https://github.com/SistemBasisData2023/TixOnline)
-
-</details>
+<p align="left"><a href="https://nodejs.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/> <a href="https://expressjs.com" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg" alt="express" width="40" height="40"/> </a> <a href="https://www.postgresql.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg" alt="postgresql" width="40" height="40"/> </a> <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/> </a> <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/> </a> <a href="https://tailwindcss.com/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg" alt="tailwind" width="40" height="40"/> </a> </P>
