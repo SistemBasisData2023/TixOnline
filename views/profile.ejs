@@ -64,58 +64,65 @@
             <div class="flex-shrink-0 "> <!-- This div holds the list -->
               <ul class="flex space-x-4">
                 <%console.log(purchases);%>
-                  <%if(purchases.length===0){%>
-                    <div class="flex items-center justify-center bg-black rounded-lg">No ongoing transaction</div>
-                    <%}else{%>
-                      <% purchases.forEach((purchase)=> {
-                        var time = purchase.hours;
-                        var timeComponents = time.split(':');
-                        var hours = parseInt(timeComponents[0]);
-                        var minutes = parseInt(timeComponents[1]);
-                        purchase.date.setHours(hours);
-                        purchase.date.setMinutes(minutes);
-                        if((purchase.transaction_status !== 'CANCELED') && (now < purchase.date)){
-                          console.log(purchase.title + purchase.date ); %>
-                          <div class="p-4 bg-black border-2 rounded-lg border-cfab7a">
-                            <p>
-                              <%= purchase.title %>
-                            </p>
-                            <p>
-                              <%= purchase.date.toLocaleDateString('en-GB') %>
-                            </p>
-                            <p>
-                              <%= purchase.hours %>
-                            </p>
-                            <p>
-                              <%= purchase.studio_name %>
-                            </p>
-                            <p>
-                              <%= purchase.theater_name %>
-                            </p>
-                            <p>
-                              <%= purchase.transaction_status %>
-                            </p>
-                            <% purchase.seat_numbers.forEach((seat)=> { %>
+                <%if(purchases.length === 0){%>
+                  <div class="flex items-center justify-center bg-black rounded-lg">No ongoing transaction</div>
+                <%}else{%>
+                  <% purchases.forEach((purchase)=> {
+                    var i = 0;
+                    var time = purchase.hours;
+                    var timeComponents = time.split(':');
+                    var hours = parseInt(timeComponents[0]);
+                    var minutes = parseInt(timeComponents[1]);
+  
+                    purchase.date.setHours(hours);
+                    purchase.date.setMinutes(minutes);
+  
+                    if((purchase.transaction_status !== 'CANCELED') && (now < purchase.date)){ 
+                      console.log(purchase.title + purchase.date ); %>
+                      <div class="p-4 bg-black border-2 rounded-lg border-cfab7a">
+                        <p>
+                          <%= purchase.title %>
+                        </p>
+                        <p>
+                          <%= purchase.date.toLocaleDateString('en-GB') %>
+                        </p>
+                        <p>
+                          <%= purchase.hours %>
+                        </p>
+                        <p>
+                          <%= purchase.studio_name %>
+                        </p>
+                        <p>
+                          <%= purchase.theater_name %>
+                        </p>
+                        <p>
+                          <%= purchase.transaction_status %>
+                        </p>
+                        <% purchase.seat_numbers.forEach((seat)=> { %>
+                          <p>
+                            <%= seat %>
+                          </p>
+                          <% }); %>
+                            <%if(purchase.transaction_status==='WAITING' ){%>
                               <p>
                                 <%= seat %>
                               </p>
-                              <% }); %>
-                                <%if(purchase.transaction_status==='WAITING' ){%>
-                                  <p>
-                                    <%var purchaseDate=new Date(purchase.payment_max_date); %>
-                                      <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
-                                  </p>
-                                  <form method="POST" action="/pay">
-                                    <input type="hidden" name="transaction_id" value="<%= purchase.transaction_id %>">
-                                    <input type="hidden" name="pay_button_clicked" value="TRUE">
-                                    <input type="hidden" name="total_prices" value="<%= purchase.total_prices %>">
-                                    <input type="hidden" name="quantity" value="<%= purchase.quantity %>">
-                                    <input class="rounded cursor-pointer custom-btn" type="submit" value="Pay">
-                                  </form>
-                                  <%}%>
-                          </div>
-                          <% } }); %>
-                            <%}%>
+  
+                              <form method="POST" action="/pay">
+                                <input type="hidden" name="transaction_id" value="<%= purchase.transaction_id %>">
+                                <input type="hidden" name="pay_button_clicked" value="TRUE">
+                                <input type="hidden" name="total_prices" value="<%= purchase.total_prices %>">
+                                <input type="hidden" name="quantity" value="<%= purchase.quantity %>">
+                                <input class="rounded cursor-pointer custom-btn" type="submit" value="Pay">
+                              </form>
+  
+  
+                              <%}%>
+  
+                      </div>
+  
+                      <% i++; } if(i == 0){%><p>No ongoing transaction</p><%}}); %>
+                <%}%>
               </ul>
             </div>
           </div>
