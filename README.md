@@ -27,9 +27,7 @@ Discover an extensive collection of movies through TixOnline's intuitive interfa
 #### `Ticket Booking`
 TixOnline simplifies the ticket booking process, allowing users to effortlessly select their preferred movie, showtime, and seats. With a streamlined interface, you can confidently proceed to book tickets securely. The application ensures that seats are not double-booked, providing a hassle-free experience.
 ![message![messageImage_1686501378842](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/c3ca7300-e24e-4a42-8961-701bf81e1766)
-Image_1686501334584](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/b6b4d07b-e0cd-40af-8464-bc00b1a00e77)
-![messageImage_1686501270419](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/ca7d3259-10c3-4bf5-9092-a064de551467)
-
+![messageImage_1686501270419](https://github.com/SistemBasisData2023/TixOnline/assets/88542494/371822bf-e761-4049-9013-a891f2a8c4f2)
 
 #### `Booking History`
 
