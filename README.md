@@ -2,7 +2,7 @@
 
 ## Contributors
 
-This is a final Database Management System project made by Group Q17:
+Final Database Management System project by Group G7:
 
 - [Handaneswari Pramudhyta Imanda](https://www.github.com/handaneswari) - 2106731346
 - [Roy Oswaldha](https://www.github.com/rroiii) - 2106731592
@@ -43,20 +43,8 @@ This table stores information about administrators of the TixOnline application.
 - email
 - password
 
-### 2. `Users`
 
-This table stores information about registered users of the TixOnline application.
-
-- user_id
-- username
-- email
-- password
-- first_name
-- last_name
-- phone_number
-- points
-
-### 3. `Movies`
+### 2. `Movies`
 
 This table stores information about movies available for booking.
 
@@ -71,7 +59,7 @@ This table stores information about movies available for booking.
 - images
 - rating
 
-### 4. `Schedule`
+### 3. `Schedule`
 
 This table stores information about movie schedules, including showtimes and prices.
 
@@ -82,7 +70,7 @@ This table stores information about movie schedules, including showtimes and pri
 - hours
 - prices
 
-### 5. `Seats`
+### 4. `Seats`
 
 This table stores information about seats in the studios.
 
@@ -90,14 +78,14 @@ This table stores information about seats in the studios.
 - studio_id
 - seat_number
 
-### 6. `Schedules`
+### 5. `Schedules`
 
 This table links schedules with their corresponding seats.
 
 - schedule_id
 - seat_id
 
-### 7. `Studios`
+### 6. `Studios`
 
 This table stores information about movie studios.
 
@@ -106,7 +94,7 @@ This table stores information about movie studios.
 - type
 - theater_id
 
-### 8. `Theaters`
+### 7. `Theaters`
 
 This table stores information about theaters where movies are shown.
 
@@ -116,7 +104,7 @@ This table stores information about theaters where movies are shown.
 - city
 - theater_images
 
-### 9. `Tickets`
+### 8. `Tickets`
 
 This table stores information about tickets booked by users.
 
@@ -125,7 +113,7 @@ This table stores information about tickets booked by users.
 - schedule_id
 - seat_id
 
-### 10. `Transactions`
+### 9. `Transactions`
 
 This table stores information about user transactions.
 
@@ -136,7 +124,7 @@ This table stores information about user transactions.
 - transaction_date
 - payment_max_date
 
-### 11. `Remember me`
+### 10. `Remember me`
 
 This table stores tokens for "Remember Me" functionality.
 
