@@ -145,6 +145,17 @@ This table stores tokens for "Remember Me" functionality.
 - token
 - expires_at
 
+## Flowcharts
+1. User Flowchart
+![](https://hackmd.io/_uploads/SkBZEvmw2.png)
+3. Admin Flowchart
+![](https://hackmd.io/_uploads/Hy6M4vmvn.png)
+
+## Entity Relationship Diagram
+![](https://hackmd.io/_uploads/HyjxHDXv3.png)
+
+## UML 
+![](https://hackmd.io/_uploads/r1O34Pmw3.png)
 
 ## Getting Started
 
