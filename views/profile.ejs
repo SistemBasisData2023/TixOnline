@@ -36,7 +36,9 @@
     </div>
   </nav>
   <div class="container mx-auto">
-    <h1 class="mb-5 text-4xl font-bold">Hello, <%= user.first_name %> <%= user.last_name %></h1>
+    <h1 class="mb-5 text-4xl font-bold">Hello, <%= user.first_name %>
+        <%= user.last_name %>
+    </h1>
     <div class="px-8 py-4 mb-6 border-2 rounded-md shadow-md border-cfab7a">
       <p class="mb-2 text-xl"><strong>
           <%= user.username %>
@@ -49,13 +51,10 @@
       </p>
     </div>
 
-
     <% const today=new Date(); today.setHours(today.getHours() + 0); today.setDate(today.getDate()+0); const now=new
       Date(); now.setUTCHours(now.getUTCHours() + 7); console.log(now); const
       hours=String(now.getUTCHours()).padStart(2, '0' ); const minutes=String(now.getUTCMinutes()).padStart(2, '0' );
       const timeString=hours + ':' + minutes; %>
-
-
 
       <!-- Display for Ongoing Transactions Today -->
       <div>
@@ -63,121 +62,109 @@
           <h2 class="mb-2 text-2xl font-bold text-cfab7a">Ongoing Transaction</h2>
           <div class="flex overflow-x-auto">
             <div class="flex-shrink-0 "> <!-- This div holds the list -->
-              <ul class="flex p-4 space-x-4">
+              <ul class="flex space-x-4">
                 <%console.log(purchases);%>
-                <%if(purchases.length === 0){%>
-                  <p>No ongoing transaction</p>
-                <%}else{%>
-                  <% purchases.forEach((purchase)=> {
-
-                    var time = purchase.hours;
-                    var timeComponents = time.split(':');
-                    var hours = parseInt(timeComponents[0]);
-                    var minutes = parseInt(timeComponents[1]);
-  
-                    purchase.date.setHours(hours);
-                    purchase.date.setMinutes(minutes);
-  
-                    if((purchase.transaction_status !== 'CANCELED') && (now < purchase.date)){ console.log(purchase.title
-                      + purchase.date ); %>
-                      <div class="p-4 bg-black border-2 rounded-lg border-cfab7a">
-                        <p>
-                          <%= purchase.title %>
-                        </p>
-                        <p>
-                          <%= purchase.date.toLocaleDateString('en-GB') %>
-                        </p>
-                        <p>
-                          <%= purchase.hours %>
-                        </p>
-                        <p>
-                          <%= purchase.studio_name %>
-                        </p>
-                        <p>
-                          <%= purchase.theater_name %>
-                        </p>
-                        <p>
-                          <%= purchase.transaction_status %>
-                        </p>
-                        <% purchase.seat_numbers.forEach((seat)=> { %>
-                          <p>
-                            <%= seat %>
-                          </p>
-                          <% }); %>
-                            <%if(purchase.transaction_status==='WAITING' ){%>
+                  <%if(purchases.length===0){%>
+                    <div class="flex items-center justify-center bg-black rounded-lg">No ongoing transaction</div>
+                    <%}else{%>
+                      <% purchases.forEach((purchase)=> {
+                        var time = purchase.hours;
+                        var timeComponents = time.split(':');
+                        var hours = parseInt(timeComponents[0]);
+                        var minutes = parseInt(timeComponents[1]);
+                        purchase.date.setHours(hours);
+                        purchase.date.setMinutes(minutes);
+                        if((purchase.transaction_status !== 'CANCELED') && (now < purchase.date)){
+                          console.log(purchase.title + purchase.date ); %>
+                          <div class="p-4 bg-black border-2 rounded-lg border-cfab7a">
+                            <p>
+                              <%= purchase.title %>
+                            </p>
+                            <p>
+                              <%= purchase.date.toLocaleDateString('en-GB') %>
+                            </p>
+                            <p>
+                              <%= purchase.hours %>
+                            </p>
+                            <p>
+                              <%= purchase.studio_name %>
+                            </p>
+                            <p>
+                              <%= purchase.theater_name %>
+                            </p>
+                            <p>
+                              <%= purchase.transaction_status %>
+                            </p>
+                            <% purchase.seat_numbers.forEach((seat)=> { %>
                               <p>
-                                <%var purchaseDate=new Date(purchase.payment_max_date); %>
-                                  <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
+                                <%= seat %>
                               </p>
-  
-                              <form method="POST" action="/pay">
-                                <input type="hidden" name="transaction_id" value="<%= purchase.transaction_id %>">
-                                <input type="hidden" name="pay_button_clicked" value="TRUE">
-                                <input type="hidden" name="total_prices" value="<%= purchase.total_prices %>">
-                                <input type="hidden" name="quantity" value="<%= purchase.quantity %>">
-                                <input class="rounded cursor-pointer custom-btn" type="submit" value="Pay">
-                              </form>
-  
-  
-                              <%}%>
-  
-                      </div>
-  
-                      <% } }); %>
-                <%}%>
+                              <% }); %>
+                                <%if(purchase.transaction_status==='WAITING' ){%>
+                                  <p>
+                                    <%var purchaseDate=new Date(purchase.payment_max_date); %>
+                                      <div class="timer" data-timestamp="<%=purchaseDate%>"></div>
+                                  </p>
+                                  <form method="POST" action="/pay">
+                                    <input type="hidden" name="transaction_id" value="<%= purchase.transaction_id %>">
+                                    <input type="hidden" name="pay_button_clicked" value="TRUE">
+                                    <input type="hidden" name="total_prices" value="<%= purchase.total_prices %>">
+                                    <input type="hidden" name="quantity" value="<%= purchase.quantity %>">
+                                    <input class="rounded cursor-pointer custom-btn" type="submit" value="Pay">
+                                  </form>
+                                  <%}%>
+                          </div>
+                          <% } }); %>
+                            <%}%>
               </ul>
             </div>
           </div>
           <!-- Display for Transaction History -->
           <div>
-            <div class="my-5 border-t-2 border-cfab7a">
-            <h2 class="mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
-            <%if(purchases.length === 0){%>
-              <p>No transaction history</p>
-            <%}else{%>
-              <table class="w-full border-collapse table-auto">
-                <% purchases.forEach((purchase)=> {
-                  var time = purchase.hours;
-                  var timeComponents = time.split(':');
-                  var hours = parseInt(timeComponents[0]);
-                  var minutes = parseInt(timeComponents[1]);
-  
-                  purchase.date.setHours(hours);
-                  purchase.date.setMinutes(minutes);
-  
-                  if ((purchase.transaction_status === 'CANCELED') || (now < purchase.date)) { %>
-                    <tr>
-                      <td class="px-4 py-2 border border-cfab7a">
-                        <%= purchase.title %>
-                      </td>
-                      <td class="px-4 py-2 border border-cfab7a">
-                        <%= purchase.date.toLocaleDateString() %>
-                      </td>
-                      <td class="px-4 py-2 border border-cfab7a">
-                        <%= purchase.hours %>
-                      </td>
-                      <td class="px-4 py-2 border border-cfab7a">
-                        <%= purchase.studio_name %>
-                      </td>
-                      <td class="px-4 py-2 border border-cfab7a">
-                        <%= purchase.theater_name %>
-                      </td>
-                      <td class="px-4 py-2 border border-cfab7a">
-                        <%= purchase.transaction_status %>
-                      </td>
-                        <td class="px-4 py-2 border border-cfab7a">
-                          <%= purchase.seat_numbers%>
-                        </td>
-                       
-                    </tr>
-                    <% } }); %>
-              </table>
-            <%}%>
+            <div class="my-4 border-t-2 border-cfab7a">
+              <h2 class="my-4 mb-2 text-2xl font-bold text-cfab7a">Transaction History</h2>
+              <%if(purchases.length===0){%>
+                <p class="bg-black rounded-lg">No transaction history</p>
+                <%}else{%>
+                  <table class="w-full border-collapse table-auto">
+                    <% purchases.forEach((purchase)=> {
+                      var time = purchase.hours;
+                      var timeComponents = time.split(':');
+                      var hours = parseInt(timeComponents[0]);
+                      var minutes = parseInt(timeComponents[1]);
+                      purchase.date.setHours(hours);
+                      purchase.date.setMinutes(minutes);
+                      if ((purchase.transaction_status === 'CANCELED') || (now < purchase.date)) { %>
+                        <tr>
+                          <td class="px-4 py-2 border border-cfab7a">
+                            <%= purchase.title %>
+                          </td>
+                          <td class="px-4 py-2 border border-cfab7a">
+                            <%= purchase.date.toLocaleDateString() %>
+                          </td>
+                          <td class="px-4 py-2 border border-cfab7a">
+                            <%= purchase.hours %>
+                          </td>
+                          <td class="px-4 py-2 border border-cfab7a">
+                            <%= purchase.studio_name %>
+                          </td>
+                          <td class="px-4 py-2 border border-cfab7a">
+                            <%= purchase.theater_name %>
+                          </td>
+                          <td class="px-4 py-2 border border-cfab7a">
+                            <%= purchase.transaction_status %>
+                          </td>
+                          <td class="px-4 py-2 border border-cfab7a">
+                            <%= purchase.seat_numbers%>
+                          </td>
+                        </tr>
+                        <% } }); %>
+                  </table>
+                  <%}%>
             </div>
           </div>
         </div>
       </div>
-
       <!-- Logout Button -->
       <div class="flex justify-center mt-5">
         <form action="/logout" method="post">
@@ -194,8 +181,6 @@
   </footer>
 
   <script>
-
-
     function pay(transaction_id) {
       //tambah fetch POST insert transaction
       fetch('http://localhost:3000/pay-later', {

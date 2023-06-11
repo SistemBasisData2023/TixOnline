@@ -80,42 +80,42 @@
     </div>
   </div>
   <%console.log(theaters);%>
-  <!-- Footer -->
-  <footer class="bg-black text-cfab7a py-6 text-[#cfab7a]">
-    <div class="container mx-auto text-center">
-      <p>&copy; 2023 TixOnline. All rights reserved.</p>
-    </div>
-  </footer>
-  <script>
-    function updateTheaterOptions() {
-      var citySelect = document.getElementById('city');
-      var theaterSelect = document.getElementById('theater');
-      var selectedCity = citySelect.value;
-      var theaterOptions = <%- JSON.stringify(theaters) %>;
+    <!-- Footer -->
+    <footer class="bg-black text-cfab7a py-6 text-[#cfab7a]">
+      <div class="container mx-auto text-center">
+        <p>&copy; 2023 TixOnline. All rights reserved.</p>
+      </div>
+    </footer>
+    <script>
+      function updateTheaterOptions() {
+        var citySelect = document.getElementById('city');
+        var theaterSelect = document.getElementById('theater');
+        var selectedCity = citySelect.value;
+        var theaterOptions = <% - JSON.stringify(theaters) %>;
 
-      while (theaterSelect.options.length > 0) {
-        theaterSelect.options[0].remove();
-      }
-      var newOption = document.createElement('option');
-      newOption.value = "None";
-      newOption.innerHTML = "None";
-      newOption.disabled = true;
-      newOption.selected = true;
-      theaterSelect.appendChild(newOption);
-
-      theaterOptions.forEach(function (theater) {
-        if (theater.city === selectedCity) {
-          var newOption = document.createElement('option');
-          newOption.value = theater.theater_id;
-          newOption.innerHTML = theater.name;
-          theaterSelect.appendChild(newOption);
+        while (theaterSelect.options.length > 0) {
+          theaterSelect.options[0].remove();
         }
-      });
-    }
+        var newOption = document.createElement('option');
+        newOption.value = "None";
+        newOption.innerHTML = "None";
+        newOption.disabled = true;
+        newOption.selected = true;
+        theaterSelect.appendChild(newOption);
 
-    // Attach the event listener after defining the function
-    document.getElementById('city').addEventListener('change', updateTheaterOptions);
-  </script>
+        theaterOptions.forEach(function (theater) {
+          if (theater.city === selectedCity) {
+            var newOption = document.createElement('option');
+            newOption.value = theater.theater_id;
+            newOption.innerHTML = theater.name;
+            theaterSelect.appendChild(newOption);
+          }
+        });
+      }
+
+      // Attach the event listener after defining the function
+      document.getElementById('city').addEventListener('change', updateTheaterOptions);
+    </script>
 </body>
 
 

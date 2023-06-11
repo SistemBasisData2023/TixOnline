@@ -9,42 +9,42 @@
     <link rel="stylesheet" href="/styles/fe_style.css">
     <script src="/script/script.js" defer></script>
     <style>
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.4);
-    }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
 
-    .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 300px;
-        text-align: center;
-    }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            text-align: center;
+        }
 
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-    .close:hover,
-    .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-    }
-</style>
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body class="flex flex-col h-screen bg-black text-cfab7a font-raleway">
@@ -81,23 +81,24 @@
                                         <div class="modal" id="myModal">
                                             <div class="modal-content">
                                                 <span class="close" onclick="closeModal()">×</span>
-                                                <p>Usernames must be 8-30 characters long, including uppercase/lowercase letters, numbers, underscores, and hyphens.</p>
+                                                <p>Usernames must be 8-30 characters long, including uppercase/lowercase
+                                                    letters, numbers, underscores, and hyphens.</p>
                                             </div>
                                         </div>
                                         <% } %>
-                                    </div>
+                        </div>
                         <div class="mb-4">
                             <label for="email" class="block mb-2 font-semibold text-black">Email</label>
                             <input type="email" id="email" name="email"
                                 class="w-full px-4 py-2 mb-2 border border-gray-300 rounded "
                                 placeholder="example@email.com" required>
                             <% if (emailRegexAllowed==false) { %>
-                                    <div class="modal" id="myModal">
-                                        <div class="modal-content">
-                                            <span class="close" onclick="closeModal()">×</span>
-                                            <p>Email address must have a valid format</p>
-                                        </div>
+                                <div class="modal" id="myModal">
+                                    <div class="modal-content">
+                                        <span class="close" onclick="closeModal()">×</span>
+                                        <p>Email address must have a valid format</p>
                                     </div>
+                                </div>
                                 <% } %>
                                     <% if ( EmailAvailability==false) { %>
                                         <div class="modal" id="myModal">
@@ -118,7 +119,8 @@
                                     <div class="modal" id="myModal">
                                         <div class="modal-content">
                                             <span class="close" onclick="closeModal()">×</span>
-                                            <p>Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, and one digit</p>
+                                            <p>Password must be at least 8 characters long and include at least one
+                                                lowercase letter, one uppercase letter, and one digit</p>
                                         </div>
                                     </div>
                                     <% } %>
@@ -164,7 +166,9 @@
                                     <% if (phoneNumberRegexAllowed==false) { %>
                                         <div class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded"
                                             role="alert">
-                                            <strong class="font-bold">Allows variations such as the presence of a country code, parentheses around the area code, and the use of hyphens, dots, or spaces as separators.</strong>
+                                            <strong class="font-bold">Allows variations such as the presence of a
+                                                country code, parentheses around the area code, and the use of hyphens,
+                                                dots, or spaces as separators.</strong>
                                             <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
                                                 <svg class="w-6 h-6 text-red-500 fill-current" role="button"
                                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -197,12 +201,12 @@
         function comparePasswords() {
             var password = document.getElementById("password").value;
             var confirmPassword = document.getElementById("confirmPassword").value;
-    
+
             if (password !== confirmPassword) {
                 alert("Passwords do not match.");
                 return false; // Prevent form submission
             }
-    
+
             return true; // Allow form submission
         }
 

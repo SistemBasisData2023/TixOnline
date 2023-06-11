@@ -7,12 +7,11 @@
   <title>Theaters List</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/styles/fe_style.css">
-  <link rel="stylesheet" href="/styles/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
-<body class="bg-black">
+<body class="bg-black text-raleway text-cfab7a">
   <!-- Navbar -->
   <nav class="p-10 bg-black text-cfab7a">
     <div class="container flex flex-col items-center justify-between mx-auto lg:flex-row">
@@ -48,7 +47,7 @@
     <div class="container mx-auto">
       <h1 class="mb-6 text-4xl font-semibold text-cfab7a">Theaters List</h1>
       <form id="filterForm" action="/theaters" method="GET">
-        <select id="selectedCity" name="selectedCity" class="px-4 py-2 mr-4 bg-black border-2 rounded border-cfab7a"
+        <select id="selectedCity" name="selectedCity" class="px-4 py-2 mr-4 bg-black border-2 rounded cursor-pointer border-cfab7a"
           onchange="this.form.submit();">
           <% cities.forEach((city)=> { %>
             <option value="<%= city.city %>" <% if(city.city==cityFilter){ %> selected <%}%>><%= city.city %>
@@ -63,7 +62,7 @@
     <% const today=new Date(); today.setHours(today.getHours() + 7); today.toISOString().split('T')[0];%>
       <% theaters.forEach(function(theater) { %>
         <a href="/schedules-theater/<%= theater.theater_id %>?selectedCity=<%=theater.city%>&selectedDate=<%=today.toISOString().split('T')[0]%>"
-          class="flex flex-col max-w-sm overflow-hidden transition-all duration-200 transform bg-gray-800 rounded shadow-lg hover:scale-105">
+          class="flex flex-col max-w-sm overflow-hidden transition-all duration-200 transform rounded shadow-lg custom-btn hover:scale-105">
           <img class="object-cover w-full h-64" src='/images/<%= theater.theater_images %> ' alt="<%= theater.city %>">
           <div class="flex-grow px-6 py-4">
             <div class="mb-2 text-xl font-bold">
