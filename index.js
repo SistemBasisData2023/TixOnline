@@ -2726,8 +2726,9 @@ router.post('/login-admin', async (req, res) => {
 //function to get all purchases
 async function getAllPurchases() {
   try {
-    const query = "SELECT * FROM transactions_details_seats ORDER BY transaction_id DESC;";
-    const result = await db.query(query);
+    const query = "SELECT * FROM transactions_details_seats WHERE user_id = $1 ORDER BY transaction_id DESC;";
+    const values = [store_session.user_id];
+    const result = await db.query(query, values);
     return result.rows;
   } catch (error) {
     console.error("Error retrieving purchase information:", error);
