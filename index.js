@@ -594,7 +594,7 @@ router.get("/admin/dashboard", async (req, res) => {
                                 console.log("admin dashboard");
                                 console.log(movies.rows);
                                 console.log(totalPrices.rows[0].sum);
-                                return res.status(200).render("admin-dashboard.ejs", {movies: movies.rows, totalPrices: totalPrices.rows[0].sum });
+                                return res.status(200).render("admin-dashboard.ejs", { movies: movies.rows, totalPrices: totalPrices.rows[0].sum , username : store_session.username});
                             }
                         });
                     }
@@ -627,7 +627,7 @@ router.get("/admin/schedules", async (req, res) => {
                         return res.status(500).redirect("/admin/dashboard");
                     } else {
                         //Open admin-schedules.ejs
-                        return res.status(200).render("admin-schedules.ejs", { schedules: results.rows });
+                        return res.status(200).render("admin-schedules.ejs", { schedules: results.rows, username : store_session.username });
                     }
                 });
             } catch (error) {
@@ -686,6 +686,7 @@ router.get("/admin/schedules/add", async (req, res) => {
                                                     studios: studios.rows,
                                                     cities: cities.rows,
                                                     minDate,
+                                                    username : store_session.username
                                                 });
                                             }
                                         });
@@ -792,6 +793,7 @@ router.get("/admin/schedules/edit/:scheduleId", async (req, res) => {
                                     studios: studios.rows,
                                     cities: cities.rows,
                                     minDate,
+                                    username : store_session.username
                                   });
                                 }
                               });
@@ -914,7 +916,7 @@ router.get("/admin/seats", async (req, res) => {
                         console.log("(/admin/seats) Getting data seats error : " + err);
                         return res.status(500).redirect("/admin/dashboard");
                     } else {
-                        return res.status(200).render("admin-seats.ejs", { seats: results.rows });
+                        return res.status(200).render("admin-seats.ejs", { seats: results.rows, username : store_session.username });
                     }
                 });
             } catch (error) {
@@ -960,6 +962,7 @@ router.get("/admin/seats/add", async (req, res) => {
                                             cities: cities.rows,
                                             theaters: theaters.rows,
                                             studios: studios.rows,
+                                            username : store_session.username
                                         });
                                     }
                                 });
@@ -1050,6 +1053,7 @@ router.get("/admin/seats/edit/:seatId", async (req, res) => {
                                                     cities: cities.rows,
                                                     theaters: theaters.rows,
                                                     studios: studios.rows,
+                                                    username : store_session.username
                                                 });
                                             }
                                         });
@@ -1159,7 +1163,7 @@ router.get("/admin/theaters", async (req, res) => {
                     if (err) {
                         console.log("(/admin/theaters) Getting data theaters error : " + err);
                     } else {
-                        res.render("admin-theaters.ejs", { theaters: results.rows });
+                        res.render("admin-theaters.ejs", { theaters: results.rows, username : store_session.username });
                     }
                 });
             } catch (error) {
@@ -1179,7 +1183,7 @@ router.get("/admin/theaters/add", async (req, res) => {
     if(store_session){
         if(store_session.role == "admin"){
             try {
-                return res.status(200).render("admin-theaters-add.ejs");
+                return res.status(200).render("admin-theaters-add.ejs",{username : store_session.username});
             } catch (error) {
                 console.error("Page is not availible" + error);
                 return res.status(500).json({ message: "An error occurred during showing page." });
@@ -1206,7 +1210,7 @@ router.get("/admin/theaters/edit/:theaterId", async (req, res) => {
                         console.log("(/admin/theaters/edit) Getting data theaters error : " + err);
                         return res.status(500).redirect("/admin/theaters");
                     }else{
-                        return  res.status(200).render('admin-theaters-edit.ejs',{theater : results.rows[0]});
+                        return  res.status(200).render('admin-theaters-edit.ejs',{theater : results.rows[0], username : store_session.username});
                     }
                 });
             } catch (error) {
@@ -1402,7 +1406,7 @@ router.get("/admin/studios", async (req, res) => {
                         console.log("(/admin/studios) Getting data studios error : " + err);
                         return res.status(500).redirect("/admin/dashboard");
                     } else {
-                        res.render("admin-studios.ejs", { studios: results.rows });
+                        res.render("admin-studios.ejs", { studios: results.rows, username : store_session.username });
                     }
                 });
             } catch (error) {
@@ -1430,7 +1434,7 @@ router.get("/admin/studios/add", async (req, res) => {
                     await db.query(queryTheaters, async (err, theaters) => {
                         if(err){
                             console.log("(/admin/studios/add) Getting data theaters error : " + err);
-                            return res.status(500).redirect("/admin/studios");
+                            return res.status(500).redirect("/admin/studios",{username : store_session.username});
                         }else{
                             return res.status(200).render('admin-studios-add.ejs', {cities : cities.rows, theaters : theaters.rows});
                         }
@@ -1509,6 +1513,7 @@ router.get("/admin/studios/edit/:studioId", async (req, res) => {
                                         cities: cities.rows,
                                         theaters: theaters.rows,
                                         studio: studio.rows[0],
+                                        username : store_session.username
                                     });
                                 }
                             });
@@ -1609,7 +1614,7 @@ router.get("/admin/movies/add", async (req, res) => {
     if(store_session){
         if(store_session.role == "admin"){
             try {
-                return res.status(200).render("admin-movies-add.ejs");
+                return res.status(200).render("admin-movies-add.ejs", {username : store_session.username});
             } catch (error) {
                 console.error("Page is not availible" + error);
                 return res.status(500).json({ message: "An error occurred during showing page." });
@@ -1635,7 +1640,7 @@ router.get("/admin/movies/edit/:movieId", async (req, res) => {
                         console.log("(/admin/movies/edit) Getting data movies error : " + err);
                         return res.status(500).redirect("/admin/movies");
                     } else {
-                        return res.status(200).render("admin-movies-edit.ejs", { movie: results.rows[0] });
+                        return res.status(200).render("admin-movies-edit.ejs", { movie: results.rows[0], username : store_session.username });
                     }
                 });
             } catch (error) {
