@@ -591,6 +591,7 @@ router.get("/admin/dashboard", async (req, res) => {
                                 console.log("(/admin/dashboard) Getting data movies error : " + err);
                                 return res.status(500).redirect("/");
                             }else{
+                                console.log("admin dashboard");
                                 console.log(movies.rows);
                                 console.log(totalPrices.rows[0].sum);
                                 return res.status(200).render("admin-dashboard.ejs", { movies: movies.rows, totalPrices: totalPrices.rows[0].sum });
@@ -2687,12 +2688,13 @@ router.post('/login-admin', async (req, res) => {
                             }else{
                                 console.log(results.rows[0].user_id);
                                 store_session = req.session;
+                                console.log(store_session);
                                 store_session.user_id = results.rows[0].admin_id;
                                 store_session.username = username;
                                 store_session.schedule = null;
                                 store_session.seats_id = null;
                                 store_session.role = 'admin';
-                                return res.status(200).render(`admin-dashboard.ejs`, {username : username});
+                                return res.status(200).redirect('/admin/dashboard');
                             }
                         });
                     }else{
